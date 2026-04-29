@@ -1,0 +1,43 @@
+{
+  "Storefront": {
+    "brand": "Cross",
+    "nav": {
+      "home": "Início",
+      "products": "Produtos",
+      "contact": "Contato",
+      "subscribe": "Inscrever-se"
+    },
+    "searchPlaceholder": "Buscar produtos, categorias ou modelos",
+    "portal": "Portal",
+    "whatsApp": "WhatsApp",
+    "footer": {
+      "tagline": "Base da fase um para uma vitrine multilíngue com painel administrativo.",
+      "rights": "Cross. Todos os direitos reservados."
+    },
+    "emptyProducts": "Ainda não há produtos disponíveis.",
+    "productCta": "Ver detalhes",
+    "contactForm": {
+      "title": "Enviar mensagem",
+      "name": "Nome",
+      "email": "Email",
+      "content": "Mensagem",
+      "submit": "Enviar"
+    },
+    "subscribeForm": {
+      "title": "Receber atualizações",
+      "email": "Email",
+      "submit": "Inscrever-se"
+    },
+    "language": {
+      "label": "Idioma"
+    },
+    "home": {
+      "eyebrow": "Storefront Shell",
+      "title": "A base em quatro idiomas já está pronta",
+      "description": "A home, o catálogo, os detalhes e a administração serão expandidos nas próximas tarefas."
+    }
+  },
+  "Admin": {
+    "title": "Administração"
+  }
+}

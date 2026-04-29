@@ -1,0 +1,43 @@
+{
+  "Storefront": {
+    "brand": "Cross",
+    "nav": {
+      "home": "Home",
+      "products": "Products",
+      "contact": "Contact",
+      "subscribe": "Subscribe"
+    },
+    "searchPlaceholder": "Search products, categories or models",
+    "portal": "Portal",
+    "whatsApp": "WhatsApp",
+    "footer": {
+      "tagline": "Phase-one shell for a multilingual storefront and admin portal.",
+      "rights": "Cross. All rights reserved."
+    },
+    "emptyProducts": "No products are available yet.",
+    "productCta": "View details",
+    "contactForm": {
+      "title": "Send a message",
+      "name": "Name",
+      "email": "Email",
+      "content": "Message",
+      "submit": "Send"
+    },
+    "subscribeForm": {
+      "title": "Subscribe for updates",
+      "email": "Email",
+      "submit": "Subscribe"
+    },
+    "language": {
+      "label": "Language"
+    },
+    "home": {
+      "eyebrow": "Storefront Shell",
+      "title": "The four-locale shell is now wired up",
+      "description": "Homepage, catalog, detail pages and admin management screens will be expanded in the next tasks."
+    }
+  },
+  "Admin": {
+    "title": "Admin"
+  }
+}
