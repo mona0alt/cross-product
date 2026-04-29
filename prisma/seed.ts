@@ -305,6 +305,34 @@ async function main() {
           es: 'Un utensilio de cocina de demostración, ligero y fácil de limpiar.',
           pt: 'Um utensílio de cozinha leve para o dia a dia e fácil limpeza.'
         }
+      },
+      {
+        slug: 'aurora-desk-lamp',
+        productCode: 'P-3001',
+        categorySlug: 'electronics-computers',
+        priceUsd: new Prisma.Decimal('89.00'),
+        coverImageUrl: 'https://images.example.com/products/lamp-cover.jpg',
+        isRecommended: false,
+        sortOrder: 5,
+        publishedAt: null,
+        names: {
+          zh: '极光桌面灯',
+          en: 'Aurora Desk Lamp',
+          es: 'Lámpara Aurora',
+          pt: 'Luminária Aurora'
+        },
+        intros: {
+          zh: '后台草稿商品示例。',
+          en: 'A draft product example for the admin flow.',
+          es: 'Un producto borrador para el flujo administrativo.',
+          pt: 'Um exemplo de produto em rascunho para o fluxo administrativo.'
+        },
+        details: {
+          zh: '用于后台编辑和发布流程演示的草稿商品。',
+          en: 'A draft product used to demonstrate editing and publishing flows.',
+          es: 'Un producto borrador para demostrar edición y publicación.',
+          pt: 'Um produto em rascunho para demonstrar edição e publicação.'
+        }
       }
     ];
 
@@ -318,7 +346,7 @@ async function main() {
           productCode: product.productCode,
           priceUsd: product.priceUsd,
           coverImageUrl: product.coverImageUrl,
-          status: 'published',
+          status: product.publishedAt ? 'published' : 'draft',
           isRecommended: product.isRecommended,
           sortOrder: product.sortOrder,
           publishedAt: product.publishedAt,
