@@ -28,6 +28,12 @@
       "email": "邮箱",
       "submit": "订阅"
     },
+    "sections": {
+      "topCategories": "一级分类导航",
+      "categoryGrid": "分类图标区",
+      "recommended": "推荐商品",
+      "related": "相关推荐"
+    },
     "language": {
       "label": "语言"
     },
@@ -35,6 +41,40 @@
       "eyebrow": "Storefront Shell",
       "title": "四语展示骨架已接通",
       "description": "首页、列表、详情和后台管理页将在后续任务继续完善。"
+    },
+    "products": {
+      "eyebrow": "Catalog",
+      "title": "商品列表",
+      "description": "按关键词、一级分类、二级分类和推荐状态筛选商品。",
+      "filters": {
+        "allPrimary": "全部一级分类",
+        "allSecondary": "全部二级分类",
+        "recommendedOnly": "仅看推荐",
+        "apply": "筛选"
+      }
+    },
+    "categories": {
+      "eyebrow": "Category",
+      "title": "分类商品",
+      "description": "浏览该分类下的已发布商品。"
+    },
+    "contact": {
+      "eyebrow": "Contact",
+      "title": "联系与留言",
+      "description": "留下采购需求、合作方向或交付问题，我们会在下一阶段接入真实写库。",
+      "success": "演示阶段：留言表单已本地提交。"
+    },
+    "subscribe": {
+      "eyebrow": "Subscribe",
+      "title": "订阅更新",
+      "description": "登记邮箱以接收商品更新与上线通知。",
+      "success": "演示阶段：订阅表单已本地提交。"
+    },
+    "portalPage": {
+      "eyebrow": "Portal",
+      "title": "客户入口即将开放",
+      "description": "一期先提供轻量占位页，后续任务会把 portal 功能和商城流程进一步打通。",
+      "back": "返回商城首页"
     }
   },
   "Admin": {

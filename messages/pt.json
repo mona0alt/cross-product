@@ -28,6 +28,12 @@
       "email": "Email",
       "submit": "Inscrever-se"
     },
+    "sections": {
+      "topCategories": "Categorias principais",
+      "categoryGrid": "Grade de categorias",
+      "recommended": "Produtos recomendados",
+      "related": "Você também pode gostar"
+    },
     "language": {
       "label": "Idioma"
     },
@@ -35,6 +41,40 @@
       "eyebrow": "Storefront Shell",
       "title": "A base em quatro idiomas já está pronta",
       "description": "A home, o catálogo, os detalhes e a administração serão expandidos nas próximas tarefas."
+    },
+    "products": {
+      "eyebrow": "Catálogo",
+      "title": "Produtos",
+      "description": "Filtre produtos por palavra-chave, categoria principal, subcategoria e destaque.",
+      "filters": {
+        "allPrimary": "Todas as categorias principais",
+        "allSecondary": "Todas as subcategorias",
+        "recommendedOnly": "Somente recomendados",
+        "apply": "Aplicar"
+      }
+    },
+    "categories": {
+      "eyebrow": "Categoria",
+      "title": "Produtos da categoria",
+      "description": "Navegue pelos produtos publicados desta categoria."
+    },
+    "contact": {
+      "eyebrow": "Contato",
+      "title": "Contato e mensagem",
+      "description": "Envie demandas de compra, ideias de parceria ou dúvidas de entrega. A gravação real entra na próxima tarefa.",
+      "success": "Modo demo: o formulário foi enviado localmente."
+    },
+    "subscribe": {
+      "eyebrow": "Inscrição",
+      "title": "Receber atualizações",
+      "description": "Cadastre um email para receber atualizações de produtos e lançamentos.",
+      "success": "Modo demo: a inscrição foi enviada localmente."
+    },
+    "portalPage": {
+      "eyebrow": "Portal",
+      "title": "O portal do cliente chega em breve",
+      "description": "A fase um entrega uma página leve de espera. As próximas tarefas integrarão o portal e a loja.",
+      "back": "Voltar para a loja"
     }
   },
   "Admin": {

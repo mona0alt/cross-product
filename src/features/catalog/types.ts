@@ -36,6 +36,10 @@ export type StorefrontCategory = {
   description: string | null;
 };
 
+export type StorefrontCategoryGroup = StorefrontCategory & {
+  children: StorefrontCategory[];
+};
+
 export type StorefrontProductCard = {
   id: string;
   slug: string;
@@ -64,6 +68,12 @@ export type HomepagePayload = {
   }>;
   featuredCategories: StorefrontCategory[];
   recommendedProducts: StorefrontProductCard[];
+};
+
+export type ProductListPayload = {
+  filters: ProductListFilters;
+  categoryGroups: StorefrontCategoryGroup[];
+  products: StorefrontProductCard[];
 };
 
 export type ProductListFilters = {

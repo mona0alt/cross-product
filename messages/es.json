@@ -28,6 +28,12 @@
       "email": "Correo",
       "submit": "Suscribirse"
     },
+    "sections": {
+      "topCategories": "Categorías principales",
+      "categoryGrid": "Cuadrícula de categorías",
+      "recommended": "Productos recomendados",
+      "related": "También te puede interesar"
+    },
     "language": {
       "label": "Idioma"
     },
@@ -35,6 +41,40 @@
       "eyebrow": "Storefront Shell",
       "title": "La base de cuatro idiomas ya está conectada",
       "description": "La página inicial, el catálogo, el detalle y la administración se ampliarán en las siguientes tareas."
+    },
+    "products": {
+      "eyebrow": "Catálogo",
+      "title": "Productos",
+      "description": "Filtra productos por palabra clave, categoría principal, subcategoría y recomendación.",
+      "filters": {
+        "allPrimary": "Todas las categorías principales",
+        "allSecondary": "Todas las subcategorías",
+        "recommendedOnly": "Solo recomendados",
+        "apply": "Aplicar"
+      }
+    },
+    "categories": {
+      "eyebrow": "Categoría",
+      "title": "Productos por categoría",
+      "description": "Explora los productos publicados en esta categoría."
+    },
+    "contact": {
+      "eyebrow": "Contacto",
+      "title": "Contacto y mensaje",
+      "description": "Deja necesidades de compra, ideas de colaboración o preguntas de entrega. La escritura real llegará en la siguiente tarea.",
+      "success": "Modo demo: el formulario se envió localmente."
+    },
+    "subscribe": {
+      "eyebrow": "Suscripción",
+      "title": "Suscribirse a novedades",
+      "description": "Registra un correo para recibir novedades y avisos de lanzamiento.",
+      "success": "Modo demo: la suscripción se envió localmente."
+    },
+    "portalPage": {
+      "eyebrow": "Portal",
+      "title": "El portal del cliente llegará pronto",
+      "description": "La fase uno entrega una página ligera de espera. Las siguientes tareas conectarán el portal con la tienda.",
+      "back": "Volver a la tienda"
     }
   },
   "Admin": {

@@ -1,11 +1,33 @@
+import React from 'react';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
 
 import type { Locale } from '@/lib/i18n/config';
 import { LanguageSwitcher } from '@/components/storefront/language-switcher';
 
-export function StorefrontHeader({ locale }: { locale: Locale }) {
-  const t = useTranslations('Storefront');
+type HeaderCopy = {
+  brand: string;
+  nav: {
+    home: string;
+    products: string;
+    contact: string;
+    subscribe: string;
+  };
+  searchPlaceholder: string;
+  portal: string;
+  whatsApp: string;
+  languageLabel: string;
+};
+
+export function StorefrontHeader({
+  locale,
+  copy,
+  whatsAppNumber
+}: {
+  locale: Locale;
+  copy: HeaderCopy;
+  whatsAppNumber: string;
+}) {
+  const normalizedWhatsAppNumber = whatsAppNumber.replace(/[^\d]/g, '');
 
   return (
     <header className="border-b border-slate-200 bg-white/90 backdrop-blur">
@@ -15,34 +37,34 @@ export function StorefrontHeader({ locale }: { locale: Locale }) {
             href={`/${locale}`}
             className="text-lg font-semibold tracking-[0.18em] text-slate-950"
           >
-            {t('brand')}
+            {copy.brand}
           </Link>
           <nav className="flex flex-wrap items-center gap-4 text-sm text-slate-600">
-            <Link href={`/${locale}`}>{t('nav.home')}</Link>
-            <Link href={`/${locale}/products`}>{t('nav.products')}</Link>
-            <Link href={`/${locale}/contact`}>{t('nav.contact')}</Link>
-            <Link href={`/${locale}/subscribe`}>{t('nav.subscribe')}</Link>
+            <Link href={`/${locale}`}>{copy.nav.home}</Link>
+            <Link href={`/${locale}/products`}>{copy.nav.products}</Link>
+            <Link href={`/${locale}/contact`}>{copy.nav.contact}</Link>
+            <Link href={`/${locale}/subscribe`}>{copy.nav.subscribe}</Link>
           </nav>
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <input
             className="min-w-[220px] rounded-full border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-700 placeholder:text-slate-400"
-            placeholder={t('searchPlaceholder')}
+            placeholder={copy.searchPlaceholder}
             type="search"
           />
-          <LanguageSwitcher />
+          <LanguageSwitcher currentLocale={locale} label={copy.languageLabel} />
           <Link
             href={`/${locale}/portal`}
             className="rounded-full border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-700"
           >
-            {t('portal')}
+            {copy.portal}
           </Link>
           <Link
-            href="https://wa.me/15551234567"
+            href={`https://wa.me/${normalizedWhatsAppNumber}`}
             className="rounded-full bg-emerald-500 px-4 py-2.5 text-sm font-medium text-white"
           >
-            {t('whatsApp')}
+            {copy.whatsApp}
           </Link>
         </div>
       </div>

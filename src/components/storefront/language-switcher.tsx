@@ -1,9 +1,9 @@
 'use client';
 
-import { useLocale, useTranslations } from 'next-intl';
+import React from 'react';
 import { usePathname } from 'next/navigation';
 
-import { locales } from '@/lib/i18n/config';
+import { locales, type Locale } from '@/lib/i18n/config';
 
 function replaceLocale(pathname: string, nextLocale: string) {
   const segments = pathname.split('/').filter(Boolean);
@@ -20,17 +20,21 @@ function replaceLocale(pathname: string, nextLocale: string) {
   return `/${nextLocale}/${segments.join('/')}`;
 }
 
-export function LanguageSwitcher() {
-  const locale = useLocale();
+export function LanguageSwitcher({
+  currentLocale,
+  label
+}: {
+  currentLocale: Locale;
+  label: string;
+}) {
   const pathname = usePathname();
-  const t = useTranslations('Storefront.language');
 
   return (
     <label className="flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-slate-500">
-      <span>{t('label')}</span>
+      <span>{label}</span>
       <select
         className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-medium tracking-normal text-slate-700"
-        value={locale}
+        value={currentLocale}
         onChange={(event) => {
           window.location.href = replaceLocale(pathname, event.target.value);
         }}

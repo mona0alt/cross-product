@@ -28,6 +28,12 @@
       "email": "Email",
       "submit": "Subscribe"
     },
+    "sections": {
+      "topCategories": "Primary categories",
+      "categoryGrid": "Category grid",
+      "recommended": "Recommended products",
+      "related": "You may also like"
+    },
     "language": {
       "label": "Language"
     },
@@ -35,6 +41,40 @@
       "eyebrow": "Storefront Shell",
       "title": "The four-locale shell is now wired up",
       "description": "Homepage, catalog, detail pages and admin management screens will be expanded in the next tasks."
+    },
+    "products": {
+      "eyebrow": "Catalog",
+      "title": "Products",
+      "description": "Filter products by keyword, primary category, secondary category and recommendation status.",
+      "filters": {
+        "allPrimary": "All primary categories",
+        "allSecondary": "All secondary categories",
+        "recommendedOnly": "Recommended only",
+        "apply": "Apply"
+      }
+    },
+    "categories": {
+      "eyebrow": "Category",
+      "title": "Category products",
+      "description": "Browse published products in this category."
+    },
+    "contact": {
+      "eyebrow": "Contact",
+      "title": "Contact and message",
+      "description": "Leave sourcing needs, partnership ideas or delivery questions. Database writes will be wired in the next task.",
+      "success": "Demo mode: the contact form was submitted locally."
+    },
+    "subscribe": {
+      "eyebrow": "Subscribe",
+      "title": "Subscribe for updates",
+      "description": "Register an email to receive product updates and launch notices.",
+      "success": "Demo mode: the subscription form was submitted locally."
+    },
+    "portalPage": {
+      "eyebrow": "Portal",
+      "title": "Client portal is coming soon",
+      "description": "Phase one ships a lightweight placeholder. Later tasks will connect the portal and storefront flows.",
+      "back": "Back to storefront"
     }
   },
   "Admin": {

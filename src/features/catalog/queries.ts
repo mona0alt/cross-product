@@ -4,7 +4,8 @@ import type {
   AdminProductFilters,
   CatalogLocale,
   HomepagePayload,
-  ProductListFilters
+  ProductListFilters,
+  ProductListPayload
 } from '@/features/catalog/types';
 import { mapLocalizedCategory, mapLocalizedProduct } from '@/features/catalog/mappers';
 
@@ -70,48 +71,111 @@ export async function getHomepagePayload(
 export async function getProductListPayload(
   filters: ProductListFilters,
   locale: CatalogLocale
-) {
-  const products = await db.product.findMany({
-    where: {
-      status: 'published',
-      ...(filters.recommended ? { isRecommended: true } : {}),
-      ...(filters.search
-        ? {
-            OR: [
-              { productCode: { contains: filters.search, mode: 'insensitive' } },
-              { nameZh: { contains: filters.search, mode: 'insensitive' } },
-              { nameEn: { contains: filters.search, mode: 'insensitive' } },
-              { nameEs: { contains: filters.search, mode: 'insensitive' } },
-              { namePt: { contains: filters.search, mode: 'insensitive' } }
-            ]
-          }
-        : {}),
-      ...(filters.categorySlug
-        ? {
-            category: {
-              slug: filters.categorySlug
+): Promise<ProductListPayload> {
+  const [products, categoryGroups] = await Promise.all([
+    db.product.findMany({
+      where: {
+        status: 'published',
+        ...(filters.recommended ? { isRecommended: true } : {}),
+        ...(filters.search
+          ? {
+              OR: [
+                { productCode: { contains: filters.search, mode: 'insensitive' } },
+                { nameZh: { contains: filters.search, mode: 'insensitive' } },
+                { nameEn: { contains: filters.search, mode: 'insensitive' } },
+                { nameEs: { contains: filters.search, mode: 'insensitive' } },
+                { namePt: { contains: filters.search, mode: 'insensitive' } }
+              ]
             }
-          }
-        : {})
-    },
-    include: {
-      images: true,
-      category: true
-    },
-    orderBy: [
-      {
-        sortOrder: 'asc'
+          : {}),
+        ...(filters.categorySlug
+          ? {
+              OR: [
+                {
+                  category: {
+                    slug: filters.categorySlug
+                  }
+                },
+                {
+                  category: {
+                    parent: {
+                      slug: filters.categorySlug
+                    }
+                  }
+                }
+              ]
+            }
+          : {})
       },
-      {
-        publishedAt: 'desc'
+      include: {
+        images: true,
+        category: true
+      },
+      orderBy: [
+        {
+          sortOrder: 'asc'
+        },
+        {
+          publishedAt: 'desc'
+        }
+      ]
+    }),
+    db.category.findMany({
+      where: {
+        parentId: null,
+        isActive: true
+      },
+      include: {
+        children: {
+          where: {
+            isActive: true
+          },
+          orderBy: {
+            sortOrder: 'asc'
+          }
+        }
+      },
+      orderBy: {
+        sortOrder: 'asc'
       }
-    ]
-  });
+    })
+  ]);
 
   return {
     filters,
+    categoryGroups: categoryGroups.map((group) => ({
+      ...mapLocalizedCategory(group, locale),
+      children: group.children.map((child) => mapLocalizedCategory(child, locale))
+    })),
     products: products.map((product) => mapLocalizedProduct(product, locale))
   };
+}
+
+export async function getStorefrontCategoryGroups(locale: CatalogLocale) {
+  const groups = await db.category.findMany({
+    where: {
+      parentId: null,
+      isActive: true
+    },
+    include: {
+      children: {
+        where: {
+          isActive: true
+        },
+        orderBy: {
+          sortOrder: 'asc'
+        }
+      }
+    },
+    orderBy: {
+      sortOrder: 'asc'
+    }
+  });
+
+  return groups.map((group) => ({
+    ...mapLocalizedCategory(group, locale),
+    children: group.children.map((child) => mapLocalizedCategory(child, locale))
+  }));
 }
 
 export async function getProductDetailBySlug(
