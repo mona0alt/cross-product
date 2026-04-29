@@ -38,6 +38,11 @@ describe('admin login flow', () => {
       })
     );
 
+    expect(response).toBeDefined();
+    if (!response) {
+      throw new Error('Expected route response');
+    }
+
     expect(response.status).toBe(401);
   });
 
@@ -65,6 +70,11 @@ describe('admin login flow', () => {
       })
     );
 
+    expect(response).toBeDefined();
+    if (!response) {
+      throw new Error('Expected route response');
+    }
+
     expect(response.status).toBe(200);
     expect(response.headers.get('set-cookie')).toContain(ADMIN_SESSION_COOKIE);
   });
@@ -72,6 +82,11 @@ describe('admin login flow', () => {
   it('redirects anonymous users away from protected admin routes', async () => {
     const { middleware } = await import('../../middleware');
     const response = middleware(new NextRequest('http://localhost/admin'));
+
+    expect(response).toBeDefined();
+    if (!response) {
+      throw new Error('Expected middleware response');
+    }
 
     expect(response.status).toBe(307);
     expect(response.headers.get('location')).toContain('/admin/login');
