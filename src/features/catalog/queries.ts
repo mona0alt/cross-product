@@ -1,0 +1,202 @@
+import { db } from '@/lib/db';
+import type {
+  AdminCategoryTreeNode,
+  AdminProductFilters,
+  CatalogLocale,
+  HomepagePayload,
+  ProductListFilters
+} from '@/features/catalog/types';
+import { mapLocalizedCategory, mapLocalizedProduct } from '@/features/catalog/mappers';
+
+export async function getHomepagePayload(
+  locale: CatalogLocale
+): Promise<HomepagePayload> {
+  const [banners, categories, products] = await Promise.all([
+    db.banner.findMany({
+      where: {
+        isActive: true
+      },
+      orderBy: {
+        sortOrder: 'asc'
+      }
+    }),
+    db.category.findMany({
+      where: {
+        parentId: null,
+        isActive: true
+      },
+      orderBy: {
+        sortOrder: 'asc'
+      }
+    }),
+    db.product.findMany({
+      where: {
+        status: 'published',
+        isRecommended: true
+      },
+      include: {
+        images: true,
+        category: true
+      },
+      orderBy: [
+        {
+          sortOrder: 'asc'
+        },
+        {
+          publishedAt: 'desc'
+        }
+      ]
+    })
+  ]);
+
+  return {
+    banners: banners.map((banner) => ({
+      id: banner.id,
+      imageUrl: banner.imageUrl,
+      targetType: banner.targetType,
+      targetId: banner.targetId,
+      targetUrl: banner.targetUrl,
+      sortOrder: banner.sortOrder
+    })),
+    featuredCategories: categories.map((category) =>
+      mapLocalizedCategory(category, locale)
+    ),
+    recommendedProducts: products.map((product) =>
+      mapLocalizedProduct(product, locale)
+    )
+  };
+}
+
+export async function getProductListPayload(
+  filters: ProductListFilters,
+  locale: CatalogLocale
+) {
+  const products = await db.product.findMany({
+    where: {
+      status: 'published',
+      ...(filters.recommended ? { isRecommended: true } : {}),
+      ...(filters.search
+        ? {
+            OR: [
+              { productCode: { contains: filters.search, mode: 'insensitive' } },
+              { nameZh: { contains: filters.search, mode: 'insensitive' } },
+              { nameEn: { contains: filters.search, mode: 'insensitive' } },
+              { nameEs: { contains: filters.search, mode: 'insensitive' } },
+              { namePt: { contains: filters.search, mode: 'insensitive' } }
+            ]
+          }
+        : {}),
+      ...(filters.categorySlug
+        ? {
+            category: {
+              slug: filters.categorySlug
+            }
+          }
+        : {})
+    },
+    include: {
+      images: true,
+      category: true
+    },
+    orderBy: [
+      {
+        sortOrder: 'asc'
+      },
+      {
+        publishedAt: 'desc'
+      }
+    ]
+  });
+
+  return {
+    filters,
+    products: products.map((product) => mapLocalizedProduct(product, locale))
+  };
+}
+
+export async function getProductDetailBySlug(
+  slug: string,
+  locale: CatalogLocale
+) {
+  const product = await db.product.findFirst({
+    where: {
+      slug,
+      status: 'published'
+    },
+    include: {
+      images: true,
+      category: true
+    }
+  });
+
+  if (!product) {
+    return null;
+  }
+
+  return mapLocalizedProduct(product, locale);
+}
+
+export async function getAdminProductList(filters: AdminProductFilters) {
+  return db.product.findMany({
+    where: {
+      ...(filters.status ? { status: filters.status as never } : {}),
+      ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
+      ...(filters.search
+        ? {
+            OR: [
+              { productCode: { contains: filters.search, mode: 'insensitive' } },
+              { nameZh: { contains: filters.search, mode: 'insensitive' } },
+              { nameEn: { contains: filters.search, mode: 'insensitive' } }
+            ]
+          }
+        : {})
+    },
+    include: {
+      category: true
+    },
+    orderBy: [
+      {
+        updatedAt: 'desc'
+      }
+    ]
+  });
+}
+
+export async function getAdminCategoryTree(): Promise<AdminCategoryTreeNode[]> {
+  const categories = await db.category.findMany({
+    orderBy: [
+      {
+        sortOrder: 'asc'
+      }
+    ]
+  });
+
+  const grouped = new Map<string | null, AdminCategoryTreeNode[]>();
+
+  for (const category of categories) {
+    const node: AdminCategoryTreeNode = {
+      id: category.id,
+      slug: category.slug,
+      sortOrder: category.sortOrder,
+      isActive: category.isActive,
+      nameZh: category.nameZh,
+      nameEn: category.nameEn,
+      nameEs: category.nameEs,
+      namePt: category.namePt,
+      children: []
+    };
+
+    const siblings = grouped.get(category.parentId) ?? [];
+    siblings.push(node);
+    grouped.set(category.parentId, siblings);
+  }
+
+  function attachChildren(parentId: string | null): AdminCategoryTreeNode[] {
+    return (grouped.get(parentId) ?? []).map((node) => ({
+      ...node,
+      children: attachChildren(node.id)
+    }));
+  }
+
+  return attachChildren(null);
+}
