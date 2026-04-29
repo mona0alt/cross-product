@@ -1,0 +1,13 @@
+.DS_Store
+node_modules
+.next
+coverage
+playwright-report
+test-results
+.env*
+!.env.example
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+turbo
