@@ -68,6 +68,9 @@ describe('storefront routes', () => {
 
     expect(html).toContain('Star River Pro Phone');
     expect(html).toContain('Electronics');
+    expect(html).toContain('Browse Products');
+    expect(html).toContain('Primary categories');
+    expect(html).toContain('Recommended products');
   });
 
   it('renders the localized product list page', async () => {

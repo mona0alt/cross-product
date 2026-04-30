@@ -2,6 +2,7 @@ import React from 'react';
 import type { Locale } from '@/lib/i18n/config';
 import type { StorefrontProductCard } from '@/features/catalog/types';
 import { ProductCard } from '@/components/storefront/product-card';
+import { SectionShell } from '@/components/storefront/section-shell';
 
 export function RecommendedProducts({
   locale,
@@ -17,12 +18,9 @@ export function RecommendedProducts({
   ctaLabel: string;
 }) {
   return (
-    <section className="space-y-4">
-      <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
-        {title}
-      </h2>
+    <SectionShell title={title}>
       {products.length === 0 ? (
-        <p className="rounded-[1.5rem] border border-dashed border-slate-300 bg-white/80 p-6 text-sm text-slate-500">
+        <p className="storefront-surface rounded-[var(--store-radius-lg)] p-6 text-sm text-[var(--store-text-muted)]">
           {emptyLabel}
         </p>
       ) : (
@@ -37,6 +35,6 @@ export function RecommendedProducts({
           ))}
         </div>
       )}
-    </section>
+    </SectionShell>
   );
 }

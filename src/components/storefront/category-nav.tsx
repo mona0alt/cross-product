@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import type { Locale } from '@/lib/i18n/config';
 import type { StorefrontCategory } from '@/features/catalog/types';
+import { SectionShell } from '@/components/storefront/section-shell';
 
 export function CategoryNav({
   locale,
@@ -18,23 +19,23 @@ export function CategoryNav({
   }
 
   return (
-    <section className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
-          {title}
-        </h2>
-      </div>
-      <div className="flex flex-wrap gap-3">
+    <SectionShell title={title}>
+      <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {categories.map((category) => (
           <Link
             key={category.id}
             href={`/${locale}/categories/${category.slug}`}
-            className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 hover:text-slate-950"
+            className="storefront-surface-muted rounded-[1.25rem] px-4 py-4 transition hover:-translate-y-0.5 hover:border-[var(--store-border-strong)] hover:bg-white"
           >
-            {category.name}
+            <h3 className="text-lg font-bold text-[var(--store-text)]">
+              {category.name}
+            </h3>
+            <p className="mt-2 text-sm text-[var(--store-text-muted)]">
+              {category.description}
+            </p>
           </Link>
         ))}
       </div>
-    </section>
+    </SectionShell>
   );
 }
