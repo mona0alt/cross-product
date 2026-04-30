@@ -14,5 +14,9 @@ describe('DashboardWorkbench', () => {
     expect(html).toContain('先处理待审核商品');
     expect(html).toContain('待审核商品');
     expect(html).toContain('今日新增候选商品');
+    expect(html).toContain('新建商品');
+    expect(html).toContain('发起抓取');
+    expect(html).toContain('本周上新节奏');
+    expect(html).toContain('热门分类');
   });
 });

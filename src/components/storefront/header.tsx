@@ -16,15 +16,6 @@ function SearchIcon({ className }: { className?: string }) {
   );
 }
 
-function UserIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-      <circle cx={12} cy={7} r={4} />
-    </svg>
-  );
-}
-
 function PhoneIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
@@ -53,35 +44,6 @@ function ChevronDownIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
       <path d="M6 9l6 6 6-6" />
-    </svg>
-  );
-}
-
-function HelpIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-      <circle cx={12} cy={12} r={10} />
-      <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
-      <line x1={12} y1={17} x2={12.01} y2={17} />
-    </svg>
-  );
-}
-
-function StoreIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-      <path d="M3 21h18M5 21V7l8-4 8 4v14M9 21v-6h6v6" />
-    </svg>
-  );
-}
-
-function TruckIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-      <rect x={1} y={3} width={15} height={13} />
-      <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
-      <circle cx={5.5} cy={18.5} r={2.5} />
-      <circle cx={18.5} cy={18.5} r={2.5} />
     </svg>
   );
 }

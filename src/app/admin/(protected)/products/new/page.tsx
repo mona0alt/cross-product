@@ -23,12 +23,15 @@ export default async function AdminNewProductPage() {
   return (
     <section className="space-y-6">
       <div>
-        <p className="text-xs uppercase tracking-[0.35em] text-slate-400">
+        <p className="text-xs uppercase tracking-[0.35em] text-slate-500">
           Products
         </p>
-        <h2 className="text-3xl font-semibold tracking-tight text-white">
-          新建商品草稿
+        <h2 className="text-3xl font-semibold tracking-tight text-slate-950">
+          手动新建商品
         </h2>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
+          创建后的商品不会直接上架，而是进入统一审核链路，和自动抓取商品一起处理。
+        </p>
       </div>
       <ProductForm mode="create" categories={flattenCategories(categories)} />
     </section>

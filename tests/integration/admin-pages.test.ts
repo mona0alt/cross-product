@@ -69,7 +69,7 @@ describe('admin pages', () => {
     expect(response.headers.get('location')).toContain('/admin/login');
   });
 
-  it('renders the product management page for authenticated admin', async () => {
+  it('renders the product center page for authenticated admin', async () => {
     getAdminProductList.mockResolvedValue([
       {
         id: 'product-1',
@@ -100,9 +100,34 @@ describe('admin pages', () => {
       (await import('@/app/admin/(protected)/products/page')).default;
     const html = renderToStaticMarkup(await ProductsPage());
 
-    expect(html).toContain('商品管理');
-    expect(html).toContain('P-1001');
+    expect(html).toContain('商品中心');
+    expect(html).toContain('自动抓取');
+    expect(html).toContain('手动导入');
     expect(html).toContain('新建商品');
+  });
+
+  it('renders the manual product creation page with review framing', async () => {
+    getAdminCategoryTree.mockResolvedValue([
+      {
+        id: 'cat-1',
+        slug: 'electronics',
+        sortOrder: 1,
+        isActive: true,
+        nameZh: '电子数码',
+        nameEn: 'Electronics',
+        nameEs: 'Electronica',
+        namePt: 'Eletronicos',
+        children: []
+      }
+    ]);
+
+    const NewProductPage =
+      (await import('@/app/admin/(protected)/products/new/page')).default;
+    const html = renderToStaticMarkup(await NewProductPage());
+
+    expect(html).toContain('手动新建商品');
+    expect(html).toContain('审核提示');
+    expect(html).toContain('提交审核');
   });
 
   it('renders the messages and subscribers pages', async () => {
@@ -129,13 +154,24 @@ describe('admin pages', () => {
       (await import('@/app/admin/(protected)/messages/page')).default;
     const SubscribersPage =
       (await import('@/app/admin/(protected)/subscribers/page')).default;
+    const CrawlTasksPage =
+      (await import('@/app/admin/(protected)/crawl-tasks/page')).default;
+    const AnalyticsPage =
+      (await import('@/app/admin/(protected)/analytics/page')).default;
 
     const messagesHtml = renderToStaticMarkup(await MessagesPage());
     const subscribersHtml = renderToStaticMarkup(await SubscribersPage());
+    const crawlHtml = renderToStaticMarkup(await CrawlTasksPage());
+    const analyticsHtml = renderToStaticMarkup(await AnalyticsPage());
 
     expect(messagesHtml).toContain('留言管理');
     expect(messagesHtml).toContain('Alice');
-    expect(subscribersHtml).toContain('订阅管理');
-    expect(subscribersHtml).toContain('buyer@example.com');
+    expect(subscribersHtml).toContain('订阅与通知');
+    expect(subscribersHtml).toContain('邮件通知');
+    expect(subscribersHtml).toContain('失败重发');
+    expect(crawlHtml).toContain('抓取任务看板');
+    expect(crawlHtml).toContain('来源站点');
+    expect(analyticsHtml).toContain('AI 经营分析台');
+    expect(analyticsHtml).toContain('用户转化路径');
   });
 });
