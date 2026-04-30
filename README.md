@@ -2,6 +2,20 @@
 
 基于 Next.js App Router、Prisma 和 PostgreSQL 的多语言商品展示与单管理员后台一期项目。
 
+## 前台说明
+
+当前 storefront 已重构为更偏零售门户的前台结构，覆盖以下页面：
+
+- 多语言首页：`/[locale]`
+- 商品列表页：`/[locale]/products`
+- 分类页：`/[locale]/categories/[slug]`
+- 商品详情页：`/[locale]/products/[slug]`
+- 联系页：`/[locale]/contact`
+- 订阅页：`/[locale]/subscribe`
+- Portal 页：`/[locale]/portal`
+
+前台视觉方向为浅底高对比、楼层式陈列、强分类入口与零售型商品卡，参考家居零售站的展示逻辑，但不包含第三方品牌素材复制。
+
 ## 环境要求
 
 - Node.js `20.x` 或以上
@@ -57,6 +71,10 @@ npm run dev
 
 - `http://localhost:3000/`
 
+默认会重定向到：
+
+- `http://localhost:3000/en`
+
 后台登录页：
 
 - `http://localhost:3000/admin/login`
@@ -68,6 +86,15 @@ npm run dev
 ```bash
 npm run test
 ```
+
+当前 storefront 相关测试覆盖：
+
+- 根路由默认语言重定向
+- storefront 共享壳子组件
+- 全局头部 / 页脚骨架
+- 列表页筛选与结果工具栏
+- 详情页图库结构
+- 前台首页、列表页、详情页、联系页、订阅页、portal 页渲染
 
 端到端测试：
 

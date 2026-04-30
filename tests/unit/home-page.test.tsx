@@ -1,14 +1,17 @@
-import React from 'react';
-import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 
 import HomePage from '@/app/page';
+import { defaultLocale } from '@/lib/i18n/config';
 
 describe('HomePage', () => {
-  it('renders the skeleton heading', () => {
-    const html = renderToStaticMarkup(<HomePage />);
-
-    expect(html).toContain('Next.js skeleton is ready.');
-    expect(html).toContain('src/app/page.tsx');
+  it('redirects to the default locale storefront', () => {
+    try {
+      HomePage();
+      throw new Error('Expected redirect to throw');
+    } catch (error) {
+      expect(error).toMatchObject({
+        digest: expect.stringContaining(`/${defaultLocale}`)
+      });
+    }
   });
 });
