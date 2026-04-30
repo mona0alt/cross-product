@@ -15,8 +15,11 @@
     "portal": "Portal",
     "whatsApp": "WhatsApp",
     "footer": {
+      "navigationTitle": "导航",
       "tagline": "多语言商品展示与后台管理一期骨架。",
-      "rights": "Cross. All rights reserved."
+      "rights": "Cross. All rights reserved.",
+      "supportTitle": "服务支持",
+      "supportDescription": "连接产品咨询、订阅更新和客户入口，统一承接零售前台的沟通动作。"
     },
     "emptyProducts": "当前还没有可展示的商品。",
     "productCta": "查看详情",

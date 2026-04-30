@@ -15,8 +15,11 @@
     "portal": "Portal",
     "whatsApp": "WhatsApp",
     "footer": {
+      "navigationTitle": "Catalog",
       "tagline": "Phase-one shell for a multilingual storefront and admin portal.",
-      "rights": "Cross. All rights reserved."
+      "rights": "Cross. All rights reserved.",
+      "supportTitle": "Support",
+      "supportDescription": "Route product consultations, subscription updates, and portal access through one retail shell."
     },
     "emptyProducts": "No products are available yet.",
     "productCta": "View details",

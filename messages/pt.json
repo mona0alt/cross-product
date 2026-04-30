@@ -15,8 +15,11 @@
     "portal": "Portal",
     "whatsApp": "WhatsApp",
     "footer": {
+      "navigationTitle": "Catálogo",
       "tagline": "Base da fase um para uma vitrine multilíngue com painel administrativo.",
-      "rights": "Cross. Todos os direitos reservados."
+      "rights": "Cross. Todos os direitos reservados.",
+      "supportTitle": "Suporte",
+      "supportDescription": "Concentre consultas de produto, inscrições e acesso ao portal em uma única experiência retail."
     },
     "emptyProducts": "Ainda não há produtos disponíveis.",
     "productCta": "Ver detalhes",

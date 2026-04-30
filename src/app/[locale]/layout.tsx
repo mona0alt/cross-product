@@ -36,7 +36,7 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <div className="flex min-h-screen flex-col bg-[radial-gradient(circle_at_top,_rgba(148,163,184,0.15),_transparent_45%),linear-gradient(180deg,_#f8fafc_0%,_#ffffff_45%,_#eef2ff_100%)] text-slate-900">
+      <div className="storefront-shell flex min-h-screen flex-col text-slate-900">
         <StorefrontHeader
           locale={locale}
           copy={{
@@ -45,18 +45,24 @@ export default async function LocaleLayout({
             searchPlaceholder: Storefront.searchPlaceholder,
             portal: Storefront.portal,
             whatsApp: Storefront.whatsApp,
-            languageLabel: Storefront.language.label
+            languageLabel: Storefront.language.label,
+            utilityBar: Storefront.utilityBar
           }}
           whatsAppNumber={whatsAppNumber}
         />
-        <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-12">{children}</main>
+        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
+          {children}
+        </main>
         <StorefrontFooter
           locale={locale}
           copy={{
             brand: Storefront.brand,
             nav: Storefront.nav,
+            portal: Storefront.portal,
+            whatsApp: Storefront.whatsApp,
             footer: Storefront.footer
           }}
+          whatsAppNumber={whatsAppNumber}
         />
       </div>
     </NextIntlClientProvider>
