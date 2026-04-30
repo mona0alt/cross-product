@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { AdminSectionHeader } from '@/components/admin/admin-section-header';
 import { CategoryForm } from '@/components/admin/category-form';
 import { getAdminCategoryTree } from '@/features/catalog/queries';
 
@@ -22,14 +23,10 @@ export default async function AdminCategoriesPage() {
 
   return (
     <section className="space-y-6">
-      <div>
-        <p className="text-xs uppercase tracking-[0.35em] text-slate-400">
-          Categories
-        </p>
-        <h2 className="text-3xl font-semibold tracking-tight text-white">
-          分类管理
-        </h2>
-      </div>
+      <AdminSectionHeader
+        label="Categories"
+        title="分类管理"
+      />
       <CategoryForm categories={flattenCategories(categories)} />
     </section>
   );

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Shield, Lock, User } from 'lucide-react';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -39,61 +40,87 @@ export default function AdminLoginPage() {
     }
   }
 
+  const inputClass =
+    'w-full rounded-lg border border-admin-border bg-admin-surface px-4 py-3 text-sm text-admin-text-primary outline-none transition-all duration-200 placeholder:text-admin-text-muted focus:border-admin-accent/30 focus:ring-1 focus:ring-admin-accent/20';
+
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-6 py-12 text-slate-50">
-      <form
-        className="w-full max-w-md space-y-5 rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/20"
-        onSubmit={handleSubmit}
-      >
-        <div className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.35em] text-slate-400">
+    <main className="flex min-h-screen items-center justify-center bg-admin-bg px-6 py-12 text-admin-text-primary font-body">
+      <div className="w-full max-w-md">
+        <div className="mb-8 text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-admin-accent/10">
+            <Shield className="h-6 w-6 text-admin-accent" />
+          </div>
+          <h1 className="mt-4 text-2xl font-semibold tracking-tight font-display">
             Cross Admin
-          </p>
-          <h1 className="text-3xl font-semibold tracking-tight">管理员登录</h1>
-          <p className="text-sm text-slate-300">
-            使用单管理员账户进入后台。
+          </h1>
+          <p className="mt-1 text-sm text-admin-text-secondary">
+            专业电商平台后台管理系统
           </p>
         </div>
 
-        <label className="block space-y-2">
-          <span className="text-sm text-slate-200">用户名</span>
-          <input
-            className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-sm outline-none ring-0 placeholder:text-slate-500"
-            name="username"
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
-            placeholder="admin"
-            autoComplete="username"
-          />
-        </label>
-
-        <label className="block space-y-2">
-          <span className="text-sm text-slate-200">密码</span>
-          <input
-            className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-sm outline-none ring-0 placeholder:text-slate-500"
-            name="password"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder="请输入密码"
-            autoComplete="current-password"
-          />
-        </label>
-
-        {error ? (
-          <p className="rounded-xl border border-rose-400/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">
-            {error}
-          </p>
-        ) : null}
-
-        <button
-          className="w-full rounded-xl bg-amber-300 px-4 py-3 text-sm font-medium text-slate-950 transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-70"
-          type="submit"
-          disabled={isSubmitting}
+        <form
+          className="space-y-5 rounded-xl border border-admin-border bg-admin-surface p-8 shadow-lg shadow-black/5"
+          onSubmit={handleSubmit}
         >
-          {isSubmitting ? '登录中...' : '登录'}
-        </button>
-      </form>
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-admin-text-muted font-body">
+              Secure Access
+            </p>
+            <h2 className="mt-1 text-xl font-semibold text-admin-text-primary font-display">
+              管理员登录
+            </h2>
+          </div>
+
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-admin-text-secondary">用户名</span>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-admin-text-muted" />
+              <input
+                className={`${inputClass} pl-10`}
+                name="username"
+                value={username}
+                onChange={(event) => setUsername(event.target.value)}
+                placeholder="admin"
+                autoComplete="username"
+              />
+            </div>
+          </label>
+
+          <label className="block space-y-2">
+            <span className="text-sm font-medium text-admin-text-secondary">密码</span>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-admin-text-muted" />
+              <input
+                className={`${inputClass} pl-10`}
+                name="password"
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="请输入密码"
+                autoComplete="current-password"
+              />
+            </div>
+          </label>
+
+          {error ? (
+            <p className="rounded-lg border border-admin-danger/20 bg-admin-danger/10 px-4 py-3 text-sm text-admin-danger">
+              {error}
+            </p>
+          ) : null}
+
+          <button
+            className="w-full rounded-lg bg-admin-accent px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-admin-accent-hover disabled:cursor-not-allowed disabled:opacity-70 shadow-sm shadow-admin-accent/20"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? '登录中...' : '登录'}
+          </button>
+        </form>
+
+        <p className="mt-6 text-center text-xs text-admin-text-muted">
+          Cross Platform &copy; {new Date().getFullYear()}
+        </p>
+      </div>
     </main>
   );
 }

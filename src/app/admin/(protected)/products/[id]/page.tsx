@@ -1,6 +1,7 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 
+import { AdminSectionHeader } from '@/components/admin/admin-section-header';
 import { ProductForm } from '@/components/admin/product-form';
 import { getAdminCategoryTree } from '@/features/catalog/queries';
 import { db } from '@/lib/db';
@@ -41,17 +42,11 @@ export default async function AdminEditProductPage({
 
   return (
     <section className="space-y-6">
-      <div>
-        <p className="text-xs uppercase tracking-[0.35em] text-slate-500">
-          Products
-        </p>
-        <h2 className="text-3xl font-semibold tracking-tight text-slate-950">
-          编辑并重新审核商品
-        </h2>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-          修改内容后可以重新进入审核链路，确保前台上架商品的字段完整度一致。
-        </p>
-      </div>
+      <AdminSectionHeader
+        label="Products"
+        title="编辑并重新审核商品"
+        description="修改内容后可以重新进入审核链路，确保前台上架商品的字段完整度一致。"
+      />
       <ProductForm
         mode="edit"
         categories={flattenCategories(categories)}

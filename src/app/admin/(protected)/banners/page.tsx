@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { AdminSectionHeader } from '@/components/admin/admin-section-header';
 import { BannerForm } from '@/components/admin/banner-form';
 import { db } from '@/lib/db';
 
@@ -12,14 +13,10 @@ export default async function AdminBannersPage() {
 
   return (
     <section className="space-y-6">
-      <div>
-        <p className="text-xs uppercase tracking-[0.35em] text-slate-400">
-          Banners
-        </p>
-        <h2 className="text-3xl font-semibold tracking-tight text-white">
-          Banner 管理
-        </h2>
-      </div>
+      <AdminSectionHeader
+        label="Banners"
+        title="Banner 管理"
+      />
       <BannerForm banners={banners} />
     </section>
   );

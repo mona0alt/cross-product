@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,6 +19,21 @@
   --mk-radius-sm: 0.25rem;
   --mk-radius-md: 0.5rem;
   --mk-radius-lg: 0.75rem;
+
+  /* Admin Design System */
+  --admin-bg: #f5f3ef;
+  --admin-surface: #ffffff;
+  --admin-elevated: #f0eeea;
+  --admin-border: rgba(0, 0, 0, 0.06);
+  --admin-border-strong: rgba(0, 0, 0, 0.12);
+  --admin-accent: #c87941;
+  --admin-accent-hover: #b56a36;
+  --admin-success: #2e7d32;
+  --admin-warning: #bfa030;
+  --admin-danger: #c0392b;
+  --admin-text-primary: #1e1e1e;
+  --admin-text-secondary: #5c5c5c;
+  --admin-text-muted: #9ca3af;
 }
 
 * {
@@ -102,3 +119,53 @@ img {
   flex-shrink: 0;
   scroll-snap-align: start;
 }
+
+/* Admin global overrides */
+.admin-body {
+  background: var(--admin-bg);
+  color: var(--admin-text-primary);
+  font-family: "DM Sans", sans-serif;
+}
+
+.admin-body h1,
+.admin-body h2,
+.admin-body h3,
+.admin-body h4,
+.admin-body h5,
+.admin-body h6 {
+  font-family: "Playfair Display", serif;
+}
+
+.admin-body code,
+.admin-body .font-mono {
+  font-family: "JetBrains Mono", monospace;
+}
+
+/* Scrollbar styling for admin */
+.admin-body ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.admin-body ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.admin-body ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+.admin-body ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* Staggered animation delays */
+.admin-stagger-1 { animation-delay: 0.05s; }
+.admin-stagger-2 { animation-delay: 0.10s; }
+.admin-stagger-3 { animation-delay: 0.15s; }
+.admin-stagger-4 { animation-delay: 0.20s; }
+.admin-stagger-5 { animation-delay: 0.25s; }
+.admin-stagger-6 { animation-delay: 0.30s; }
+.admin-stagger-7 { animation-delay: 0.35s; }
+.admin-stagger-8 { animation-delay: 0.40s; }

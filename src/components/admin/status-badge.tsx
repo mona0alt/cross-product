@@ -1,10 +1,11 @@
 import React from 'react';
 
 const toneStyles = {
-  slate: 'bg-slate-200 text-slate-700',
-  blue: 'bg-blue-100 text-blue-700',
-  amber: 'bg-amber-100 text-amber-800',
-  green: 'bg-emerald-100 text-emerald-700'
+  slate: 'bg-admin-elevated text-admin-text-secondary border-admin-border',
+  blue: 'bg-admin-accent/10 text-admin-accent border-admin-accent/20',
+  amber: 'bg-admin-warning/10 text-admin-warning border-admin-warning/20',
+  green: 'bg-admin-success/10 text-admin-success border-admin-success/20',
+  danger: 'bg-admin-danger/10 text-admin-danger border-admin-danger/20'
 } as const;
 
 export function StatusBadge({
@@ -16,7 +17,7 @@ export function StatusBadge({
 }) {
   return (
     <span
-      className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${toneStyles[tone]}`}
+      className={`inline-flex rounded-md px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider border ${toneStyles[tone]}`}
     >
       {label}
     </span>

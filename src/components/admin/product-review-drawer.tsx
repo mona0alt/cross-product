@@ -1,6 +1,6 @@
 import React from 'react';
-
 import { StatusBadge } from '@/components/admin/status-badge';
+import { AdminCard } from './admin-card';
 
 type ProductReviewData = {
   title: string;
@@ -20,11 +20,13 @@ export function ProductReviewDrawer({
   review: ProductReviewData;
 }) {
   return (
-    <aside className="rounded-[2rem] bg-slate-950 p-6 text-white shadow-sm">
-      <p className="text-xs uppercase tracking-[0.35em] text-slate-400">
+    <AdminCard delay={3} className="h-fit">
+      <p className="text-[10px] uppercase tracking-[0.2em] text-admin-text-muted font-body">
         Review Panel
       </p>
-      <h3 className="mt-3 text-2xl font-semibold">{review.title}</h3>
+      <h3 className="mt-2 text-xl font-semibold text-admin-text-primary font-display">
+        {review.title}
+      </h3>
       <div className="mt-4 flex flex-wrap gap-2">
         <StatusBadge label={review.source} tone="slate" />
         <StatusBadge label={review.status} tone="amber" />
@@ -32,20 +34,24 @@ export function ProductReviewDrawer({
       </div>
       <div className="mt-6 grid gap-3 sm:grid-cols-2">
         {review.checks.map((check) => (
-          <div key={check.label} className="rounded-3xl bg-white/10 p-4">
-            <p className="text-xs uppercase tracking-[0.25em] text-slate-400">
+          <div key={check.label} className="rounded-lg border border-admin-border bg-admin-elevated p-4">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-admin-text-muted">
               {check.label}
             </p>
-            <p className="mt-2 text-lg font-semibold">{check.value}</p>
+            <p className="mt-2 text-lg font-semibold text-admin-text-primary font-mono">
+              {check.value}
+            </p>
           </div>
         ))}
       </div>
-      <div className="mt-6 rounded-3xl bg-white/10 p-4">
-        <p className="text-xs uppercase tracking-[0.25em] text-slate-400">
+      <div className="mt-4 rounded-lg border border-admin-border bg-admin-elevated p-4">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-admin-text-muted">
           审核建议
         </p>
-        <p className="mt-3 text-sm leading-7 text-slate-200">{review.advice}</p>
+        <p className="mt-3 text-sm leading-relaxed text-admin-text-secondary">
+          {review.advice}
+        </p>
       </div>
-    </aside>
+    </AdminCard>
   );
 }

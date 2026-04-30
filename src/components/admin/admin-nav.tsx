@@ -1,57 +1,94 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
-
-import { StatusBadge } from '@/components/admin/status-badge';
+import { usePathname } from 'next/navigation';
+import {
+  Package,
+  Globe,
+  Mail,
+  BarChart3,
+  FolderTree,
+  Image,
+  MessageSquare,
+  type LucideIcon
+} from 'lucide-react';
 
 type AdminNavItem = {
   href: string;
   label: string;
-  description: string;
-  badge?: {
-    label: string;
-    tone?: 'slate' | 'blue' | 'amber' | 'green';
-  };
+  icon: string;
+  badge?: string;
 };
 
-export function AdminNav({
-  items
-}: {
-  items: AdminNavItem[];
-}) {
+const iconMap: Record<string, LucideIcon> = {
+  Package,
+  Globe,
+  Mail,
+  BarChart3,
+  FolderTree,
+  Image,
+  MessageSquare
+};
+
+export function AdminNav({ items }: { items: AdminNavItem[] }) {
+  const pathname = usePathname();
+
   return (
-    <aside className="border-r border-slate-200 bg-slate-950 px-5 py-6 text-white">
-      <div className="rounded-3xl border border-white/10 bg-white/5 p-5">
-        <p className="text-xs uppercase tracking-[0.35em] text-slate-400">
-          Cross Admin
+    <aside className="flex h-full flex-col px-4 py-6">
+      <div className="px-3">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-admin-text-muted font-body">
+          Cross Platform
         </p>
-        <h1 className="mt-3 text-2xl font-semibold">后台工作台</h1>
-        <p className="mt-3 text-sm leading-6 text-slate-300">
-          统一管理商品导入、审核、通知与 AI 洞察。
-        </p>
+        <h1 className="mt-2 text-xl font-semibold tracking-tight text-admin-text-primary font-display">
+          后台管理
+        </h1>
       </div>
 
-      <nav className="mt-6 space-y-3">
-        {items.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="block rounded-3xl border border-white/10 bg-white/5 p-4 transition hover:border-white/20 hover:bg-white/10"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-base font-semibold">{item.label}</span>
-              {item.badge ? (
-                <StatusBadge
-                  label={item.badge.label}
-                  tone={item.badge.tone}
+      <nav className="mt-8 flex-1 space-y-1">
+        {items.map((item) => {
+          const Icon = iconMap[item.icon];
+          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                isActive
+                  ? 'bg-admin-accent/15 text-admin-accent'
+                  : 'text-admin-text-secondary hover:bg-admin-elevated hover:text-admin-text-primary'
+              }`}
+            >
+              {Icon ? (
+                <Icon
+                  className={`h-4 w-4 transition-colors ${
+                    isActive ? 'text-admin-accent' : 'text-admin-text-muted group-hover:text-admin-text-secondary'
+                  }`}
                 />
               ) : null}
-            </div>
-            <p className="mt-2 text-sm leading-6 text-slate-300">
-              {item.description}
-            </p>
-          </Link>
-        ))}
+              <span className="flex-1">{item.label}</span>
+              {item.badge ? (
+                <span
+                  className={`rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${
+                    isActive
+                      ? 'bg-admin-accent/25 text-admin-accent'
+                      : 'bg-admin-elevated text-admin-text-muted'
+                  }`}
+                >
+                  {item.badge}
+                </span>
+              ) : null}
+            </Link>
+          );
+        })}
       </nav>
+
+      <div className="mt-auto border-t border-admin-border pt-4 px-3">
+        <p className="text-[10px] text-admin-text-muted leading-relaxed">
+          Cross Admin v0.1.0
+        </p>
+      </div>
     </aside>
   );
 }

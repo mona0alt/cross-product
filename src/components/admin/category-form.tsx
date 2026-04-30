@@ -1,4 +1,6 @@
 import React from 'react';
+import { AdminCard } from './admin-card';
+import { AdminButton } from './admin-button';
 
 type CategoryOption = {
   id: string;
@@ -10,53 +12,44 @@ export function CategoryForm({
 }: {
   categories: CategoryOption[];
 }) {
+  const inputClass =
+    'w-full rounded-lg border border-admin-border bg-admin-surface px-4 py-2.5 text-sm text-admin-text-primary outline-none transition-all duration-200 placeholder:text-admin-text-muted focus:border-admin-accent/30 focus:ring-1 focus:ring-admin-accent/20';
+
   return (
-    <form className="space-y-6 rounded-3xl border border-white/10 bg-slate-900/70 p-6">
-      <h2 className="text-xl font-semibold text-white">分类表单</h2>
-      <div className="grid gap-4 md:grid-cols-2">
-        <select className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100">
-          <option value="">选择一级/二级分类父级</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.label}
-            </option>
-          ))}
-        </select>
-        <input
-          className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100"
-          placeholder="图标 URL"
-        />
-        <input
-          className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100"
-          placeholder="中文名称"
-        />
-        <input
-          className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100"
-          placeholder="英文名称"
-        />
-        <input
-          className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100"
-          placeholder="西语名称"
-        />
-        <input
-          className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100"
-          placeholder="葡语名称"
-        />
-        <textarea
-          className="min-h-24 rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100"
-          placeholder="四语描述可在下一步扩展"
-        />
-        <input
-          className="rounded-2xl border border-white/10 bg-slate-950 px-4 py-3 text-sm text-slate-100"
-          placeholder="排序"
-        />
-      </div>
-      <button
-        type="button"
-        className="rounded-full bg-amber-300 px-5 py-3 text-sm font-medium text-slate-950"
-      >
-        保存分类
-      </button>
+    <form className="space-y-6">
+      <AdminCard delay={1}>
+        <p className="text-[10px] uppercase tracking-[0.2em] text-admin-text-muted font-body">
+          Category Management
+        </p>
+        <h2 className="mt-1 text-xl font-semibold text-admin-text-primary font-display">
+          分类表单
+        </h2>
+        <div className="mt-5 grid gap-4 md:grid-cols-2">
+          <select className={inputClass}>
+            <option value="">选择一级/二级分类父级</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.label}
+              </option>
+            ))}
+          </select>
+          <input className={inputClass} placeholder="图标 URL" />
+          <input className={inputClass} placeholder="中文名称" />
+          <input className={inputClass} placeholder="英文名称" />
+          <input className={inputClass} placeholder="西语名称" />
+          <input className={inputClass} placeholder="葡语名称" />
+          <textarea
+            className={`${inputClass} min-h-[100px] resize-y`}
+            placeholder="四语描述可在下一步扩展"
+          />
+          <input className={inputClass} placeholder="排序" type="number" />
+        </div>
+        <div className="mt-5">
+          <AdminButton type="button" variant="primary">
+            保存分类
+          </AdminButton>
+        </div>
+      </AdminCard>
     </form>
   );
 }
