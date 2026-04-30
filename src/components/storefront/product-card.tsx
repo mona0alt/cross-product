@@ -22,32 +22,41 @@ export function ProductCard({
   ctaLabel: string;
 }) {
   return (
-    <article className="overflow-hidden rounded-[1.75rem] border border-white/70 bg-white/90 shadow-[0_24px_60px_-45px_rgba(15,23,42,0.55)]">
-      <img
-        src={product.coverImageUrl}
-        alt={product.name}
-        className="h-56 w-full object-cover"
-      />
+    <article className="storefront-surface overflow-hidden rounded-[var(--store-radius-lg)] transition hover:-translate-y-1 hover:border-[var(--store-border-strong)]">
+      <div className="relative">
+        <img
+          src={product.coverImageUrl}
+          alt={product.name}
+          className="h-64 w-full object-cover"
+        />
+        <div className="absolute left-4 top-4 rounded-full bg-white/92 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--store-accent)]">
+          {product.category?.name ?? product.productCode}
+        </div>
+      </div>
       <div className="space-y-4 p-5">
-        <div className="space-y-2">
-          <div className="flex items-start justify-between gap-4">
-            <h3 className="text-lg font-semibold text-slate-950">
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-2">
+            <h3 className="text-lg font-bold text-[var(--store-text)]">
               {product.name}
             </h3>
-            <span className="rounded-full bg-slate-950 px-3 py-1 text-xs font-medium text-white">
-              {formatPrice(product.priceUsd)}
-            </span>
+            <p className="text-sm text-[var(--store-text-muted)]">
+              {product.productCode}
+            </p>
           </div>
-          <p className="text-sm text-slate-500">{product.productCode}</p>
-          <p className="text-sm leading-6 text-slate-600">{product.intro}</p>
+          <span className="rounded-full bg-[var(--store-accent)] px-3 py-1.5 text-xs font-semibold text-white">
+            {formatPrice(product.priceUsd)}
+          </span>
         </div>
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-xs uppercase tracking-[0.25em] text-slate-400">
+        <p className="text-sm leading-6 text-[var(--store-text-muted)]">
+          {product.intro}
+        </p>
+        <div className="flex items-center justify-between gap-3 border-t border-[var(--store-border)] pt-4">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--store-text-muted)]">
             {product.category?.name}
           </span>
           <Link
             href={`/${locale}/products/${product.slug}`}
-            className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700"
+            className="inline-flex items-center rounded-full border border-[var(--store-border-strong)] bg-white px-4 py-2 text-sm font-semibold text-[var(--store-accent)]"
           >
             {ctaLabel}
           </Link>

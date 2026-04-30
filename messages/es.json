@@ -55,7 +55,9 @@
       "eyebrow": "Catálogo",
       "title": "Productos",
       "description": "Filtra productos por palabra clave, categoría principal, subcategoría y recomendación.",
+      "sortLabel": "Ordenar por",
       "filters": {
+        "title": "Filtros",
         "allPrimary": "Todas las categorías principales",
         "allSecondary": "Todas las subcategorías",
         "recommendedOnly": "Solo recomendados",

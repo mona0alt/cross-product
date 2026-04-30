@@ -55,7 +55,9 @@
       "eyebrow": "Catalog",
       "title": "商品列表",
       "description": "按关键词、一级分类、二级分类和推荐状态筛选商品。",
+      "sortLabel": "排序方式",
       "filters": {
+        "title": "筛选条件",
         "allPrimary": "全部一级分类",
         "allSecondary": "全部二级分类",
         "recommendedOnly": "仅看推荐",

@@ -55,7 +55,9 @@
       "eyebrow": "Catalog",
       "title": "Products",
       "description": "Filter products by keyword, primary category, secondary category and recommendation status.",
+      "sortLabel": "Sort by",
       "filters": {
+        "title": "Filters",
         "allPrimary": "All primary categories",
         "allSecondary": "All secondary categories",
         "recommendedOnly": "Recommended only",

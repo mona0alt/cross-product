@@ -128,6 +128,7 @@ describe('storefront routes', () => {
 
     expect(html).toContain('Star River Pro Phone');
     expect(html).toContain('phone');
+    expect(html).toContain('Sort by');
   });
 
   it('renders published product details and throws 404 for missing slug', async () => {
