@@ -39,7 +39,8 @@
       "topCategories": "Primary categories",
       "categoryGrid": "Category grid",
       "recommended": "Recommended products",
-      "related": "You may also like"
+      "related": "You may also like",
+      "gallery": "Gallery"
     },
     "language": {
       "label": "Language"

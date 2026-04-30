@@ -32,29 +32,47 @@ export default async function ProductDetailPage({
 
   return (
     <div className="space-y-10">
-      <section className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
-        <ProductGallery images={product.images.length > 0 ? product.images : [product.coverImageUrl]} />
-        <div className="space-y-5 rounded-[1.75rem] border border-white/70 bg-white/90 p-6 shadow-[0_24px_60px_-45px_rgba(15,23,42,0.55)]">
-          <p className="text-xs uppercase tracking-[0.35em] text-slate-500">
-            {product.category?.name}
-          </p>
-          <h1 className="text-4xl font-semibold tracking-tight text-slate-950">
-            {product.name}
-          </h1>
-          <p className="text-sm text-slate-500">{product.productCode}</p>
-          <p className="text-base leading-8 text-slate-600">{product.detail}</p>
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white">
-              ${product.priceUsd.toFixed(2)}
-            </span>
-            <a
-              href={`https://wa.me/${whatsAppNumber.replace(/[^\d]/g, '')}?text=${encodeURIComponent(product.name)}`}
-              className="rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700"
-            >
-              {Storefront.whatsApp}
-            </a>
+      <section className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_380px]">
+        <ProductGallery
+          images={
+            product.images.length > 0 ? product.images : [product.coverImageUrl]
+          }
+          label={Storefront.sections.gallery}
+        />
+        <aside className="storefront-surface h-fit rounded-[var(--store-radius-lg)] p-6">
+          <div className="space-y-5">
+            <p className="storefront-eyebrow">
+              {product.category?.name}
+            </p>
+            <h1 className="text-4xl font-black tracking-[-0.04em] text-[var(--store-text)]">
+              {product.name}
+            </h1>
+            <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--store-text-muted)]">
+              {product.productCode}
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <span className="rounded-full bg-[var(--store-accent)] px-4 py-2 text-sm font-semibold text-white">
+                ${product.priceUsd.toFixed(2)}
+              </span>
+              {product.isRecommended ? (
+                <span className="rounded-full border border-[var(--store-border-strong)] px-4 py-2 text-sm font-semibold text-[var(--store-accent)]">
+                  {Storefront.products.filters.recommendedOnly}
+                </span>
+              ) : null}
+            </div>
+            <p className="text-base leading-8 text-[var(--store-text-muted)]">
+              {product.detail}
+            </p>
+            <div className="grid gap-3">
+              <a
+                href={`https://wa.me/${whatsAppNumber.replace(/[^\d]/g, '')}?text=${encodeURIComponent(product.name)}`}
+                className="inline-flex items-center justify-center rounded-full bg-[var(--store-accent)] px-4 py-3 text-sm font-semibold text-white"
+              >
+                {Storefront.whatsApp}
+              </a>
+            </div>
           </div>
-        </div>
+        </aside>
       </section>
 
       <RecommendedProducts

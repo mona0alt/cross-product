@@ -164,6 +164,7 @@ describe('storefront routes', () => {
 
     expect(html).toContain('Star River Pro Phone');
     expect(html).toContain('P-1001');
+    expect(html).toContain('Gallery');
 
     getProductDetailBySlug.mockResolvedValueOnce(null);
 

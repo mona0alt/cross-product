@@ -39,7 +39,8 @@
       "topCategories": "一级分类导航",
       "categoryGrid": "分类图标区",
       "recommended": "推荐商品",
-      "related": "相关推荐"
+      "related": "相关推荐",
+      "gallery": "商品图库"
     },
     "language": {
       "label": "语言"
