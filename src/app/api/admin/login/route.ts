@@ -11,6 +11,7 @@ const loginSchema = z.object({
 
 export async function POST(request: Request) {
   const payload = loginSchema.parse(await request.json());
+  const isHttpsRequest = new URL(request.url).protocol === 'https:';
   const admin = await db.admin.findUnique({
     where: {
       username: payload.username
@@ -41,6 +42,9 @@ export async function POST(request: Request) {
       id: admin.id,
       username: admin.username
     },
-    NextResponse.json({ ok: true })
+    NextResponse.json({ ok: true }),
+    {
+      secure: isHttpsRequest
+    }
   );
 }

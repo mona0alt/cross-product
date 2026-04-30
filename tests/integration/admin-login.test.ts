@@ -19,6 +19,7 @@ describe('admin login flow', () => {
     process.env.ADMIN_USERNAME = 'admin';
     process.env.ADMIN_PASSWORD = 'ChangeMe123!';
     process.env.WHATSAPP_NUMBER = '15551234567';
+    delete process.env.COOKIE_SECURE;
   });
 
   it('rejects invalid credentials', async () => {
@@ -77,6 +78,41 @@ describe('admin login flow', () => {
 
     expect(response.status).toBe(200);
     expect(response.headers.get('set-cookie')).toContain(ADMIN_SESSION_COOKIE);
+  });
+
+  it('does not mark the session cookie as secure for http admin login requests', async () => {
+    process.env.NODE_ENV = 'production';
+
+    const { hashPassword } = await import('@/lib/auth');
+    const passwordHash = await hashPassword('ChangeMe123!');
+
+    adminFindUnique.mockResolvedValue({
+      id: 'admin-1',
+      username: 'admin',
+      passwordHash
+    });
+
+    const { POST } = await import('@/app/api/admin/login/route');
+    const response = await POST(
+      new Request('http://192.168.231.128:3000/api/admin/login', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: 'admin',
+          password: 'ChangeMe123!'
+        }),
+        headers: {
+          'content-type': 'application/json'
+        }
+      })
+    );
+
+    expect(response).toBeDefined();
+    if (!response) {
+      throw new Error('Expected route response');
+    }
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('set-cookie')).not.toContain('Secure');
   });
 
   it('redirects anonymous users away from protected admin routes', async () => {

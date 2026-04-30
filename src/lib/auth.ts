@@ -76,14 +76,31 @@ function decodeAdminSession(value?: string | null): SessionPayload | null {
   }
 }
 
+function isSecureCookie() {
+  if (process.env.COOKIE_SECURE === 'false') {
+    return false;
+  }
+
+  return process.env.NODE_ENV === 'production';
+}
+
+function resolveSecureCookie(secure?: boolean) {
+  if (typeof secure === 'boolean') {
+    return secure;
+  }
+
+  return isSecureCookie();
+}
+
 function applySessionCookie(
   response: NextResponse,
-  value: string
+  value: string,
+  secure?: boolean
 ) {
   response.cookies.set(ADMIN_SESSION_COOKIE, value, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: resolveSecureCookie(secure),
     path: '/',
     maxAge: ADMIN_SESSION_MAX_AGE
   });
@@ -106,30 +123,38 @@ export async function isValidAdminPassword(
 
 export async function createAdminSession(
   admin: AdminIdentity,
-  response?: NextResponse
+  response?: NextResponse,
+  options?: {
+    secure?: boolean;
+  }
 ) {
   const sessionValue = encodeAdminSession(admin);
 
   if (response) {
-    return applySessionCookie(response, sessionValue);
+    return applySessionCookie(response, sessionValue, options?.secure);
   }
 
   const cookieStore = await cookies();
   cookieStore.set(ADMIN_SESSION_COOKIE, sessionValue, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: resolveSecureCookie(options?.secure),
     path: '/',
     maxAge: ADMIN_SESSION_MAX_AGE
   });
 }
 
-export async function clearAdminSession(response?: NextResponse) {
+export async function clearAdminSession(
+  response?: NextResponse,
+  options?: {
+    secure?: boolean;
+  }
+) {
   if (response) {
     response.cookies.set(ADMIN_SESSION_COOKIE, '', {
       httpOnly: true,
       sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
+      secure: resolveSecureCookie(options?.secure),
       path: '/',
       maxAge: 0
     });
@@ -141,7 +166,7 @@ export async function clearAdminSession(response?: NextResponse) {
   cookieStore.set(ADMIN_SESSION_COOKIE, '', {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: resolveSecureCookie(options?.secure),
     path: '/',
     maxAge: 0
   });
@@ -164,7 +189,6 @@ export async function requireAdminSession() {
   });
 
   if (!admin || admin.username !== session.username) {
-    await clearAdminSession();
     redirect('/admin/login');
   }
 
