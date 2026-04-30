@@ -14,17 +14,37 @@ export default async function SubscribePage({
   const { Storefront } = messages;
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
-      <section className="space-y-4">
-        <p className="text-xs uppercase tracking-[0.35em] text-slate-500">
-          {Storefront.subscribe.eyebrow}
-        </p>
-        <h1 className="text-4xl font-semibold tracking-tight text-slate-950">
-          {Storefront.subscribe.title}
-        </h1>
-        <p className="max-w-xl text-sm leading-7 text-slate-600">
-          {Storefront.subscribe.description}
-        </p>
+    <div className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+      <section className="storefront-surface rounded-[var(--store-radius-xl)] p-6 sm:p-8">
+        <div className="space-y-5">
+          <p className="storefront-eyebrow">
+            {Storefront.subscribe.eyebrow}
+          </p>
+          <h1 className="text-4xl font-black tracking-[-0.04em] text-[var(--store-text)]">
+            {Storefront.subscribe.title}
+          </h1>
+          <p className="max-w-xl text-sm leading-7 text-[var(--store-text-muted)]">
+            {Storefront.subscribe.description}
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="storefront-surface-muted rounded-[1.25rem] px-4 py-4">
+              <p className="text-sm font-semibold text-[var(--store-accent)]">
+                {Storefront.utilityBar.support}
+              </p>
+              <p className="mt-2 text-sm text-[var(--store-text-muted)]">
+                {Storefront.contact.description}
+              </p>
+            </div>
+            <div className="storefront-surface-muted rounded-[1.25rem] px-4 py-4">
+              <p className="text-sm font-semibold text-[var(--store-accent)]">
+                {Storefront.utilityBar.service}
+              </p>
+              <p className="mt-2 text-sm text-[var(--store-text-muted)]">
+                {Storefront.subscribe.description}
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
       <SubscribeForm
         copy={{

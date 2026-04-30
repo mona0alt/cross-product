@@ -176,4 +176,36 @@ describe('storefront routes', () => {
       digest: 'NEXT_HTTP_ERROR_FALLBACK;404'
     });
   });
+
+  it('renders contact, subscribe, and portal support pages', async () => {
+    const ContactPage = (await import('@/app/[locale]/contact/page')).default;
+    const SubscribePage = (await import('@/app/[locale]/subscribe/page')).default;
+    const PortalPage = (await import('@/app/[locale]/portal/page')).default;
+
+    const contactHtml = renderToStaticMarkup(
+      await ContactPage({
+        params: Promise.resolve({ locale: 'en' })
+      })
+    );
+    const subscribeHtml = renderToStaticMarkup(
+      await SubscribePage({
+        params: Promise.resolve({ locale: 'en' })
+      })
+    );
+    const portalHtml = renderToStaticMarkup(
+      await PortalPage({
+        params: Promise.resolve({ locale: 'en' })
+      })
+    );
+
+    expect(contactHtml).toContain('Contact and message');
+    expect(contactHtml).toContain('Support');
+    expect(contactHtml).toContain('Send');
+    expect(subscribeHtml).toContain('Subscribe for updates');
+    expect(subscribeHtml).toContain('Customer Service');
+    expect(subscribeHtml).toContain('Subscribe');
+    expect(portalHtml).toContain('Client portal is coming soon');
+    expect(portalHtml).toContain('Support');
+    expect(portalHtml).toContain('Back to storefront');
+  });
 });

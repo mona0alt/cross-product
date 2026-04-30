@@ -19,7 +19,7 @@ export function ContactForm({ copy }: { copy: ContactFormCopy }) {
 
   return (
     <form
-      className="space-y-4 rounded-[1.75rem] border border-white/70 bg-white/90 p-6 shadow-[0_24px_60px_-45px_rgba(15,23,42,0.55)]"
+      className="storefront-surface space-y-4 rounded-[var(--store-radius-lg)] p-6"
       onSubmit={async (event) => {
         event.preventDefault();
         setIsSubmitting(true);
