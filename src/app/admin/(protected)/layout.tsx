@@ -1,5 +1,7 @@
-import type { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 
+import { AdminNav } from '@/components/admin/admin-nav';
+import { AdminShellHeader } from '@/components/admin/admin-shell-header';
 import { requireAdminSession } from '@/lib/auth';
 
 export default async function AdminProtectedLayout({
@@ -8,28 +10,51 @@ export default async function AdminProtectedLayout({
   children: ReactNode;
 }) {
   const admin = await requireAdminSession();
+  const navItems = [
+    {
+      href: '/admin',
+      label: '工作台',
+      description: '查看今日待办、上新节奏和关键提醒。'
+    },
+    {
+      href: '/admin/products',
+      label: '商品中心',
+      description: '统一管理自动抓取和手动导入的商品池。',
+      badge: {
+        label: '待审核 26',
+        tone: 'amber' as const
+      }
+    },
+    {
+      href: '/admin/crawl-tasks',
+      label: '抓取任务',
+      description: '追踪来源站点、抓取批次和异常修复。'
+    },
+    {
+      href: '/admin/subscribers',
+      label: '订阅与通知',
+      description: '查看订阅客户、通知活动和失败重发。'
+    },
+    {
+      href: '/admin/analytics',
+      label: 'AI 数据分析',
+      description: '查看热门排行、转化路径和推荐建议。',
+      badge: {
+        label: '4 条建议',
+        tone: 'green' as const
+      }
+    }
+  ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50">
-      <header className="border-b border-white/10 bg-slate-900/80">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-slate-400">
-              Cross Admin
-            </p>
-            <h1 className="text-lg font-semibold">{admin.username}</h1>
-          </div>
-          <form action="/api/admin/logout" method="post">
-            <button
-              className="rounded-lg border border-white/15 px-4 py-2 text-sm text-slate-200 transition hover:border-white/30 hover:text-white"
-              type="submit"
-            >
-              退出登录
-            </button>
-          </form>
+    <div className="min-h-screen bg-stone-100 text-slate-950">
+      <div className="mx-auto grid min-h-screen max-w-[1600px] grid-cols-1 xl:grid-cols-[320px_1fr]">
+        <AdminNav items={navItems} />
+        <div className="min-w-0">
+          <AdminShellHeader admin={admin} />
+          <main className="px-6 py-8 xl:px-8">{children}</main>
         </div>
-      </header>
-      <main className="mx-auto max-w-6xl px-6 py-10">{children}</main>
+      </div>
     </div>
   );
 }
