@@ -53,6 +53,7 @@ describe('storefront catalog layout', () => {
       <ProductCard
         locale="en"
         ctaLabel="View details"
+        stockLabel="In stock"
         product={{
           id: 'p1',
           slug: 'item',

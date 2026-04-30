@@ -49,101 +49,210 @@ async function main() {
 
     const catalog: CategorySeed[] = [
       {
-        slug: 'electronics',
-        iconImageUrl: 'https://images.example.com/categories/electronics.png',
+        slug: 'window-cleaning-robots',
+        iconImageUrl:
+          'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=200&h=200&fit=crop',
         names: {
-          zh: '电子数码',
-          en: 'Electronics',
-          es: 'Electrónica',
-          pt: 'Eletrônicos'
+          zh: '擦窗机器人',
+          en: 'Window Cleaning Robots',
+          es: 'Robots Limpiacristales',
+          pt: 'Robôs de Limpeza de Vidros'
         },
         descriptions: {
-          zh: '围绕智能设备和办公效率的演示分类。',
-          en: 'Demo category for smart devices and productivity.',
-          es: 'Categoría de demostración para dispositivos inteligentes y productividad.',
-          pt: 'Categoria de demonstração para dispositivos inteligentes e produtividade.'
+          zh: '高效智能的窗户清洁解决方案。',
+          en: 'Efficient and intelligent window cleaning solutions.',
+          es: 'Soluciones de limpieza de ventanas eficientes e inteligentes.',
+          pt: 'Soluções de limpeza de vidros eficientes e inteligentes.'
         },
         children: [
           {
-            slug: 'electronics-phones',
-            iconImageUrl: 'https://images.example.com/categories/phones.png',
+            slug: 'residential-window-robots',
+            iconImageUrl: '/show/robot_window_cleaner.png',
             names: {
-              zh: '手机',
-              en: 'Phones',
-              es: 'Teléfonos',
-              pt: 'Celulares'
+              zh: '家用擦窗机器人',
+              en: 'Residential',
+              es: 'Residencial',
+              pt: 'Residencial'
             },
             descriptions: {
-              zh: '展示旗舰和入门机型。',
-              en: 'Showcases flagship and entry devices.',
-              es: 'Muestra dispositivos insignia y de entrada.',
-              pt: 'Mostra dispositivos premium e de entrada.'
+              zh: '专为家庭窗户设计的智能清洁机器人。',
+              en: 'Smart cleaning robots designed for home windows.',
+              es: 'Robots de limpieza inteligentes diseñados para ventanas del hogar.',
+              pt: 'Robôs de limpeza inteligentes projetados para janelas residenciais.'
             }
           },
           {
-            slug: 'electronics-computers',
-            iconImageUrl: 'https://images.example.com/categories/computers.png',
+            slug: 'commercial-window-robots',
+            iconImageUrl:
+              'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=200&h=200&fit=crop',
             names: {
-              zh: '电脑',
-              en: 'Computers',
-              es: 'Computadoras',
-              pt: 'Computadores'
+              zh: '商用擦窗机器人',
+              en: 'Commercial',
+              es: 'Comercial',
+              pt: 'Comercial'
             },
             descriptions: {
-              zh: '适合内容创作与办公。',
-              en: 'Suitable for content creation and work.',
-              es: 'Adecuado para creación de contenido y trabajo.',
-              pt: 'Adequado para criação de conteúdo e trabalho.'
+              zh: '适用于高层建筑与商业场景的专业设备。',
+              en: 'Professional equipment for high-rise and commercial use.',
+              es: 'Equipo profesional para uso en altura y comercial.',
+              pt: 'Equipamento profissional para uso em altura e comercial.'
             }
           }
         ]
       },
       {
-        slug: 'home-living',
-        iconImageUrl: 'https://images.example.com/categories/home-living.png',
+        slug: 'drones',
+        iconImageUrl:
+          'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=200&h=200&fit=crop',
         names: {
-          zh: '居家生活',
-          en: 'Home Living',
-          es: 'Hogar',
-          pt: 'Casa e Vida'
+          zh: '无人机',
+          en: 'Drones',
+          es: 'Drones',
+          pt: 'Drones'
         },
         descriptions: {
-          zh: '展示日常生活与家居用品。',
-          en: 'Demo category for daily living and home goods.',
-          es: 'Categoría de demostración para vida diaria y hogar.',
-          pt: 'Categoria de demonstração para vida diária e casa.'
+          zh: '消费级与工业级无人机。',
+          en: 'Consumer and industrial drones.',
+          es: 'Drones de consumo e industriales.',
+          pt: 'Drones de consumo e industriais.'
         },
         children: [
           {
-            slug: 'home-living-storage',
-            iconImageUrl: 'https://images.example.com/categories/storage.png',
+            slug: 'consumer-drones',
+            iconImageUrl:
+              'https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=200&h=200&fit=crop',
             names: {
-              zh: '收纳',
-              en: 'Storage',
-              es: 'Almacenamiento',
-              pt: 'Armazenamento'
+              zh: '消费级无人机',
+              en: 'Consumer Drones',
+              es: 'Drones de Consumo',
+              pt: 'Drones de Consumo'
             },
             descriptions: {
-              zh: '整理空间的高频收纳方案。',
-              en: 'Storage solutions for organizing space.',
-              es: 'Soluciones de almacenamiento para organizar el espacio.',
-              pt: 'Soluções de armazenamento para organizar o espaço.'
+              zh: '航拍与娱乐飞行设备。',
+              en: 'Aerial photography and recreational flight devices.',
+              es: 'Dispositivos de fotografía aérea y vuelo recreativo.',
+              pt: 'Dispositivos de fotografia aérea e voo recreativo.'
             }
           },
           {
-            slug: 'home-living-kitchen',
-            iconImageUrl: 'https://images.example.com/categories/kitchen.png',
+            slug: 'industrial-drones',
+            iconImageUrl:
+              'https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=200&h=200&fit=crop',
             names: {
-              zh: '厨房',
-              en: 'Kitchen',
-              es: 'Cocina',
-              pt: 'Cozinha'
+              zh: '工业级无人机',
+              en: 'Industrial Drones',
+              es: 'Drones Industriales',
+              pt: 'Drones Industriais'
             },
             descriptions: {
-              zh: '烹饪与餐厨用品展示。',
-              en: 'Demo area for cooking and kitchen goods.',
-              es: 'Área de demostración para cocina y utensilios.',
-              pt: 'Área de demonstração para cozinha e utensílios.'
+              zh: '测绘、巡检与物流应用的工业无人机。',
+              en: 'Industrial drones for surveying, inspection and logistics.',
+              es: 'Drones industriales para topografía, inspección y logística.',
+              pt: 'Drones industriais para levantamento topográfico, inspeção e logística.'
+            }
+          }
+        ]
+      },
+      {
+        slug: 'humanoid-robots',
+        iconImageUrl:
+          'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=200&h=200&fit=crop',
+        names: {
+          zh: '人形机器人',
+          en: 'Humanoid Robots',
+          es: 'Robots Humanoides',
+          pt: 'Robôs Humanoides'
+        },
+        descriptions: {
+          zh: '面向服务、研究与教育的人形机器人平台。',
+          en: 'Humanoid robot platforms for service, research and education.',
+          es: 'Plataformas de robots humanoides para servicio, investigación y educación.',
+          pt: 'Plataformas de robôs humanoides para serviço, pesquisa e educação.'
+        },
+        children: [
+          {
+            slug: 'service-humanoids',
+            iconImageUrl:
+              'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=200&h=200&fit=crop',
+            names: {
+              zh: '服务人形机器人',
+              en: 'Service Humanoids',
+              es: 'Humanoides de Servicio',
+              pt: 'Humanoides de Serviço'
+            },
+            descriptions: {
+              zh: '迎宾、导览与家庭服务人形机器人。',
+              en: 'Reception, guide and home service humanoid robots.',
+              es: 'Robots humanoides de recepción, guía y servicio doméstico.',
+              pt: 'Robôs humanoides de recepção, guia e serviço doméstico.'
+            }
+          },
+          {
+            slug: 'research-humanoids',
+            iconImageUrl: '/show/robot_humanoid.png',
+            names: {
+              zh: '研究/教育人形机器人',
+              en: 'Research & Education',
+              es: 'Investigación y Educación',
+              pt: 'Pesquisa e Educação'
+            },
+            descriptions: {
+              zh: '面向高校与科研机构的开发人形机器人。',
+              en: 'Development humanoid robots for universities and research institutes.',
+              es: 'Robots humanoides de desarrollo para universidades e institutos de investigación.',
+              pt: 'Robôs humanoides de desenvolvimento para universidades e institutos de pesquisa.'
+            }
+          }
+        ]
+      },
+      {
+        slug: 'vacuum-robots',
+        iconImageUrl:
+          'https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?w=200&h=200&fit=crop',
+        names: {
+          zh: '扫地机器人',
+          en: 'Vacuum Robots',
+          es: 'Robots Aspiradores',
+          pt: 'Robôs Aspiradores'
+        },
+        descriptions: {
+          zh: '智能扫地与扫拖一体机器人。',
+          en: 'Smart vacuum and vacuum-mop combo robots.',
+          es: 'Robots aspiradores inteligentes y combos aspiradora-fregona.',
+          pt: 'Robôs aspiradores inteligentes e combos aspirador-esfregão.'
+        },
+        children: [
+          {
+            slug: 'robot-vacuums',
+            iconImageUrl: '/show/robot_floor_cleaner.png',
+            names: {
+              zh: '扫地机器人',
+              en: 'Robot Vacuums',
+              es: 'Aspiradoras Robóticas',
+              pt: 'Aspiradores Robóticos'
+            },
+            descriptions: {
+              zh: '专注高效吸尘的智能扫地机。',
+              en: 'Smart robot vacuums focused on efficient suction.',
+              es: 'Aspiradoras robóticas inteligentes enfocadas en succión eficiente.',
+              pt: 'Aspiradores robóticos inteligentes focados em sucção eficiente.'
+            }
+          },
+          {
+            slug: 'robot-mops',
+            iconImageUrl:
+              'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=200&h=200&fit=crop',
+            names: {
+              zh: '扫拖一体机',
+              en: 'Vacuum-Mop Combos',
+              es: 'Combos Aspiradora-Fregona',
+              pt: 'Combos Aspirador-Esfregão'
+            },
+            descriptions: {
+              zh: '先扫后拖，一步到位。',
+              en: 'Sweep and mop in one go.',
+              es: 'Barre y friega en un solo paso.',
+              pt: 'Varre e esfrega em um único passo.'
             }
           }
         ]
@@ -195,143 +304,262 @@ async function main() {
 
     const products = [
       {
-        slug: 'star-river-pro-phone',
+        slug: 'sky-cleaner-pro',
         productCode: 'P-1001',
-        categorySlug: 'electronics-phones',
-        priceUsd: new Prisma.Decimal('699.00'),
-        coverImageUrl: 'https://images.example.com/products/phone-cover.jpg',
+        categorySlug: 'residential-window-robots',
+        priceUsd: new Prisma.Decimal('599.00'),
+        coverImageUrl:
+          'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&fit=crop',
         isRecommended: true,
         sortOrder: 1,
         publishedAt: new Date('2026-04-29T00:00:00.000Z'),
         names: {
-          zh: '星河 Pro 手机',
-          en: 'Star River Pro Phone',
-          es: 'Teléfono Star River Pro',
-          pt: 'Telefone Star River Pro'
+          zh: 'Sky Cleaner Pro 擦窗机器人',
+          en: 'Sky Cleaner Pro',
+          es: 'Sky Cleaner Pro',
+          pt: 'Sky Cleaner Pro'
         },
         intros: {
-          zh: '轻薄旗舰，日常创作更高效。',
-          en: 'A slim flagship for productive everyday work.',
-          es: 'Un modelo insignia liviano para el trabajo diario.',
-          pt: 'Um topo de linha leve para o dia a dia produtivo.'
+          zh: '家用智能擦窗，安全高效。',
+          en: 'Smart home window cleaning, safe and efficient.',
+          es: 'Limpieza inteligente de ventanas para el hogar, segura y eficiente.',
+          pt: 'Limpeza inteligente de janelas residenciais, segura e eficiente.'
         },
         details: {
-          zh: '面向内容创作者的高性能演示机型，提供流畅体验和清晰影像。',
-          en: 'High-performance demo phone for creators with smooth performance and clear imaging.',
-          es: 'Teléfono de demostración de alto rendimiento para creadores, con fluidez e imagen clara.',
-          pt: 'Celular de demonstração de alto desempenho para criadores, com fluidez e imagem nítida.'
+          zh: '搭载强力吸附系统与智能路径规划，专为家庭窗户设计的高性能擦窗机器人。',
+          en: 'High-performance window cleaning robot with powerful suction and intelligent path planning, designed for home windows.',
+          es: 'Robot limpiacristales de alto rendimiento con succión potente y planificación de rutas inteligente, diseñado para ventanas del hogar.',
+          pt: 'Robô de limpeza de vidros de alto desempenho com sucção potente e planejamento de rotas inteligente, projetado para janelas residenciais.'
         }
       },
       {
-        slug: 'cloudscape-laptop',
+        slug: 'clear-glass-max',
         productCode: 'P-1002',
-        categorySlug: 'electronics-computers',
-        priceUsd: new Prisma.Decimal('999.00'),
-        coverImageUrl: 'https://images.example.com/products/laptop-cover.jpg',
+        categorySlug: 'commercial-window-robots',
+        priceUsd: new Prisma.Decimal('1299.00'),
+        coverImageUrl:
+          'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&fit=crop',
         isRecommended: true,
         sortOrder: 2,
         publishedAt: new Date('2026-04-29T00:00:00.000Z'),
         names: {
-          zh: '云境轻薄本',
-          en: 'Cloudscape Laptop',
-          es: 'Portátil Cloudscape',
-          pt: 'Notebook Cloudscape'
+          zh: 'ClearGlass Max 商用擦窗机',
+          en: 'ClearGlass Max',
+          es: 'ClearGlass Max',
+          pt: 'ClearGlass Max'
         },
         intros: {
-          zh: '移动办公与创作的主力选择。',
-          en: 'The main choice for mobile work and creation.',
-          es: 'La opción principal para trabajo móvil y creación.',
-          pt: 'A escolha principal para trabalho móvel e criação.'
+          zh: '高层幕墙清洁专家。',
+          en: 'Expert in high-rise facade cleaning.',
+          es: 'Experto en limpieza de fachadas de gran altura.',
+          pt: 'Especialista em limpeza de fachadas de arranha-céus.'
         },
         details: {
-          zh: '适合办公、学习和轻度创作的演示笔记本，强调便携和续航。',
-          en: 'A demo laptop for work, study, and light creation with portability and battery life.',
-          es: 'Portátil de demostración para trabajo, estudio y creación ligera con portabilidad y batería.',
-          pt: 'Notebook de demonstração para trabalho, estudo e criação leve com portabilidade e bateria.'
+          zh: '商用级擦窗机器人，适用于高层建筑与大面积玻璃幕墙，具备防风防坠安全系统。',
+          en: 'Commercial-grade window cleaning robot for high-rise buildings and large glass facades, with windproof and anti-fall safety systems.',
+          es: 'Robot limpiacristales de grado comercial para edificios de gran altura y grandes fachadas de vidrio, con sistemas de seguridad anticaída y a prueba de viento.',
+          pt: 'Robô de limpeza de vidros comercial para arranha-céus e grandes fachadas de vidro, com sistemas de segurança anticapotamento e à prova de vento.'
         }
       },
       {
-        slug: 'storage-drawer-cabinet',
+        slug: 'aerial-x1',
         productCode: 'P-2001',
-        categorySlug: 'home-living-storage',
-        priceUsd: new Prisma.Decimal('129.00'),
-        coverImageUrl: 'https://images.example.com/products/storage-cover.jpg',
-        isRecommended: false,
+        categorySlug: 'consumer-drones',
+        priceUsd: new Prisma.Decimal('799.00'),
+        coverImageUrl:
+          'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=800&fit=crop',
+        isRecommended: true,
         sortOrder: 3,
         publishedAt: new Date('2026-04-29T00:00:00.000Z'),
         names: {
-          zh: '收纳灵感抽屉柜',
-          en: 'Storage Drawer Cabinet',
-          es: 'Gabinete de Cajones',
-          pt: 'Armário com Gavetas'
+          zh: 'Aerial X1 航拍无人机',
+          en: 'Aerial X1',
+          es: 'Aerial X1',
+          pt: 'Aerial X1'
         },
         intros: {
-          zh: '把空间还给生活。',
-          en: 'Return space to daily living.',
-          es: 'Devuelve el espacio a la vida diaria.',
-          pt: 'Devolve espaço à vida diária.'
+          zh: '4K航拍，轻巧随行。',
+          en: '4K aerial filming, light and portable.',
+          es: 'Filmación aérea 4K, ligero y portátil.',
+          pt: 'Filmagem aérea 4K, leve e portátil.'
         },
         details: {
-          zh: '适合客厅与卧室的多层收纳演示商品，结构轻巧而实用。',
-          en: 'A multi-layer storage demo product for living rooms and bedrooms.',
-          es: 'Un producto de demostración de almacenamiento multicapa para sala y dormitorio.',
-          pt: 'Um produto de demonstração de armazenamento multicamadas para sala e quarto.'
+          zh: '消费级航拍无人机，支持4K视频录制与智能跟随，续航长达35分钟。',
+          en: 'Consumer aerial drone supporting 4K video recording and intelligent tracking, with up to 35 minutes of flight time.',
+          es: 'Drone aéreo de consumo con soporte para grabación de video 4K y seguimiento inteligente, con hasta 35 minutos de tiempo de vuelo.',
+          pt: 'Drone aéreo de consumo com suporte para gravação de vídeo 4K e rastreamento inteligente, com até 35 minutos de tempo de voo.'
         }
       },
       {
-        slug: 'sunrise-cooking-pan',
+        slug: 'survey-drone-t20',
         productCode: 'P-2002',
-        categorySlug: 'home-living-kitchen',
-        priceUsd: new Prisma.Decimal('49.00'),
-        coverImageUrl: 'https://images.example.com/products/pan-cover.jpg',
-        isRecommended: false,
+        categorySlug: 'industrial-drones',
+        priceUsd: new Prisma.Decimal('3999.00'),
+        coverImageUrl:
+          'https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=800&fit=crop',
+        isRecommended: true,
         sortOrder: 4,
         publishedAt: new Date('2026-04-29T00:00:00.000Z'),
         names: {
-          zh: '晨光多功能炒锅',
-          en: 'Sunrise Multi-purpose Pan',
-          es: 'Sartén Multiusos Sunrise',
-          pt: 'Panela Multiuso Sunrise'
+          zh: 'SurveyDrone T20 工业无人机',
+          en: 'SurveyDrone T20',
+          es: 'SurveyDrone T20',
+          pt: 'SurveyDrone T20'
         },
         intros: {
-          zh: '厨房里的高频主角。',
-          en: 'A frequent star in the kitchen.',
-          es: 'Una pieza estrella en la cocina.',
-          pt: 'Uma peça frequente na cozinha.'
+          zh: '测绘巡检，精准可靠。',
+          en: 'Surveying and inspection, precise and reliable.',
+          es: 'Topografía e inspección, precisos y confiables.',
+          pt: 'Levantamento topográfico e inspeção, precisos e confiáveis.'
         },
         details: {
-          zh: '适合日常烹饪的轻量化演示厨具，兼顾导热与易清洁。',
-          en: 'A lightweight demo kitchen tool for everyday cooking and easy cleaning.',
-          es: 'Un utensilio de cocina de demostración, ligero y fácil de limpiar.',
-          pt: 'Um utensílio de cozinha leve para o dia a dia e fácil limpeza.'
+          zh: '工业级测绘与巡检无人机，配备高精度RTK定位与多光谱传感器。',
+          en: 'Industrial surveying and inspection drone with high-precision RTK positioning and multispectral sensors.',
+          es: 'Drone industrial de topografía e inspección con posicionamiento RTK de alta precisión y sensores multiespectrales.',
+          pt: 'Drone industrial de levantamento topográfico e inspeção com posicionamento RTK de alta precisão e sensores multiespectrais.'
         }
       },
       {
-        slug: 'aurora-desk-lamp',
+        slug: 'alpha-humanoid',
         productCode: 'P-3001',
-        categorySlug: 'electronics-computers',
-        priceUsd: new Prisma.Decimal('89.00'),
-        coverImageUrl: 'https://images.example.com/products/lamp-cover.jpg',
-        isRecommended: false,
+        categorySlug: 'service-humanoids',
+        priceUsd: new Prisma.Decimal('29999.00'),
+        coverImageUrl:
+          'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&fit=crop',
+        isRecommended: true,
         sortOrder: 5,
-        publishedAt: null,
+        publishedAt: new Date('2026-04-29T00:00:00.000Z'),
         names: {
-          zh: '极光桌面灯',
-          en: 'Aurora Desk Lamp',
-          es: 'Lámpara Aurora',
-          pt: 'Luminária Aurora'
+          zh: 'Alpha Humanoid 服务机器人',
+          en: 'Alpha Humanoid',
+          es: 'Alpha Humanoid',
+          pt: 'Alpha Humanoid'
         },
         intros: {
-          zh: '后台草稿商品示例。',
+          zh: '类人智能，服务未来。',
+          en: 'Human-like intelligence, serving the future.',
+          es: 'Inteligencia similar a la humana, sirviendo el futuro.',
+          pt: 'Inteligência semelhante à humana, servindo o futuro.'
+        },
+        details: {
+          zh: '全尺寸双足人形机器人，具备自然语言交互与多场景服务能力。',
+          en: 'Full-size bipedal humanoid robot with natural language interaction and multi-scenario service capabilities.',
+          es: 'Robot humanoide bípedo de tamaño completo con interacción en lenguaje natural y capacidades de servicio multi-escenario.',
+          pt: 'Robô humanoide bípede em tamanho real com interação em linguagem natural e capacidades de serviço multi-cenário.'
+        }
+      },
+      {
+        slug: 'edu-bot-mini',
+        productCode: 'P-3002',
+        categorySlug: 'research-humanoids',
+        priceUsd: new Prisma.Decimal('4999.00'),
+        coverImageUrl:
+          'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=800&fit=crop',
+        isRecommended: false,
+        sortOrder: 6,
+        publishedAt: new Date('2026-04-29T00:00:00.000Z'),
+        names: {
+          zh: 'EduBot Mini 教育机器人',
+          en: 'EduBot Mini',
+          es: 'EduBot Mini',
+          pt: 'EduBot Mini'
+        },
+        intros: {
+          zh: '开源平台，科研教学利器。',
+          en: 'Open-source platform, ideal for research and teaching.',
+          es: 'Plataforma de código abierto, ideal para investigación y enseñanza.',
+          pt: 'Plataforma de código aberto, ideal para pesquisa e ensino.'
+        },
+        details: {
+          zh: '紧凑型人形机器人开发平台，支持ROS2与Python编程，适用于高校实验室与AI教育。',
+          en: 'Compact humanoid robot development platform supporting ROS2 and Python programming, ideal for university labs and AI education.',
+          es: 'Plataforma de desarrollo de robots humanoides compactos con soporte para ROS2 y programación en Python, ideal para laboratorios universitarios y educación en IA.',
+          pt: 'Plataforma de desenvolvimento de robôs humanoides compactos com suporte para ROS2 e programação em Python, ideal para laboratórios universitários e educação em IA.'
+        }
+      },
+      {
+        slug: 'sweep-master-s8',
+        productCode: 'P-4001',
+        categorySlug: 'robot-vacuums',
+        priceUsd: new Prisma.Decimal('499.00'),
+        coverImageUrl:
+          'https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?w=800&fit=crop',
+        isRecommended: false,
+        sortOrder: 7,
+        publishedAt: new Date('2026-04-29T00:00:00.000Z'),
+        names: {
+          zh: 'SweepMaster S8 扫地机器人',
+          en: 'SweepMaster S8',
+          es: 'SweepMaster S8',
+          pt: 'SweepMaster S8'
+        },
+        intros: {
+          zh: '强力吸尘，智能避障。',
+          en: 'Powerful suction, intelligent obstacle avoidance.',
+          es: 'Succión potente, evasión inteligente de obstáculos.',
+          pt: 'Sucção potente, desvio inteligente de obstáculos.'
+        },
+        details: {
+          zh: '搭载LDS激光导航与5000Pa强劲吸力，支持APP远程控制与语音联动。',
+          en: 'Equipped with LDS laser navigation and 5000Pa strong suction, supporting APP remote control and voice integration.',
+          es: 'Equipado con navegación láser LDS y succión fuerte de 5000Pa, con soporte para control remoto por APP e integración de voz.',
+          pt: 'Equipado com navegação a laser LDS e sucção forte de 5000Pa, com suporte para controle remoto por APP e integração de voz.'
+        }
+      },
+      {
+        slug: 'wash-vac-pro',
+        productCode: 'P-4002',
+        categorySlug: 'robot-mops',
+        priceUsd: new Prisma.Decimal('699.00'),
+        coverImageUrl: '/show/robot_floor_cleaner.png',
+        isRecommended: false,
+        sortOrder: 8,
+        publishedAt: new Date('2026-04-29T00:00:00.000Z'),
+        names: {
+          zh: 'WashVac Pro 扫拖一体机',
+          en: 'WashVac Pro',
+          es: 'WashVac Pro',
+          pt: 'WashVac Pro'
+        },
+        intros: {
+          zh: '扫拖一体，自清洁基站。',
+          en: 'Sweep and mop combo with self-cleaning dock.',
+          es: 'Combo barre y friega con base de autolimpieza.',
+          pt: 'Combo varre e esfrega com base de autolimpeza.'
+        },
+        details: {
+          zh: '先扫后拖，配备自动洗拖布与热风烘干基站，真正解放双手。',
+          en: 'Sweep then mop, with automatic mop washing and hot air drying dock, truly hands-free.',
+          es: 'Barre y luego friega, con base de lavado automático de trapeador y secado con aire caliente, verdaderamente manos libres.',
+          pt: 'Varre e depois esfrega, com base de lavagem automática do esfregão e secagem com ar quente, verdadeiramente sem usar as mãos.'
+        }
+      },
+      {
+        slug: 'window-bot-lite',
+        productCode: 'P-1003',
+        categorySlug: 'residential-window-robots',
+        priceUsd: new Prisma.Decimal('299.00'),
+        coverImageUrl: '/show/robot_window_cleaner.png',
+        isRecommended: false,
+        sortOrder: 9,
+        publishedAt: null,
+        names: {
+          zh: 'WindowBot Lite 擦窗机器人',
+          en: 'WindowBot Lite',
+          es: 'WindowBot Lite',
+          pt: 'WindowBot Lite'
+        },
+        intros: {
+          zh: '入门款擦窗机器人，轻松搞定日常清洁。',
+          en: 'Entry-level window cleaning robot for everyday cleaning.',
+          es: 'Robot limpiacristales de nivel básico para limpieza diaria.',
+          pt: 'Robô de limpeza de vidros de nível básico para limpeza diária.'
+        },
+        details: {
+          zh: '后台草稿商品示例，用于演示编辑和发布流程。',
           en: 'A draft product example for the admin flow.',
           es: 'Un producto borrador para el flujo administrativo.',
           pt: 'Um exemplo de produto em rascunho para o fluxo administrativo.'
-        },
-        details: {
-          zh: '用于后台编辑和发布流程演示的草稿商品。',
-          en: 'A draft product used to demonstrate editing and publishing flows.',
-          es: 'Un producto borrador para demostrar edición y publicación.',
-          pt: 'Um produto em rascunho para demonstrar edição e publicação.'
         }
       }
     ];
@@ -387,19 +615,43 @@ async function main() {
     await tx.banner.createMany({
       data: [
         {
-          imageUrl: 'https://images.example.com/banners/electronics.jpg',
+          imageUrl: '/show/robot_humanoid.png',
           targetType: 'category',
-          targetId: categories.get('electronics'),
+          targetId: categories.get('humanoid-robots'),
           targetUrl: null,
           sortOrder: 1,
           isActive: true
         },
         {
-          imageUrl: 'https://images.example.com/banners/phone.jpg',
-          targetType: 'product',
-          targetId: createdProducts.get('star-river-pro-phone'),
+          imageUrl: '/show/robot_drone.png',
+          targetType: 'category',
+          targetId: categories.get('drones'),
           targetUrl: null,
           sortOrder: 2,
+          isActive: true
+        },
+        {
+          imageUrl: '/show/robot_window_cleaner.png',
+          targetType: 'category',
+          targetId: categories.get('window-cleaning-robots'),
+          targetUrl: null,
+          sortOrder: 3,
+          isActive: true
+        },
+        {
+          imageUrl: '/show/robot_floor_cleaner.png',
+          targetType: 'category',
+          targetId: categories.get('vacuum-robots'),
+          targetUrl: null,
+          sortOrder: 4,
+          isActive: true
+        },
+        {
+          imageUrl: '/show/robot_industrial_arm.png',
+          targetType: 'category',
+          targetId: categories.get('humanoid-robots'),
+          targetUrl: null,
+          sortOrder: 5,
           isActive: true
         }
       ]

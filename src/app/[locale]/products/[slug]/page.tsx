@@ -81,6 +81,7 @@ export default async function ProductDetailPage({
         title={Storefront.sections.related}
         emptyLabel={Storefront.emptyProducts}
         ctaLabel={Storefront.productCta}
+        stockLabel={Storefront.product.stockAvailable}
       />
     </div>
   );

@@ -1,28 +1,65 @@
 {
   "Storefront": {
-    "brand": "Cross",
+    "brand": "FBGM",
     "nav": {
       "home": "Inicio",
       "products": "Productos",
       "contact": "Contacto",
       "subscribe": "Suscribirse"
     },
-    "searchPlaceholder": "Buscar productos, categorías o modelos",
+    "searchPlaceholder": "Buscar robots, categorías o modelos",
     "utilityBar": {
       "support": "Soporte",
       "service": "Atención al cliente"
+    },
+    "header": {
+      "phoneSales": "Venta telefónica",
+      "topLinks": {
+        "blog": "Blog",
+        "studio": "FBGM Studio",
+        "professionals": "FBGM Profesionales"
+      },
+      "quickActions": {
+        "trackOrder": "Sigue tu compra",
+        "stores": "Tiendas",
+        "helpCenter": "Centro de ayuda",
+        "account": "Mi cuenta"
+      },
+      "featuredNav": {
+        "inspiration": "Inspírate",
+        "outlet": "Outlet"
+      },
+      "categoryPromo": {
+        "viewAll": "Ver todo",
+        "offerTitle": "Ofertas",
+        "offerLink": "Última oportunidad",
+        "featuredTitle": "Destacado",
+        "featuredDescription": "Descubre los más vendidos"
+      }
     },
     "portal": "Portal",
     "whatsApp": "WhatsApp",
     "footer": {
       "navigationTitle": "Catálogo",
-      "tagline": "Base de la fase uno para una tienda multilingüe y su panel.",
-      "rights": "Cross. Todos los derechos reservados.",
+      "tagline": "Vitrina multilingüe de productos robóticos con panel administrativo.",
+      "rights": "FBGM. Todos los derechos reservados.",
       "supportTitle": "Soporte",
-      "supportDescription": "Centraliza consultas de producto, suscripciones y acceso al portal en una sola experiencia retail."
+      "supportDescription": "Centraliza consultas de producto, suscripciones y acceso al portal en una sola experiencia retail.",
+      "contactTitle": "Contacto",
+      "phoneSales": "Venta telefónica",
+      "businessHours": "Lun - Vie: 09:00 - 18:00",
+      "helpCenter": "Centro de ayuda",
+      "paymentMethods": "Medios de pago"
+    },
+    "banner": {
+      "empty": "No hay banners activos"
     },
     "emptyProducts": "Todavía no hay productos disponibles.",
     "productCta": "Ver detalles",
+    "product": {
+      "stockAvailable": "Stock disponible",
+      "discountBadge": "{percent}% OFF"
+    },
     "contactForm": {
       "title": "Enviar mensaje",
       "name": "Nombre",
@@ -37,13 +74,38 @@
     },
     "sections": {
       "topCategories": "Categorías principales",
-      "categoryGrid": "Cuadrícula de categorías",
+      "categoryGrid": "BUSCAR POR CATEGORÍA",
       "recommended": "Productos recomendados",
       "related": "También te puede interesar",
-      "gallery": "Galería"
+      "gallery": "Galería",
+      "offers": "OFERTAS IMPERDIBLES",
+      "offersSubtitle": "SALE DE LUJO",
+      "featured": "NUESTROS DESTACADOS",
+      "catalogs": "CONOCE NUESTROS CATÁLOGOS",
+      "addToCart": "AGREGAR AL CARRITO"
     },
     "language": {
       "label": "Idioma"
+    },
+    "catalogShowcase": {
+      "ctaLabel": "Ver catálogos",
+      "items": {
+        "windowRobots": "Catálogo Robots Limpiacristales",
+        "drones": "Catálogo Drones",
+        "humanoidRobots": "Catálogo Robots Humanoides",
+        "vacuumRobots": "Catálogo Robots Aspiradores"
+      }
+    },
+    "socialShowcase": {
+      "title": "Robótica en acción #FBGM",
+      "handle": "@fbgm_robotics",
+      "tabs": {
+        "windowRobots": "ROBOTS LIMPIACRISTALES",
+        "drones": "DRONES",
+        "humanoidRobots": "HUMANOIDES",
+        "vacuumRobots": "ROBOTS ASPIRADORES",
+        "scenes": "ESCENAS"
+      }
     },
     "home": {
       "eyebrow": "Storefront Shell",

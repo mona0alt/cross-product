@@ -6,61 +6,82 @@ import type { Locale } from '@/lib/i18n/config';
 import type { StorefrontProductCard } from '@/features/catalog/types';
 
 function formatPrice(priceUsd: number) {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('es-CL', {
     style: 'currency',
-    currency: 'USD'
+    currency: 'CLP',
+    minimumFractionDigits: 0
   }).format(priceUsd);
 }
 
 export function ProductCard({
   locale,
   product,
-  ctaLabel
+  ctaLabel,
+  stockLabel,
+  discountBadgeTemplate,
+  discountPercent
 }: {
   locale: Locale;
   product: StorefrontProductCard;
   ctaLabel: string;
+  stockLabel: string;
+  discountBadgeTemplate?: string;
+  discountPercent?: number;
 }) {
+  const discountBadgeLabel =
+    discountPercent && discountBadgeTemplate
+      ? discountBadgeTemplate.replace('{percent}', String(discountPercent))
+      : null;
+
   return (
-    <article className="storefront-surface overflow-hidden rounded-[var(--store-radius-lg)] transition hover:-translate-y-1 hover:border-[var(--store-border-strong)]">
-      <div className="relative">
+    <article className="group flex w-[200px] flex-col sm:w-[220px]">
+      {/* Image */}
+      <div className="relative overflow-hidden rounded-md border border-[var(--mk-border)] bg-white">
         <img
           src={product.coverImageUrl}
           alt={product.name}
-          className="h-64 w-full object-cover"
+          className="h-[200px] w-full object-cover transition duration-300 group-hover:scale-105 sm:h-[220px]"
         />
-        <div className="absolute left-4 top-4 rounded-full bg-white/92 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--store-accent)]">
-          {product.category?.name ?? product.productCode}
-        </div>
+        {discountBadgeLabel ? (
+          <span className="absolute left-2 top-2 rounded-sm bg-[var(--mk-highlight)] px-2 py-1 text-xs font-bold text-white">
+            {discountBadgeLabel}
+          </span>
+        ) : null}
       </div>
-      <div className="space-y-4 p-5">
-        <div className="flex items-start justify-between gap-4">
-          <div className="space-y-2">
-            <h3 className="text-lg font-bold text-[var(--store-text)]">
-              {product.name}
-            </h3>
-            <p className="text-sm text-[var(--store-text-muted)]">
-              {product.productCode}
-            </p>
-          </div>
-          <span className="rounded-full bg-[var(--store-accent)] px-3 py-1.5 text-xs font-semibold text-white">
-            {formatPrice(product.priceUsd)}
-          </span>
+
+      {/* Info */}
+      <div className="mt-2 flex flex-1 flex-col gap-1">
+        <h3 className="text-sm font-medium leading-snug text-black line-clamp-2">
+          {product.name}
+        </h3>
+        <p className="text-xs text-[var(--mk-text-muted)]">{product.productCode}</p>
+        <p className="text-xs text-[var(--mk-text-muted)]">{product.category?.name}</p>
+
+        <div className="mt-1 flex items-baseline gap-2">
+          {discountPercent ? (
+            <>
+              <span className="text-lg font-bold text-black">
+                {formatPrice(product.priceUsd)}
+              </span>
+              <span className="text-sm text-[var(--mk-text-muted)] line-through">
+                {formatPrice(Math.round(product.priceUsd * (1 + discountPercent / 100)))}
+              </span>
+            </>
+          ) : (
+            <span className="text-lg font-bold text-black">
+              {formatPrice(product.priceUsd)}
+            </span>
+          )}
         </div>
-        <p className="text-sm leading-6 text-[var(--store-text-muted)]">
-          {product.intro}
-        </p>
-        <div className="flex items-center justify-between gap-3 border-t border-[var(--store-border)] pt-4">
-          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--store-text-muted)]">
-            {product.category?.name}
-          </span>
-          <Link
-            href={`/${locale}/products/${product.slug}`}
-            className="inline-flex items-center rounded-full border border-[var(--store-border-strong)] bg-white px-4 py-2 text-sm font-semibold text-[var(--store-accent)]"
-          >
-            {ctaLabel}
-          </Link>
-        </div>
+
+        <p className="text-xs text-[var(--mk-success)]">{stockLabel}</p>
+
+        <Link
+          href={`/${locale}/products/${product.slug}`}
+          className="mt-2 inline-flex items-center justify-center rounded-md bg-black px-3 py-2 text-center text-xs font-semibold uppercase tracking-wide text-white transition hover:bg-[var(--mk-highlight)]"
+        >
+          {ctaLabel}
+        </Link>
       </div>
     </article>
   );

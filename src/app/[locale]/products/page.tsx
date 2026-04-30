@@ -94,6 +94,7 @@ export default async function ProductsPage({
                 locale={locale}
                 product={product}
                 ctaLabel={Storefront.productCta}
+                stockLabel={Storefront.product.stockAvailable}
               />
             ))}
           </div>

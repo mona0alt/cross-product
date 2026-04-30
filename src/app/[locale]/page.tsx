@@ -1,10 +1,9 @@
 import React from 'react';
 
-import { CategoryIconGrid } from '@/components/storefront/category-icon-grid';
-import { CategoryNav } from '@/components/storefront/category-nav';
-import { HeroShowcase } from '@/components/storefront/hero-showcase';
-import { PromoCta } from '@/components/storefront/promo-cta';
-import { RecommendedProducts } from '@/components/storefront/recommended-products';
+import { BannerCarousel } from '@/components/storefront/banner-carousel';
+import { CatalogCarousel } from '@/components/storefront/catalog-carousel';
+import { ProductCarousel } from '@/components/storefront/product-carousel';
+import { SocialShowcase } from '@/components/storefront/social-showcase';
 import { getHomepagePayload } from '@/features/catalog/queries';
 import { defaultLocale, isLocale, type Locale } from '@/lib/i18n/config';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
@@ -22,57 +21,72 @@ export default async function LocalizedHomePage({
   const payload = await getHomepagePayload(locale);
   const { Storefront } = messages;
 
+  // Simulated discounts for visual effect matching mk.cl
+  const discounts: Record<string, number> = {};
+  payload.recommendedProducts.slice(0, 5).forEach((product, index) => {
+    const percents = [52, 61, 69, 43, 37];
+    discounts[product.id] = percents[index] ?? 30;
+  });
+
+  const secondBatch = payload.recommendedProducts.slice(5, 10);
+
   return (
-    <div className="space-y-10">
-      <HeroShowcase
-        locale={locale}
+    <div>
+      {/* Full-width banner carousel */}
+      <BannerCarousel
         banners={payload.banners}
-        copy={{
-          eyebrow: Storefront.home.eyebrow,
-          title: Storefront.home.title,
-          description: Storefront.home.description,
-          primaryCta: Storefront.home.primaryCta,
-          secondaryCta: Storefront.home.secondaryCta,
-          highlights: [
-            Storefront.utilityBar.support,
-            Storefront.utilityBar.service,
-            Storefront.portal
-          ]
-        }}
+        emptyLabel={Storefront.banner.empty}
       />
 
-      <CategoryNav
+      {/* Offers carousel */}
+      <ProductCarousel
         locale={locale}
-        categories={payload.featuredCategories}
-        title={Storefront.sections.topCategories}
-      />
-
-      <CategoryIconGrid
-        locale={locale}
-        categories={payload.featuredCategories}
-        title={Storefront.sections.categoryGrid}
-      />
-
-      <RecommendedProducts
-        locale={locale}
-        products={payload.recommendedProducts}
-        title={Storefront.sections.recommended}
+        products={payload.recommendedProducts.slice(0, 8)}
+        title={Storefront.sections.offers}
+        subtitle={Storefront.sections.offersSubtitle}
+        ctaLabel={Storefront.sections.addToCart}
         emptyLabel={Storefront.emptyProducts}
-        ctaLabel={Storefront.productCta}
+        stockLabel={Storefront.product.stockAvailable}
+        discountBadgeTemplate={Storefront.product.discountBadge}
+        discounts={discounts}
       />
 
-      <PromoCta
-        eyebrow={Storefront.contact.eyebrow}
-        title={Storefront.contact.title}
-        description={Storefront.subscribe.description}
-        primary={{
-          href: `/${locale}/contact`,
-          label: Storefront.nav.contact
-        }}
-        secondary={{
-          href: `/${locale}/subscribe`,
-          label: Storefront.nav.subscribe
-        }}
+      {/* Featured products */}
+      {secondBatch.length > 0 && (
+        <ProductCarousel
+          locale={locale}
+          products={secondBatch}
+          title={Storefront.sections.featured}
+          ctaLabel={Storefront.sections.addToCart}
+          emptyLabel={Storefront.emptyProducts}
+          stockLabel={Storefront.product.stockAvailable}
+        />
+      )}
+
+      {/* Wide banner */}
+      {payload.banners.length > 1 && (
+        <section className="py-4">
+          <div className="mk-container">
+            <div className="overflow-hidden rounded-md">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={payload.banners[1]?.imageUrl}
+                alt=""
+                className="h-[180px] w-full object-cover sm:h-[240px] lg:h-[300px]"
+              />
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Social showcase */}
+      <SocialShowcase copy={Storefront.socialShowcase} />
+
+      {/* Catalog carousel */}
+      <CatalogCarousel
+        locale={locale}
+        title={Storefront.sections.catalogs}
+        copy={Storefront.catalogShowcase}
       />
     </div>
   );

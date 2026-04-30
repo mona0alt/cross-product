@@ -1,28 +1,65 @@
 {
   "Storefront": {
-    "brand": "Cross",
+    "brand": "FBGM",
     "nav": {
       "home": "首页",
       "products": "商品",
       "contact": "留言",
       "subscribe": "订阅"
     },
-    "searchPlaceholder": "搜索商品、分类或型号",
+    "searchPlaceholder": "搜索机器人、分类或型号",
     "utilityBar": {
       "support": "支持中心",
       "service": "客户服务"
+    },
+    "header": {
+      "phoneSales": "电话销售",
+      "topLinks": {
+        "blog": "博客",
+        "studio": "FBGM 设计中心",
+        "professionals": "FBGM 专业客户"
+      },
+      "quickActions": {
+        "trackOrder": "追踪订单",
+        "stores": "门店",
+        "helpCenter": "帮助中心",
+        "account": "我的账户"
+      },
+      "featuredNav": {
+        "inspiration": "灵感",
+        "outlet": "奥莱"
+      },
+      "categoryPromo": {
+        "viewAll": "查看全部",
+        "offerTitle": "优惠",
+        "offerLink": "最后机会",
+        "featuredTitle": "精选",
+        "featuredDescription": "发现热销产品"
+      }
     },
     "portal": "Portal",
     "whatsApp": "WhatsApp",
     "footer": {
       "navigationTitle": "导航",
-      "tagline": "多语言商品展示与后台管理一期骨架。",
-      "rights": "Cross. All rights reserved.",
+      "tagline": "多语言机器人产品展示与后台管理平台。",
+      "rights": "FBGM. All rights reserved.",
       "supportTitle": "服务支持",
-      "supportDescription": "连接产品咨询、订阅更新和客户入口，统一承接零售前台的沟通动作。"
+      "supportDescription": "连接产品咨询、订阅更新和客户入口，统一承接零售前台的沟通动作。",
+      "contactTitle": "联系",
+      "phoneSales": "电话销售",
+      "businessHours": "周一至周五：09:00 - 18:00",
+      "helpCenter": "帮助中心",
+      "paymentMethods": "支付方式"
+    },
+    "banner": {
+      "empty": "当前没有可展示的横幅"
     },
     "emptyProducts": "当前还没有可展示的商品。",
     "productCta": "查看详情",
+    "product": {
+      "stockAvailable": "现货供应",
+      "discountBadge": "{percent}% 优惠"
+    },
     "contactForm": {
       "title": "提交留言",
       "name": "姓名",
@@ -37,13 +74,38 @@
     },
     "sections": {
       "topCategories": "一级分类导航",
-      "categoryGrid": "分类图标区",
+      "categoryGrid": "按分类浏览",
       "recommended": "推荐商品",
       "related": "相关推荐",
-      "gallery": "商品图库"
+      "gallery": "商品图库",
+      "offers": "限时特惠",
+      "offersSubtitle": "豪华促销",
+      "featured": "精选推荐",
+      "catalogs": "浏览产品目录",
+      "addToCart": "加入购物车"
     },
     "language": {
       "label": "语言"
+    },
+    "catalogShowcase": {
+      "ctaLabel": "查看目录",
+      "items": {
+        "windowRobots": "擦窗机器人目录",
+        "drones": "无人机目录",
+        "humanoidRobots": "人形机器人目录",
+        "vacuumRobots": "扫地机器人目录"
+      }
+    },
+    "socialShowcase": {
+      "title": "机器人应用场景 #FBGM",
+      "handle": "@fbgm_robotics",
+      "tabs": {
+        "windowRobots": "擦窗机器人",
+        "drones": "无人机",
+        "humanoidRobots": "人形机器人",
+        "vacuumRobots": "扫地机器人",
+        "scenes": "场景"
+      }
     },
     "home": {
       "eyebrow": "Storefront Shell",

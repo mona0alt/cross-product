@@ -1,28 +1,65 @@
 {
   "Storefront": {
-    "brand": "Cross",
+    "brand": "FBGM",
     "nav": {
       "home": "Início",
       "products": "Produtos",
       "contact": "Contato",
       "subscribe": "Inscrever-se"
     },
-    "searchPlaceholder": "Buscar produtos, categorias ou modelos",
+    "searchPlaceholder": "Buscar robôs, categorias ou modelos",
     "utilityBar": {
       "support": "Suporte",
       "service": "Atendimento"
+    },
+    "header": {
+      "phoneSales": "Venda por telefone",
+      "topLinks": {
+        "blog": "Blog",
+        "studio": "FBGM Studio",
+        "professionals": "FBGM Profissionais"
+      },
+      "quickActions": {
+        "trackOrder": "Acompanhar compra",
+        "stores": "Lojas",
+        "helpCenter": "Central de ajuda",
+        "account": "Minha conta"
+      },
+      "featuredNav": {
+        "inspiration": "Inspire-se",
+        "outlet": "Outlet"
+      },
+      "categoryPromo": {
+        "viewAll": "Ver tudo",
+        "offerTitle": "Ofertas",
+        "offerLink": "Última chance",
+        "featuredTitle": "Destaque",
+        "featuredDescription": "Descubra os mais vendidos"
+      }
     },
     "portal": "Portal",
     "whatsApp": "WhatsApp",
     "footer": {
       "navigationTitle": "Catálogo",
-      "tagline": "Base da fase um para uma vitrine multilíngue com painel administrativo.",
-      "rights": "Cross. Todos os direitos reservados.",
+      "tagline": "Vitrine multilíngue de produtos robóticos com painel administrativo.",
+      "rights": "FBGM. Todos os direitos reservados.",
       "supportTitle": "Suporte",
-      "supportDescription": "Concentre consultas de produto, inscrições e acesso ao portal em uma única experiência retail."
+      "supportDescription": "Concentre consultas de produto, inscrições e acesso ao portal em uma única experiência retail.",
+      "contactTitle": "Contato",
+      "phoneSales": "Venda por telefone",
+      "businessHours": "Seg - Sex: 09:00 - 18:00",
+      "helpCenter": "Central de ajuda",
+      "paymentMethods": "Meios de pagamento"
+    },
+    "banner": {
+      "empty": "Não há banners ativos"
     },
     "emptyProducts": "Ainda não há produtos disponíveis.",
     "productCta": "Ver detalhes",
+    "product": {
+      "stockAvailable": "Em estoque",
+      "discountBadge": "{percent}% OFF"
+    },
     "contactForm": {
       "title": "Enviar mensagem",
       "name": "Nome",
@@ -37,13 +74,38 @@
     },
     "sections": {
       "topCategories": "Categorias principais",
-      "categoryGrid": "Grade de categorias",
+      "categoryGrid": "BUSCAR POR CATEGORIA",
       "recommended": "Produtos recomendados",
       "related": "Você também pode gostar",
-      "gallery": "Galeria"
+      "gallery": "Galeria",
+      "offers": "OFERTAS IMPERDÍVEIS",
+      "offersSubtitle": "SALE DE LUXO",
+      "featured": "NOSSOS DESTAQUES",
+      "catalogs": "CONHEÇA NOSSOS CATÁLOGOS",
+      "addToCart": "ADICIONAR AO CARRINHO"
     },
     "language": {
       "label": "Idioma"
+    },
+    "catalogShowcase": {
+      "ctaLabel": "Ver catálogos",
+      "items": {
+        "windowRobots": "Catálogo Robôs de Limpeza de Vidros",
+        "drones": "Catálogo Drones",
+        "humanoidRobots": "Catálogo Robôs Humanoides",
+        "vacuumRobots": "Catálogo Robôs Aspiradores"
+      }
+    },
+    "socialShowcase": {
+      "title": "Robótica em ação #FBGM",
+      "handle": "@fbgm_robotics",
+      "tabs": {
+        "windowRobots": "ROBÔS DE LIMPEZA",
+        "drones": "DRONES",
+        "humanoidRobots": "HUMANOIDES",
+        "vacuumRobots": "ROBÔS ASPIRADORES",
+        "scenes": "CENAS"
+      }
     },
     "home": {
       "eyebrow": "Storefront Shell",

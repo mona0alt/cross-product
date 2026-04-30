@@ -48,6 +48,7 @@ export default async function CategoryPage({
         category={selectedPrimary}
         subcategory={selectedSecondary}
         recommended={false}
+        hideCategoryFilters
         copy={{
           title: Storefront.products.filters.title,
           searchPlaceholder: Storefront.searchPlaceholder,
@@ -82,6 +83,7 @@ export default async function CategoryPage({
                 locale={locale}
                 product={product}
                 ctaLabel={Storefront.productCta}
+                stockLabel={Storefront.product.stockAvailable}
               />
             ))}
           </div>

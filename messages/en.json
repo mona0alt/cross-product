@@ -1,28 +1,65 @@
 {
   "Storefront": {
-    "brand": "Cross",
+    "brand": "FBGM",
     "nav": {
       "home": "Home",
       "products": "Products",
       "contact": "Contact",
       "subscribe": "Subscribe"
     },
-    "searchPlaceholder": "Search products, categories or models",
+    "searchPlaceholder": "Search robots, categories or models",
     "utilityBar": {
       "support": "Support",
       "service": "Customer Service"
+    },
+    "header": {
+      "phoneSales": "Phone sales",
+      "topLinks": {
+        "blog": "Blog",
+        "studio": "FBGM Studio",
+        "professionals": "FBGM Pros"
+      },
+      "quickActions": {
+        "trackOrder": "Track order",
+        "stores": "Stores",
+        "helpCenter": "Help Center",
+        "account": "My account"
+      },
+      "featuredNav": {
+        "inspiration": "Inspiration",
+        "outlet": "Outlet"
+      },
+      "categoryPromo": {
+        "viewAll": "View all",
+        "offerTitle": "Offers",
+        "offerLink": "Last chance",
+        "featuredTitle": "Featured",
+        "featuredDescription": "Discover best sellers"
+      }
     },
     "portal": "Portal",
     "whatsApp": "WhatsApp",
     "footer": {
       "navigationTitle": "Catalog",
-      "tagline": "Phase-one shell for a multilingual storefront and admin portal.",
-      "rights": "Cross. All rights reserved.",
+      "tagline": "Multilingual robot product showcase and admin portal.",
+      "rights": "FBGM. All rights reserved.",
       "supportTitle": "Support",
-      "supportDescription": "Route product consultations, subscription updates, and portal access through one retail shell."
+      "supportDescription": "Route product consultations, subscription updates, and portal access through one retail shell.",
+      "contactTitle": "Contact",
+      "phoneSales": "Phone sales",
+      "businessHours": "Mon - Fri: 09:00 - 18:00",
+      "helpCenter": "Help Center",
+      "paymentMethods": "Payment methods"
+    },
+    "banner": {
+      "empty": "No active banners"
     },
     "emptyProducts": "No products are available yet.",
     "productCta": "View details",
+    "product": {
+      "stockAvailable": "In stock",
+      "discountBadge": "{percent}% OFF"
+    },
     "contactForm": {
       "title": "Send a message",
       "name": "Name",
@@ -37,13 +74,38 @@
     },
     "sections": {
       "topCategories": "Primary categories",
-      "categoryGrid": "Category grid",
+      "categoryGrid": "SHOP BY CATEGORY",
       "recommended": "Recommended products",
       "related": "You may also like",
-      "gallery": "Gallery"
+      "gallery": "Gallery",
+      "offers": "UNMISSABLE OFFERS",
+      "offersSubtitle": "LUXURY SALE",
+      "featured": "OUR HIGHLIGHTS",
+      "catalogs": "DISCOVER OUR CATALOGS",
+      "addToCart": "ADD TO CART"
     },
     "language": {
       "label": "Language"
+    },
+    "catalogShowcase": {
+      "ctaLabel": "View catalogs",
+      "items": {
+        "windowRobots": "Catalog: Window Cleaning Robots",
+        "drones": "Catalog: Drones",
+        "humanoidRobots": "Catalog: Humanoid Robots",
+        "vacuumRobots": "Catalog: Vacuum Robots"
+      }
+    },
+    "socialShowcase": {
+      "title": "Robotics in action #FBGM",
+      "handle": "@fbgm_robotics",
+      "tabs": {
+        "windowRobots": "WINDOW ROBOTS",
+        "drones": "DRONES",
+        "humanoidRobots": "HUMANOIDS",
+        "vacuumRobots": "VACUUM ROBOTS",
+        "scenes": "SCENES"
+      }
     },
     "home": {
       "eyebrow": "Storefront Shell",

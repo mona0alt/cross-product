@@ -7,6 +7,7 @@ type FilterSidebarProps = {
   category?: string;
   subcategory?: string;
   recommended: boolean;
+  hideCategoryFilters?: boolean;
   copy: {
     title: string;
     searchPlaceholder: string;
@@ -23,6 +24,7 @@ export function FilterSidebar({
   category,
   subcategory,
   recommended,
+  hideCategoryFilters,
   copy,
   categoryGroups
 }: FilterSidebarProps) {
@@ -44,33 +46,37 @@ export function FilterSidebar({
             placeholder={copy.searchPlaceholder}
           />
 
-          <select
-            name="category"
-            defaultValue={category ?? ''}
-            className="w-full rounded-2xl border border-[var(--store-border)] bg-white px-4 py-3 text-sm"
-          >
-            <option value="">{copy.allPrimary}</option>
-            {categoryGroups.map((group) => (
-              <option key={group.id} value={group.slug}>
-                {group.name}
-              </option>
-            ))}
-          </select>
+          {!hideCategoryFilters && (
+            <>
+              <select
+                name="category"
+                defaultValue={category ?? ''}
+                className="w-full rounded-2xl border border-[var(--store-border)] bg-white px-4 py-3 text-sm"
+              >
+                <option value="">{copy.allPrimary}</option>
+                {categoryGroups.map((group) => (
+                  <option key={group.id} value={group.slug}>
+                    {group.name}
+                  </option>
+                ))}
+              </select>
 
-          <select
-            name="subcategory"
-            defaultValue={subcategory ?? ''}
-            className="w-full rounded-2xl border border-[var(--store-border)] bg-white px-4 py-3 text-sm"
-          >
-            <option value="">{copy.allSecondary}</option>
-            {categoryGroups.flatMap((group) =>
-              group.children.map((child) => (
-                <option key={child.id} value={child.slug}>
-                  {group.name} / {child.name}
-                </option>
-              ))
-            )}
-          </select>
+              <select
+                name="subcategory"
+                defaultValue={subcategory ?? ''}
+                className="w-full rounded-2xl border border-[var(--store-border)] bg-white px-4 py-3 text-sm"
+              >
+                <option value="">{copy.allSecondary}</option>
+                {categoryGroups.flatMap((group) =>
+                  group.children.map((child) => (
+                    <option key={child.id} value={child.slug}>
+                      {group.name} / {child.name}
+                    </option>
+                  ))
+                )}
+              </select>
+            </>
+          )}
 
           <label className="flex items-center gap-3 rounded-2xl border border-[var(--store-border)] bg-[var(--store-surface-muted)] px-4 py-3 text-sm font-medium text-[var(--store-text)]">
             <input

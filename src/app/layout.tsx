@@ -4,8 +4,8 @@ import type { ReactNode } from 'react';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Cross',
-  description: 'Next.js skeleton for Cross'
+  title: 'FBGM Robotics: Window Cleaners, Drones, Humanoids & Vacuum Robots',
+  description: 'Discover cutting-edge robots at FBGM: window cleaning robots, drones, humanoid robots and smart vacuum robots.'
 };
 
 export default function RootLayout({

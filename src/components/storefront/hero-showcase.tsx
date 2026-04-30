@@ -23,6 +23,7 @@ type HeroShowcaseProps = {
     primaryCta: string;
     secondaryCta: string;
     highlights: string[];
+    emptyBannerLabel?: string;
   };
 };
 
@@ -72,7 +73,10 @@ export function HeroShowcase({
           </div>
         </div>
       </div>
-      <BannerCarousel banners={banners} />
+      <BannerCarousel
+        banners={banners}
+        emptyLabel={copy.emptyBannerLabel ?? ''}
+      />
     </section>
   );
 }

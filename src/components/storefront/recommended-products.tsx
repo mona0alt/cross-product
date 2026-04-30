@@ -9,13 +9,15 @@ export function RecommendedProducts({
   products,
   title,
   emptyLabel,
-  ctaLabel
+  ctaLabel,
+  stockLabel
 }: {
   locale: Locale;
   products: StorefrontProductCard[];
   title: string;
   emptyLabel: string;
   ctaLabel: string;
+  stockLabel: string;
 }) {
   return (
     <SectionShell title={title}>
@@ -31,6 +33,7 @@ export function RecommendedProducts({
               locale={locale}
               product={product}
               ctaLabel={ctaLabel}
+              stockLabel={stockLabel}
             />
           ))}
         </div>

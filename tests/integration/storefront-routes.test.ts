@@ -68,9 +68,16 @@ describe('storefront routes', () => {
 
     expect(html).toContain('Star River Pro Phone');
     expect(html).toContain('Electronics');
-    expect(html).toContain('Browse Products');
-    expect(html).toContain('Primary categories');
-    expect(html).toContain('Recommended products');
+    expect(html).toContain('SHOP BY CATEGORY');
+    expect(html).toContain('UNMISSABLE OFFERS');
+    expect(html).toContain('Catalog: Window Cleaning Robots');
+    expect(html).toContain('View catalogs');
+    expect(html).toContain('Robotics in action #FBGM');
+    expect(html).toContain('In stock');
+    expect(html).not.toContain('Catálogo Pisos y Muros');
+    expect(html).not.toContain('VER LOS CATÁLOGOS');
+    expect(html).not.toContain('Stock Disponible');
+    expect(html).not.toContain('INSPÍRATE CON PROYECTOS REALES');
   });
 
   it('renders the localized product list page', async () => {

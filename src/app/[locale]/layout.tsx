@@ -9,6 +9,7 @@ import { StorefrontFooter } from '@/components/storefront/footer';
 import { StorefrontHeader } from '@/components/storefront/header';
 import { defaultLocale, isLocale, locales, type Locale } from '@/lib/i18n/config';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
+import { getStorefrontCategoryGroups } from '@/features/catalog/queries';
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -33,10 +34,11 @@ export default async function LocaleLayout({
   const messages = await getDictionary(locale);
   const { Storefront } = messages;
   const whatsAppNumber = process.env.WHATSAPP_NUMBER ?? '15551234567';
+  const categoryGroups = await getStorefrontCategoryGroups(locale);
 
   return (
     <NextIntlClientProvider locale={locale} messages={messages}>
-      <div className="storefront-shell flex min-h-screen flex-col text-slate-900">
+      <div className="flex min-h-screen flex-col bg-white text-black">
         <StorefrontHeader
           locale={locale}
           copy={{
@@ -46,13 +48,17 @@ export default async function LocaleLayout({
             portal: Storefront.portal,
             whatsApp: Storefront.whatsApp,
             languageLabel: Storefront.language.label,
-            utilityBar: Storefront.utilityBar
+            phoneSales: Storefront.header.phoneSales,
+            topLinks: Storefront.header.topLinks,
+            utilityBar: Storefront.utilityBar,
+            quickActions: Storefront.header.quickActions,
+            featuredNav: Storefront.header.featuredNav,
+            categoryPromo: Storefront.header.categoryPromo
           }}
           whatsAppNumber={whatsAppNumber}
+          categoryGroups={categoryGroups}
         />
-        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12">
-          {children}
-        </main>
+        <main className="flex-1">{children}</main>
         <StorefrontFooter
           locale={locale}
           copy={{
