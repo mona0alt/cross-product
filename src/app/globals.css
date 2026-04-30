@@ -4,6 +4,20 @@
 
 :root {
   color-scheme: light;
+  --store-bg: #f3f5f7;
+  --store-bg-accent: linear-gradient(180deg, #f7f8fa 0%, #eef2f6 48%, #f7f8fb 100%);
+  --store-surface: #ffffff;
+  --store-surface-muted: #eef2f6;
+  --store-border: #d7dee7;
+  --store-border-strong: #b6c2cf;
+  --store-text: #0f172a;
+  --store-text-muted: #526072;
+  --store-accent: #111827;
+  --store-accent-soft: #1f2937;
+  --store-highlight: #f59e0b;
+  --store-shadow: 0 24px 60px -36px rgba(15, 23, 42, 0.32);
+  --store-radius-xl: 2rem;
+  --store-radius-lg: 1.5rem;
 }
 
 * {
@@ -17,9 +31,10 @@ html {
 body {
   min-height: 100%;
   margin: 0;
-  background: #ffffff;
-  color: #0f172a;
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--store-bg-accent);
+  color: var(--store-text);
+  font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  line-height: 1.5;
 }
 
 a {
@@ -32,4 +47,63 @@ input,
 textarea,
 select {
   font: inherit;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+.storefront-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.88), transparent 30%),
+    radial-gradient(circle at top right, rgba(226, 232, 240, 0.72), transparent 26%),
+    var(--store-bg-accent);
+}
+
+.storefront-surface {
+  background: var(--store-surface);
+  border: 1px solid var(--store-border);
+  box-shadow: var(--store-shadow);
+}
+
+.storefront-surface-muted {
+  background: var(--store-surface-muted);
+  border: 1px solid rgba(215, 222, 231, 0.9);
+}
+
+.storefront-eyebrow {
+  margin: 0 0 0.35rem;
+  color: var(--store-text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.storefront-section-title {
+  margin: 0;
+  color: var(--store-text);
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.storefront-section-copy {
+  margin: 0.75rem 0 0;
+  color: var(--store-text-muted);
+  font-size: 0.975rem;
+  line-height: 1.75;
+}
+
+.storefront-action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--store-accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }

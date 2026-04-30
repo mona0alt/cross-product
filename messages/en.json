@@ -8,6 +8,10 @@
       "subscribe": "Subscribe"
     },
     "searchPlaceholder": "Search products, categories or models",
+    "utilityBar": {
+      "support": "Support",
+      "service": "Customer Service"
+    },
     "portal": "Portal",
     "whatsApp": "WhatsApp",
     "footer": {
@@ -40,7 +44,9 @@
     "home": {
       "eyebrow": "Storefront Shell",
       "title": "The four-locale shell is now wired up",
-      "description": "Homepage, catalog, detail pages and admin management screens will be expanded in the next tasks."
+      "description": "Homepage, catalog, detail pages and admin management screens will be expanded in the next tasks.",
+      "primaryCta": "Browse Products",
+      "secondaryCta": "Contact Us"
     },
     "products": {
       "eyebrow": "Catalog",

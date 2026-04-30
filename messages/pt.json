@@ -8,6 +8,10 @@
       "subscribe": "Inscrever-se"
     },
     "searchPlaceholder": "Buscar produtos, categorias ou modelos",
+    "utilityBar": {
+      "support": "Suporte",
+      "service": "Atendimento"
+    },
     "portal": "Portal",
     "whatsApp": "WhatsApp",
     "footer": {
@@ -40,7 +44,9 @@
     "home": {
       "eyebrow": "Storefront Shell",
       "title": "A base em quatro idiomas já está pronta",
-      "description": "A home, o catálogo, os detalhes e a administração serão expandidos nas próximas tarefas."
+      "description": "A home, o catálogo, os detalhes e a administração serão expandidos nas próximas tarefas.",
+      "primaryCta": "Ver produtos",
+      "secondaryCta": "Falar conosco"
     },
     "products": {
       "eyebrow": "Catálogo",
