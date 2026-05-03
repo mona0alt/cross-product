@@ -155,12 +155,6 @@ img {
   gap: 1.5rem;
 }
 
-.admin-grid-shell {
-  display: grid;
-  grid-template-columns: 240px minmax(0, 1fr);
-  min-height: 100vh;
-}
-
 @media (min-width: 1280px) {
   .admin-hero-grid {
     grid-template-columns: minmax(0, 1.2fr) minmax(420px, 0.8fr);

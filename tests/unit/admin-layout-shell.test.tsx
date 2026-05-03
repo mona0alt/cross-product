@@ -37,11 +37,44 @@ describe('admin shell', () => {
       await AdminProtectedLayout({ children: <div>Child</div> })
     );
 
-    expect(html).toContain('管理后台');
-    expect(html).toContain('企业级产品套件');
+    expect(html).toContain('/logo.jpg');
     expect(html).toContain('数据分析');
     expect(html).toContain('系统设置');
     expect(html).toContain('核心管理系统');
     expect(html).toContain('运行爬虫');
+  });
+
+  it('offsets the main content when the desktop sidebar is fixed', async () => {
+    requireAdminSession.mockResolvedValue({
+      id: 'admin-1',
+      username: 'admin'
+    });
+
+    const AdminProtectedLayout =
+      (await import('@/app/admin/(protected)/layout')).default;
+
+    const html = renderToStaticMarkup(
+      await AdminProtectedLayout({ children: <div>Child</div> })
+    );
+
+    expect(html).toContain('fixed left-0 top-0');
+    expect(html).toContain('ml-60 min-h-screen');
+  });
+
+  it('does not cap the protected admin content width', async () => {
+    requireAdminSession.mockResolvedValue({
+      id: 'admin-1',
+      username: 'admin'
+    });
+
+    const AdminProtectedLayout =
+      (await import('@/app/admin/(protected)/layout')).default;
+
+    const html = renderToStaticMarkup(
+      await AdminProtectedLayout({ children: <div>Child</div> })
+    );
+
+    expect(html).not.toContain('max-w-[1600px]');
+    expect(html).not.toContain('mx-auto');
   });
 });

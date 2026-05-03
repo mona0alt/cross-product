@@ -35,15 +35,10 @@ export function AdminNav({ items }: { items: AdminNavItem[] }) {
   const pathname = usePathname() ?? '';
 
   return (
-    <aside className="flex h-full flex-col justify-between bg-[#0F172A] text-slate-300">
+    <aside className="flex h-full flex-col justify-between bg-white text-slate-700">
       <div>
-        <div className="p-6">
-          <h1 className="text-lg font-bold uppercase tracking-[0.2em] text-white">
-            管理后台
-          </h1>
-          <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-slate-500">
-            企业级产品套件
-          </p>
+        <div className="flex h-14 items-center justify-center border-b border-admin-border bg-white px-4">
+          <img src="/logo.jpg" alt="FBGM" className="h-9 w-auto" />
         </div>
 
         <nav className="mt-4">
@@ -57,14 +52,14 @@ export function AdminNav({ items }: { items: AdminNavItem[] }) {
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-3 text-[13px] font-medium transition ${
                   isActive
-                    ? 'border-l-4 border-admin-success bg-slate-800 text-white'
-                    : 'border-l-4 border-transparent text-slate-400 hover:bg-slate-800 hover:text-white'
+                    ? 'border-l-4 border-admin-accent bg-emerald-50 text-admin-accent'
+                    : 'border-l-4 border-transparent text-slate-600 hover:bg-slate-100 hover:text-admin-text-primary'
                 }`}
               >
                 {Icon ? <Icon className="h-4 w-4" /> : null}
                 <span className="flex-1">{item.label}</span>
                 {item.badge ? (
-                  <span className="rounded-full bg-slate-700 px-2 py-0.5 text-[10px] font-semibold text-slate-200">
+                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
                     {item.badge}
                   </span>
                 ) : null}
@@ -74,13 +69,9 @@ export function AdminNav({ items }: { items: AdminNavItem[] }) {
         </nav>
       </div>
 
-      <div className="mb-6 border-t border-[#1E293B] pt-4">
-        <div className="px-4 py-2 text-[13px] text-slate-400">技术文档</div>
-        <div className="px-4 py-2 text-[13px] text-slate-400">系统状态</div>
-        <div className="mt-4 border-t border-[#1E293B] px-4 pt-4">
-          <p className="text-xs font-bold text-white">系统管理员</p>
-          <p className="text-[10px] text-slate-500">admin@enterprise.ai</p>
-        </div>
+      <div className="mb-6 border-t border-admin-border px-4 pt-4">
+        <p className="text-xs font-bold text-admin-text-primary">系统管理员</p>
+        <p className="text-[10px] text-admin-text-muted">admin@enterprise.ai</p>
       </div>
     </aside>
   );

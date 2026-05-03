@@ -244,7 +244,16 @@ describe('admin pages', () => {
     expect(crawlHtml).toContain('抓取系统配置');
     expect(crawlHtml).toContain('源站任务配置');
     expect(analyticsHtml).toContain('企业级 AI 数据分析概览');
-    expect(analyticsHtml).toContain('用户转化漏斗');
+    expect(analyticsHtml).toContain('2023年10月01日 - 2023年10月31日');
+    expect(analyticsHtml).toContain('总营收 (Total Revenue)');
+    expect(analyticsHtml).toContain('用户转化漏斗 (Sankey 分析)');
+    expect(analyticsHtml).toContain('热门产品类别排名');
+    expect(analyticsHtml).toContain('电子数码');
+    expect(analyticsHtml).toContain('AI 数据分析助手');
+    expect(analyticsHtml).toContain('© 2023 Enterprise Global Manager. 版权所有。');
+    expect(analyticsHtml).toContain('系统连接正常');
+    expect(analyticsHtml).not.toContain('实时监控全球业务绩效与 AI 智能决策建议。');
+    expect(analyticsHtml).not.toContain('本周热门类目更偏便携型设备');
     expect(categoriesHtml).toContain('系统设置');
     expect(categoriesHtml).toContain('数据库配置');
     expect(categoriesHtml).toContain('分类结构与映射');
