@@ -8,24 +8,24 @@ import { SubscriberNotificationBoard } from '@/components/admin/subscriber-notif
 import { mockBackoffice } from '@/features/admin/mock-backoffice';
 
 describe('admin workflow boards', () => {
-  it('renders the upgraded crawl hero summary', () => {
+  it('renders the settings-style crawl configuration board', () => {
     const html = renderToStaticMarkup(
       <CrawlTaskBoard data={mockBackoffice.crawlTasks} />
     );
 
-    expect(html).toContain('候选商品入口页');
-    expect(html).toContain('今日抓取摘要');
-    expect(html).toContain('来源站点健康状态');
+    expect(html).toContain('抓取系统配置');
+    expect(html).toContain('源站任务配置');
+    expect(html).toContain('robotmart.example');
   });
 
-  it('renders the upgraded subscriber summary', () => {
+  it('renders the mail automation board', () => {
     const html = renderToStaticMarkup(
       <SubscriberNotificationBoard data={mockBackoffice.subscribers} />
     );
 
-    expect(html).toContain('订阅规模');
-    expect(html).toContain('待发送活动');
-    expect(html).toContain('通知活动与失败队列');
+    expect(html).toContain('总订阅数');
+    expect(html).toContain('自动化发送规则配置');
+    expect(html).toContain('合规提示');
   });
 
   it('renders the upgraded analytics hero and insight sections', () => {
