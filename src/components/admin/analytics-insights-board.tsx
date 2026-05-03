@@ -1,7 +1,4 @@
 import React from 'react';
-import { Lightbulb } from 'lucide-react';
-import { StatusBadge } from '@/components/admin/status-badge';
-import { AdminPageHero } from './admin-page-hero';
 import { AdminTableShell } from './admin-table-shell';
 
 type AnalyticsInsightsData = {
@@ -16,68 +13,75 @@ export function AnalyticsInsightsBoard({
   data: AnalyticsInsightsData;
 }) {
   return (
-    <section className="space-y-6">
-      <AdminPageHero
-        eyebrow="AI Insights"
-        title="本周经营结论"
-        description="用图表型信息分区和短文本建议表达分析价值，重点是帮助客户理解哪些结论会反过来影响下一轮选品与推荐位。"
-        metrics={[
-          {
-            label: '本周结论',
-            value: '便携设备更热',
-            detail: data.headline
-          },
-          {
-            label: '热门分类',
-            value: '3 组',
-            detail: '用演示洞察表达优先类目'
-          },
-          {
-            label: '高跳出页面',
-            value: '2 页',
-            detail: '保留页面优化入口感'
-          },
-          {
-            label: '推荐建议',
-            value: '已生成',
-            detail: '适合作为客户确认的 AI 输出样例'
-          }
-        ]}
-        status={<StatusBadge label="已生成" tone="green" />}
-      />
-
-      <div className="grid gap-6 xl:grid-cols-2">
-        <AdminTableShell
-          title="用户转化路径"
-          description="展示从首页推荐位到商品详情的静态路径概念。"
-        >
-          <div className="space-y-3 p-6 text-sm text-admin-text-secondary">
-            <p>首页推荐位 -&gt; 商品列表 -&gt; 商品详情 -&gt; 留言 / 订阅</p>
-            <p>用于帮助客户确认后续是否需要更真实的漏斗统计。</p>
+    <section className="space-y-8">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 className="text-[24px] font-semibold text-admin-text-primary">
+            企业级 AI 数据分析概览
+          </h2>
+          <p className="mt-1 text-[13px] text-admin-text-secondary">
+            实时监控全球业务绩效与 AI 智能决策建议
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="rounded border border-admin-border bg-white px-4 py-2 text-sm text-slate-700">
+            2023年10月01日 - 2023年10月31日
           </div>
-        </AdminTableShell>
+          <button className="rounded border border-admin-border bg-white px-4 py-2 text-sm text-slate-700">
+            导出
+          </button>
+        </div>
+      </div>
 
-        <AdminTableShell
-          title="推荐位与选品建议"
-          description="把热门商品、分类和运营建议收在同一视觉模块。"
-        >
-          <div className="grid gap-4 p-6">
-            {data.insights.map((insight, i) => (
-              <div
-                key={i}
-                className="rounded-2xl border border-admin-border bg-admin-elevated p-4"
-              >
-                <div className="flex items-start gap-3">
-                  <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-admin-accent" />
-                  <p className="text-sm font-medium text-admin-text-primary">{insight}</p>
-                </div>
-              </div>
-            ))}
-            <div className="rounded-2xl border border-dashed border-admin-border-strong bg-admin-surface px-4 py-4 text-sm text-admin-text-secondary">
-              高跳出页面：分类页与详情页的内容节奏需要在真实阶段继续验证。
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        {[
+          ['总营收', '¥4,280,000', '+12.5%'],
+          ['转化率', '3.48%', '+2.1%'],
+          ['跳出率', '24.12%', '0.4%'],
+          ['活跃用户', '12,842', '+8.3%']
+        ].map(([label, value, trend]) => (
+          <div key={label} className="rounded-xl border border-admin-border bg-white p-6">
+            <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-admin-text-muted">
+              {label}
+            </p>
+            <p className="mt-4 text-[32px] font-semibold leading-none text-admin-text-primary">
+              {value}
+            </p>
+            <p className="mt-4 text-[11px] font-bold text-admin-accent">{trend}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-12 gap-8">
+        <div className="col-span-12 lg:col-span-8">
+          <AdminTableShell title="用户转化漏斗" description="按参考稿保留主分析区。">
+            <div className="space-y-4 p-8 text-[13px] text-admin-text-secondary">
+              <p>网站总访问量 128,421</p>
+              <p>产品列表/搜索 82,189</p>
+              <p>加入购物车 28,252</p>
+              <p>成功支付完成 4,366</p>
+              <p>{data.summary}</p>
             </div>
-          </div>
-        </AdminTableShell>
+          </AdminTableShell>
+        </div>
+
+        <div className="col-span-12 lg:col-span-4">
+          <AdminTableShell title="AI 智能洞察" description="保留右侧建议面板。">
+            <div className="grid gap-4 p-6">
+              <div className="rounded-xl border border-admin-border bg-emerald-50/40 p-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.08em] text-admin-accent">
+                  本周结论
+                </p>
+                <p className="mt-2 text-sm font-semibold text-admin-text-primary">{data.headline}</p>
+              </div>
+              {data.insights.map((insight) => (
+                <div key={insight} className="rounded-xl border border-admin-border bg-slate-50 p-4 text-[13px] text-admin-text-secondary">
+                  {insight}
+                </div>
+              ))}
+            </div>
+          </AdminTableShell>
+        </div>
       </div>
     </section>
   );

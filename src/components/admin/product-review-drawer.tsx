@@ -1,6 +1,6 @@
 import React from 'react';
 import { StatusBadge } from '@/components/admin/status-badge';
-import { AdminCard } from './admin-card';
+import { AdminTableShell } from './admin-table-shell';
 
 type ProductReviewData = {
   title: string;
@@ -20,39 +20,36 @@ export function ProductReviewDrawer({
   review: ProductReviewData;
 }) {
   return (
-    <AdminCard delay={3} className="sticky top-28 h-fit">
-      <p className="admin-kicker">Review Panel</p>
-      <h3 className="mt-2 text-2xl font-semibold text-admin-text-primary font-display">
-        {review.title}
-      </h3>
-      <p className="mt-2 text-sm leading-7 text-admin-text-secondary">
-        审核建议集中呈现标题、图片、摘要完整度和下一步动作，作为商品中心右侧的固定工作区。
-      </p>
-      <div className="mt-4 flex flex-wrap gap-2">
-        <StatusBadge label={review.source} tone="slate" />
-        <StatusBadge label={review.status} tone="amber" />
-        <StatusBadge label={`完整度 ${review.completeness}`} tone="green" />
-      </div>
-      <div className="mt-6 grid gap-3 sm:grid-cols-2">
+    <AdminTableShell
+      title="多语言内容翻译与审核"
+      description="严格对应参考稿右下角审核面板。"
+    >
+      <div className="grid gap-4 p-4 xl:grid-cols-3">
         {review.checks.map((check) => (
-          <div key={check.label} className="rounded-lg border border-admin-border bg-admin-elevated p-4">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-admin-text-muted">
+          <div key={check.label} className="rounded-md border border-admin-border bg-white p-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.05em] text-admin-text-muted">
               {check.label}
             </p>
-            <p className="mt-2 text-lg font-semibold text-admin-text-primary font-mono">
-              {check.value}
-            </p>
+            <p className="mt-2 text-sm text-admin-text-primary">{check.value}</p>
           </div>
         ))}
       </div>
-      <div className="mt-4 rounded-lg border border-admin-border bg-admin-elevated p-4">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-admin-text-muted">
-          审核建议
-        </p>
-        <p className="mt-3 text-sm leading-relaxed text-admin-text-secondary">
-          {review.advice}
-        </p>
+      <div className="border-t border-admin-border bg-slate-50 px-4 py-3">
+        <div className="mb-3 flex flex-wrap gap-2">
+          <StatusBadge label={review.source} tone="slate" />
+          <StatusBadge label={review.status} tone="amber" />
+          <StatusBadge label={`完整度 ${review.completeness}`} tone="green" />
+        </div>
+        <p className="text-[13px] leading-6 text-admin-text-secondary">{review.advice}</p>
       </div>
-    </AdminCard>
+      <div className="flex justify-end gap-3 border-t border-admin-border bg-slate-50 p-4">
+        <button className="rounded border border-red-200 px-4 py-2 text-[13px] font-bold text-red-600">
+          拒绝此条目
+        </button>
+        <button className="rounded bg-admin-accent px-4 py-2 text-[13px] font-bold text-white">
+          审核通过并上架
+        </button>
+      </div>
+    </AdminTableShell>
   );
 }

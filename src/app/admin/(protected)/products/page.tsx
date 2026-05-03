@@ -9,8 +9,8 @@ export default function AdminProductsPage() {
     <section className="space-y-6">
       <AdminSectionHeader
         label="Products"
-        title="商品中心"
-        description="把自动抓取和手动导入商品收进同一个审核工作区，优先用于客户确认后台主流程。"
+        title="商品审核"
+        description="管理自动抓取源及手动导入的跨语言商品目录。"
       />
       <ProductCenter data={mockBackoffice.products} />
     </section>

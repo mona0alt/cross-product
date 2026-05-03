@@ -8,9 +8,9 @@ export default function AdminAnalyticsPage() {
   return (
     <section className="space-y-6">
       <AdminSectionHeader
-        label="AI Insights"
-        title="AI 数据分析"
-        description="先用静态分析页表达经营结论、路径洞察和推荐建议，再和客户确认后续真实分析能力。"
+        label="Analytics"
+        title="数据分析"
+        description="实时监控全球业务绩效与 AI 智能决策建议。"
       />
       <AnalyticsInsightsBoard data={mockBackoffice.analytics} />
     </section>

@@ -33,8 +33,9 @@ describe('admin workflow boards', () => {
       <AnalyticsInsightsBoard data={mockBackoffice.analytics} />
     );
 
-    expect(html).toContain('本周经营结论');
-    expect(html).toContain('推荐位与选品建议');
-    expect(html).toContain('高跳出页面');
+    expect(html).toContain('企业级 AI 数据分析概览');
+    expect(html).toContain('总营收');
+    expect(html).toContain('用户转化漏斗');
+    expect(html).toContain('AI 智能洞察');
   });
 });
