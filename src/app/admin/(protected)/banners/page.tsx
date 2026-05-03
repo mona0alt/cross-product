@@ -16,6 +16,7 @@ export default async function AdminBannersPage() {
       <AdminSectionHeader
         label="Banners"
         title="Banner 管理"
+        description="维护首页展示素材、跳转目标和启用状态，作为前台首屏内容的后台配置入口。"
       />
       <BannerForm banners={banners} />
     </section>

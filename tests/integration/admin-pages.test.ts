@@ -131,6 +131,30 @@ describe('admin pages', () => {
   });
 
   it('renders the messages and subscribers pages', async () => {
+    getAdminCategoryTree.mockResolvedValue([
+      {
+        id: 'cat-1',
+        slug: 'electronics',
+        sortOrder: 1,
+        isActive: true,
+        nameZh: '电子数码',
+        nameEn: 'Electronics',
+        nameEs: 'Electronica',
+        namePt: 'Eletronicos',
+        children: []
+      }
+    ]);
+    bannerFindMany.mockResolvedValue([
+      {
+        id: 'banner-1',
+        imageUrl: '/banner.jpg',
+        targetType: 'product',
+        targetId: 'product-1',
+        targetUrl: null,
+        sortOrder: 1,
+        isActive: true
+      }
+    ]);
     messageFindMany.mockResolvedValue([
       {
         id: 'message-1',
@@ -158,20 +182,30 @@ describe('admin pages', () => {
       (await import('@/app/admin/(protected)/crawl-tasks/page')).default;
     const AnalyticsPage =
       (await import('@/app/admin/(protected)/analytics/page')).default;
+    const CategoriesPage =
+      (await import('@/app/admin/(protected)/categories/page')).default;
+    const BannersPage =
+      (await import('@/app/admin/(protected)/banners/page')).default;
 
     const messagesHtml = renderToStaticMarkup(await MessagesPage());
     const subscribersHtml = renderToStaticMarkup(await SubscribersPage());
     const crawlHtml = renderToStaticMarkup(await CrawlTasksPage());
     const analyticsHtml = renderToStaticMarkup(await AnalyticsPage());
+    const categoriesHtml = renderToStaticMarkup(await CategoriesPage());
+    const bannersHtml = renderToStaticMarkup(await BannersPage());
 
-    expect(messagesHtml).toContain('留言管理');
+    expect(messagesHtml).toContain('客户留言');
+    expect(messagesHtml).toContain('客户沟通与线索概览');
     expect(messagesHtml).toContain('Alice');
-    expect(subscribersHtml).toContain('订阅与通知');
-    expect(subscribersHtml).toContain('邮件通知');
+    expect(subscribersHtml).toContain('订阅规模与通知节奏');
     expect(subscribersHtml).toContain('失败重发');
-    expect(crawlHtml).toContain('抓取任务看板');
+    expect(crawlHtml).toContain('候选商品入口页');
     expect(crawlHtml).toContain('来源站点');
-    expect(analyticsHtml).toContain('AI 经营分析台');
+    expect(analyticsHtml).toContain('本周经营结论');
     expect(analyticsHtml).toContain('用户转化路径');
+    expect(categoriesHtml).toContain('分类结构与映射');
+    expect(categoriesHtml).toContain('分类录入区');
+    expect(bannersHtml).toContain('首页展示素材');
+    expect(bannersHtml).toContain('Banner 列表');
   });
 });

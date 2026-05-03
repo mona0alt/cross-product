@@ -15,7 +15,8 @@ export default async function AdminMessagesPage() {
     <section className="space-y-6">
       <AdminSectionHeader
         label="Messages"
-        title="留言管理"
+        title="客户留言"
+        description="统一查看客户留言、邮箱和处理状态，让后台辅助页面也保持完整的页头结构。"
       />
       <MessageTable messages={messages} />
     </section>
