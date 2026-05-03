@@ -31,9 +31,10 @@ export function LanguageSwitcher({
 
   return (
     <label className="flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-slate-500">
-      <span>{label}</span>
+      <span className="hidden lg:inline">{label}</span>
       <select
-        className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-medium tracking-normal text-slate-700"
+        aria-label={label}
+        className="rounded-full border border-slate-200 bg-white px-2 py-1.5 text-xs font-medium tracking-normal text-slate-700 lg:px-3 lg:py-2"
         value={currentLocale}
         onChange={(event) => {
           window.location.href = replaceLocale(pathname, event.target.value);

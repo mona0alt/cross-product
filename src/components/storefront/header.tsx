@@ -146,7 +146,7 @@ export function StorefrontHeader({
 
       {/* Main header */}
       <div className="border-b border-[var(--mk-border)]">
-        <div className="mk-container flex items-center gap-4 py-4">
+        <div className="mk-container flex flex-wrap items-center gap-3 py-4 lg:flex-nowrap lg:gap-4">
           {/* Mobile menu button */}
           <button
             type="button"
@@ -163,7 +163,7 @@ export function StorefrontHeader({
             <img src="/logo.jpg" alt="FBGM" className="h-10 w-auto" />
           </Link>
 
-          {/* Search */}
+          {/* Search - desktop inline */}
           <div className="hidden flex-1 lg:block">
             <div className="relative mx-auto max-w-xl">
               <input
@@ -175,16 +175,28 @@ export function StorefrontHeader({
             </div>
           </div>
 
-          {/* Utility links */}
-          <div className="hidden items-center gap-5 text-xs text-black lg:flex">
+          {/* Right side: language + WhatsApp (mobile) */}
+          <div className="ml-auto flex items-center gap-3 text-xs text-black lg:gap-5">
             <LanguageSwitcher currentLocale={locale} label={copy.languageLabel} />
-          </div>
-
-          {/* Cart / WhatsApp mobile */}
-          <div className="ml-auto flex items-center gap-3 lg:hidden">
-            <Link href={`https://wa.me/${normalizedWhatsAppNumber}`} className="text-black">
+            <Link
+              href={`https://wa.me/${normalizedWhatsAppNumber}`}
+              aria-label={copy.whatsApp}
+              className="text-black lg:hidden"
+            >
               <PhoneIcon className="h-5 w-5" />
             </Link>
+          </div>
+
+          {/* Search - mobile full-width second row */}
+          <div className="order-last w-full lg:hidden">
+            <div className="relative">
+              <input
+                type="search"
+                placeholder={copy.searchPlaceholder}
+                className="w-full rounded-md border border-[var(--mk-border)] bg-[var(--mk-bg-muted)] py-2.5 pl-4 pr-10 text-sm text-black outline-none transition placeholder:text-[var(--mk-text-muted)] focus:border-[var(--mk-border-strong)] focus:bg-white"
+              />
+              <SearchIcon className="pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--mk-text-muted)]" />
+            </div>
           </div>
         </div>
       </div>
@@ -266,14 +278,6 @@ export function StorefrontHeader({
       {isMenuOpen && (
         <div className="border-b border-[var(--mk-border)] bg-white lg:hidden">
           <div className="mk-container space-y-3 py-4">
-            <div className="relative">
-              <input
-                type="search"
-                placeholder={copy.searchPlaceholder}
-                className="w-full rounded-md border border-[var(--mk-border)] bg-[var(--mk-bg-muted)] py-2.5 pl-4 pr-10 text-sm outline-none"
-              />
-              <SearchIcon className="pointer-events-none absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--mk-text-muted)]" />
-            </div>
             <div className="grid gap-2">
               {mainNav.map((item) => (
                 <Link
@@ -285,11 +289,6 @@ export function StorefrontHeader({
                   {item.label}
                 </Link>
               ))}
-            </div>
-            <div className="grid gap-2 pt-2">
-              <div className="pt-1">
-                <LanguageSwitcher currentLocale={locale} label={copy.languageLabel} />
-              </div>
             </div>
           </div>
         </div>
