@@ -6,25 +6,25 @@ const config = {
     extend: {
       colors: {
         admin: {
-          bg: '#f5f3ef',
+          bg: '#f7f9fb',
           surface: '#ffffff',
-          elevated: '#f0eeea',
-          border: 'rgba(0,0,0,0.06)',
-          'border-strong': 'rgba(0,0,0,0.12)',
-          accent: '#c87941',
-          'accent-hover': '#b56a36',
-          success: '#2e7d32',
-          warning: '#bfa030',
-          danger: '#c0392b',
-          'text-primary': '#1e1e1e',
-          'text-secondary': '#5c5c5c',
-          'text-muted': '#9ca3af'
+          elevated: '#f8fafc',
+          border: '#e2e8f0',
+          'border-strong': '#cbd5e1',
+          accent: '#059669',
+          'accent-hover': '#047857',
+          success: '#059669',
+          warning: '#f59e0b',
+          danger: '#dc2626',
+          'text-primary': '#0f172a',
+          'text-secondary': '#475569',
+          'text-muted': '#64748b'
         }
       },
       fontFamily: {
-        display: ['"Playfair Display"', 'serif'],
-        body: ['"DM Sans"', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'monospace']
+        display: ['"Inter"', 'sans-serif'],
+        body: ['"Inter"', 'sans-serif'],
+        mono: ['"Inter"', 'sans-serif']
       },
       animation: {
         'fade-in-up': 'fadeInUp 0.5s ease-out forwards',

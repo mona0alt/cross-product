@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -21,19 +21,19 @@
   --mk-radius-lg: 0.75rem;
 
   /* Admin Design System */
-  --admin-bg: #f5f3ef;
+  --admin-bg: #f7f9fb;
   --admin-surface: #ffffff;
-  --admin-elevated: #f0eeea;
-  --admin-border: rgba(0, 0, 0, 0.06);
-  --admin-border-strong: rgba(0, 0, 0, 0.12);
-  --admin-accent: #c87941;
-  --admin-accent-hover: #b56a36;
-  --admin-success: #2e7d32;
-  --admin-warning: #bfa030;
-  --admin-danger: #c0392b;
-  --admin-text-primary: #1e1e1e;
-  --admin-text-secondary: #5c5c5c;
-  --admin-text-muted: #9ca3af;
+  --admin-elevated: #f8fafc;
+  --admin-border: #e2e8f0;
+  --admin-border-strong: #cbd5e1;
+  --admin-accent: #059669;
+  --admin-accent-hover: #047857;
+  --admin-success: #059669;
+  --admin-warning: #f59e0b;
+  --admin-danger: #dc2626;
+  --admin-text-primary: #0f172a;
+  --admin-text-secondary: #475569;
+  --admin-text-muted: #64748b;
 }
 
 * {
@@ -124,7 +124,7 @@ img {
 .admin-body {
   background: var(--admin-bg);
   color: var(--admin-text-primary);
-  font-family: "DM Sans", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 .admin-body h1,
@@ -133,12 +133,12 @@ img {
 .admin-body h4,
 .admin-body h5,
 .admin-body h6 {
-  font-family: "Playfair Display", serif;
+  font-family: "Inter", sans-serif;
 }
 
 .admin-body code,
 .admin-body .font-mono {
-  font-family: "JetBrains Mono", monospace;
+  font-family: "Inter", sans-serif;
 }
 
 .admin-kicker {
@@ -153,6 +153,12 @@ img {
 .admin-hero-grid {
   display: grid;
   gap: 1.5rem;
+}
+
+.admin-grid-shell {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  min-height: 100vh;
 }
 
 @media (min-width: 1280px) {

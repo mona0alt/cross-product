@@ -24,7 +24,7 @@ vi.mock('next/navigation', async () => {
 });
 
 describe('admin shell', () => {
-  it('renders the upgraded admin shell structure', async () => {
+  it('renders the enterprise reference shell', async () => {
     requireAdminSession.mockResolvedValue({
       id: 'admin-1',
       username: 'admin'
@@ -37,11 +37,11 @@ describe('admin shell', () => {
       await AdminProtectedLayout({ children: <div>Child</div> })
     );
 
-    expect(html).toContain('Demo Preview');
-    expect(html).toContain('适合客户静态确认的后台原型');
-    expect(html).toContain('工作台总览');
-    expect(html).toContain('Cross Admin Demo');
-    expect(html).toContain('商品中心');
-    expect(html).toContain('AI 数据分析');
+    expect(html).toContain('管理后台');
+    expect(html).toContain('企业级产品套件');
+    expect(html).toContain('数据分析');
+    expect(html).toContain('系统设置');
+    expect(html).toContain('核心管理系统');
+    expect(html).toContain('运行爬虫');
   });
 });

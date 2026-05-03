@@ -1,5 +1,5 @@
 import React from 'react';
-import { LogOut, Sparkles, User } from 'lucide-react';
+import { Bell, HelpCircle, Languages, Search } from 'lucide-react';
 
 export function AdminShellHeader({
   admin
@@ -9,42 +9,40 @@ export function AdminShellHeader({
   };
 }) {
   return (
-    <header className="sticky top-0 z-30 border-b border-admin-border bg-[color:rgba(245,243,239,0.82)] px-8 py-5 backdrop-blur-xl">
-      <div className="flex items-center justify-between gap-6">
-        <div className="space-y-2">
-          <p className="admin-kicker">Demo Preview</p>
-          <div>
-            <h2 className="text-xl font-semibold tracking-tight text-admin-text-primary font-display">
-              商品工作流优先的后台
-            </h2>
-            <p className="mt-1 text-sm text-admin-text-secondary">
-              适合客户静态确认的后台原型，聚焦抓取、审核、通知与分析闭环。
-            </p>
-          </div>
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-admin-border bg-white px-6">
+      <div className="flex items-center gap-6">
+        <h2 className="text-lg font-black text-admin-text-primary">核心管理系统</h2>
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-admin-text-muted" />
+          <input
+            className="w-64 rounded-lg border border-transparent bg-slate-100 py-1.5 pl-9 pr-4 text-[13px] outline-none transition focus:border-admin-accent focus:bg-white"
+            placeholder="快速搜索数据或报告..."
+          />
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-3 rounded-2xl border border-admin-border bg-admin-surface px-4 py-3 shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-admin-accent/12">
-              <User className="h-4 w-4 text-admin-accent" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-admin-text-primary">{admin.username}</p>
-              <p className="mt-0.5 flex items-center gap-1 text-[10px] uppercase tracking-[0.2em] text-admin-text-muted">
-                <Sparkles className="h-3 w-3" />
-                Single Admin
-              </p>
-            </div>
-          </div>
-          <form action="/api/admin/logout" method="post">
-            <button
-              className="inline-flex items-center gap-2 rounded-2xl border border-admin-border bg-admin-surface px-4 py-3 text-sm font-medium text-admin-text-secondary transition hover:border-admin-border-strong hover:text-admin-text-primary"
-              type="submit"
-            >
-              <LogOut className="h-4 w-4" />
-              退出
-            </button>
-          </form>
+      </div>
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-1 border-r border-admin-border pr-4 text-admin-text-muted">
+          <button type="button" className="rounded-full p-2 hover:bg-slate-100">
+            <Bell className="h-4 w-4" />
+          </button>
+          <button type="button" className="rounded-full p-2 hover:bg-slate-100">
+            <Languages className="h-4 w-4" />
+          </button>
+          <button type="button" className="rounded-full p-2 hover:bg-slate-100">
+            <HelpCircle className="h-4 w-4" />
+          </button>
         </div>
+        <button className="rounded bg-admin-accent px-4 py-1.5 text-[13px] font-semibold text-white">
+          运行爬虫
+        </button>
+        <button className="rounded border border-admin-border px-4 py-1.5 text-[13px] font-semibold text-slate-700">
+          系统日志
+        </button>
+        <form action="/api/admin/logout" method="post">
+          <button className="text-[12px] font-semibold text-admin-text-primary" type="submit">
+            {admin.username}
+          </button>
+        </form>
       </div>
     </header>
   );
