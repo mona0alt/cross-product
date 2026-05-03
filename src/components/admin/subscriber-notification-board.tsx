@@ -1,7 +1,4 @@
 import React from 'react';
-import { StatusBadge } from '@/components/admin/status-badge';
-import { AdminCard } from './admin-card';
-import { AdminPageHero } from './admin-page-hero';
 import { AdminTableShell } from './admin-table-shell';
 
 type SubscriberNotificationData = {
@@ -22,57 +19,60 @@ export function SubscriberNotificationBoard({
 }) {
   return (
     <section className="space-y-6">
-      <AdminPageHero
-        eyebrow="Subscribers"
-        title="订阅规模与通知节奏"
-        description="把新品发布后的通知规模、待发送活动和失败重发集中在首屏，方便客户理解通知闭环。"
-        metrics={[
-          {
-            label: '订阅规模',
-            value: data.total,
-            detail: '前台订阅邮箱统一汇总'
-          },
-          {
-            label: '邮件打开率',
-            value: data.openRate,
-            detail: '演示口径，不代表真实发送数据'
-          },
-          {
-            label: '待发送活动',
-            value: '1',
-            detail: '待确认或自动发送的新品活动'
-          },
-          {
-            label: '失败重发',
-            value: data.failed,
-            detail: '保留失败队列入口感'
-          }
-        ]}
-      />
+      <div className="grid gap-6 md:grid-cols-3">
+        {[
+          ['总订阅数', data.total, '前台订阅邮箱统一汇总'],
+          ['平均打开率', data.openRate, '按参考稿呈现邮件打开表现'],
+          ['退信数量', data.failed, '失败与重发队列概览']
+        ].map(([label, value, detail]) => (
+          <div key={label} className="rounded-xl border border-admin-border bg-white p-6">
+            <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-admin-text-muted">
+              {label}
+            </p>
+            <p className="mt-4 text-[30px] font-semibold text-admin-text-primary">{value}</p>
+            <p className="mt-3 text-[13px] text-admin-text-secondary">{detail}</p>
+          </div>
+        ))}
+      </div>
 
-      <AdminTableShell
-        title="通知活动与失败队列"
-        description="活动列表、失败重发和订阅用户入口在同一视觉模块中统一呈现。"
-      >
-        <div className="grid gap-4 p-6 xl:grid-cols-2">
-          {data.campaigns.map((campaign, i) => (
-            <AdminCard key={campaign.title} delay={i + 2}>
-              <div className="flex items-center justify-between gap-3">
-                <h3 className="text-lg font-semibold text-admin-text-primary font-display">
-                  {campaign.title}
-                </h3>
-                <StatusBadge
-                  label={campaign.status}
-                  tone={campaign.status === '待发送' ? 'amber' : 'slate'}
-                />
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 lg:col-span-8">
+          <AdminTableShell
+            title="自动化发送规则配置"
+            description="严格对齐参考稿中的自动化邮件配置面板。"
+          >
+            <div className="grid gap-4 p-6 md:grid-cols-2">
+              <select className="w-full rounded border border-admin-border bg-white px-3 py-2 text-[13px] text-admin-text-primary">
+                <option>产品上新时触发</option>
+              </select>
+              <select className="w-full rounded border border-admin-border bg-white px-3 py-2 text-[13px] text-admin-text-primary">
+                <option>最多每天 1 封</option>
+              </select>
+              <textarea
+                className="min-h-[120px] w-full rounded border border-admin-border bg-white px-3 py-2 text-[13px] text-admin-text-primary md:col-span-2"
+                defaultValue={data.campaigns.map((campaign) => `${campaign.title}：${campaign.detail}`).join('\n')}
+              />
+              <div className="flex justify-end gap-3 md:col-span-2">
+                <button className="rounded border border-admin-border px-4 py-2 text-[13px] text-admin-text-secondary">
+                  取消
+                </button>
+                <button className="rounded bg-black px-4 py-2 text-[13px] text-white">
+                  保存规则
+                </button>
               </div>
-              <p className="mt-3 text-sm leading-relaxed text-admin-text-secondary">
-                {campaign.detail}
-              </p>
-            </AdminCard>
-          ))}
+            </div>
+          </AdminTableShell>
         </div>
-      </AdminTableShell>
+
+        <div className="col-span-12 lg:col-span-4">
+          <AdminTableShell title="合规提示" description="保留右侧辅助说明区。">
+            <div className="space-y-3 p-6 text-[13px] text-admin-text-secondary">
+              <p>请确保自动化邮件策略符合地区性数字通讯合规要求。</p>
+              <p>建议将新品推送频率限制在每日 1 封以内，以保护打开率。</p>
+            </div>
+          </AdminTableShell>
+        </div>
+      </div>
     </section>
   );
 }

@@ -100,10 +100,10 @@ describe('admin pages', () => {
       (await import('@/app/admin/(protected)/products/page')).default;
     const html = renderToStaticMarkup(ProductsPage());
 
-    expect(html).toContain('商品中心');
+    expect(html).toContain('商品审核');
     expect(html).toContain('自动抓取');
-    expect(html).toContain('手动导入');
-    expect(html).toContain('新建商品');
+    expect(html).toContain('手动导入商品');
+    expect(html).toContain('产品审核中心');
   });
 
   it('renders the manual product creation page with review framing', async () => {
@@ -225,21 +225,25 @@ describe('admin pages', () => {
       (await import('@/app/admin/(protected)/banners/page')).default;
 
     const messagesHtml = renderToStaticMarkup(await MessagesPage());
-    const subscribersHtml = renderToStaticMarkup(SubscribersPage());
+    const subscribersHtml = renderToStaticMarkup(await SubscribersPage());
     const crawlHtml = renderToStaticMarkup(CrawlTasksPage());
     const analyticsHtml = renderToStaticMarkup(AnalyticsPage());
     const categoriesHtml = renderToStaticMarkup(await CategoriesPage());
     const bannersHtml = renderToStaticMarkup(await BannersPage());
 
-    expect(messagesHtml).toContain('客户留言');
-    expect(messagesHtml).toContain('客户沟通与线索概览');
+    expect(messagesHtml).toContain('支持中心');
+    expect(messagesHtml).toContain('待处理收件箱');
+    expect(messagesHtml).toContain('回复界面');
+    expect(messagesHtml).toContain('系统活动日志');
     expect(messagesHtml).toContain('Alice');
-    expect(subscribersHtml).toContain('订阅规模与通知节奏');
-    expect(subscribersHtml).toContain('失败重发');
+    expect(subscribersHtml).toContain('邮件');
+    expect(subscribersHtml).toContain('总订阅数');
+    expect(subscribersHtml).toContain('自动化发送规则配置');
+    expect(subscribersHtml).toContain('订阅者列表');
     expect(crawlHtml).toContain('候选商品入口页');
     expect(crawlHtml).toContain('来源站点');
-    expect(analyticsHtml).toContain('本周经营结论');
-    expect(analyticsHtml).toContain('用户转化路径');
+    expect(analyticsHtml).toContain('企业级 AI 数据分析概览');
+    expect(analyticsHtml).toContain('用户转化漏斗');
     expect(categoriesHtml).toContain('分类结构与映射');
     expect(categoriesHtml).toContain('分类录入区');
     expect(bannersHtml).toContain('首页展示素材');

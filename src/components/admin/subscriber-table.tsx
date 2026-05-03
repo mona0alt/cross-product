@@ -16,8 +16,8 @@ export function SubscriberTable({
 }) {
   return (
     <AdminTableShell
-      title="订阅用户列表"
-      description="保留邮箱、状态和订阅时间，作为通知页后续接入真实订阅管理的静态容器。"
+      title="订阅者列表"
+      description="保留邮箱、状态和订阅时间，并对齐参考稿的邮件控制台表格区。"
     >
       <div className="overflow-hidden rounded-b-[24px]">
         <table className="min-w-full divide-y divide-admin-border text-sm">
