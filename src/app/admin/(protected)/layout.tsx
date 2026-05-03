@@ -56,13 +56,17 @@ export default async function AdminProtectedLayout({
   ];
 
   return (
-    <div className="min-h-screen bg-admin-bg text-admin-text-primary font-body">
-      <div className="fixed left-0 top-0 z-40 h-screen w-[240px] border-r border-admin-border bg-admin-surface">
+    <div className="admin-body min-h-screen bg-admin-bg text-admin-text-primary font-body">
+      <div className="fixed left-0 top-0 z-40 h-screen w-[272px] border-r border-admin-border bg-[linear-gradient(180deg,#fbfaf7_0%,#f4f1ec_100%)]">
         <AdminNav items={navItems} />
       </div>
-      <div className="ml-[240px] min-h-screen">
+      <div className="ml-[272px] min-h-screen">
         <AdminShellHeader admin={admin} />
-        <main className="px-8 py-8">{children}</main>
+        <main className="px-8 py-8">
+          <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-6">
+            {children}
+          </div>
+        </main>
       </div>
     </div>
   );

@@ -15,7 +15,7 @@ export function AdminCard({ children, className = '', delay = 0, hover = true }:
 
   return (
     <div
-      className={`rounded-xl border border-admin-border bg-admin-surface p-6 opacity-0 animate-fade-in-up ${delayClass} ${hoverClass} ${className}`}
+      className={`rounded-[24px] border border-admin-border bg-admin-surface p-6 opacity-0 shadow-[0_16px_48px_rgba(15,23,42,0.05)] animate-fade-in-up ${delayClass} ${hoverClass} ${className}`}
     >
       {children}
     </div>

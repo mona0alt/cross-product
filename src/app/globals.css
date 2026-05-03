@@ -141,6 +141,27 @@ img {
   font-family: "JetBrains Mono", monospace;
 }
 
+.admin-kicker {
+  margin: 0;
+  color: var(--admin-text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.admin-hero-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1280px) {
+  .admin-hero-grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(420px, 0.8fr);
+    align-items: start;
+  }
+}
+
 /* Scrollbar styling for admin */
 .admin-body ::-webkit-scrollbar {
   width: 6px;

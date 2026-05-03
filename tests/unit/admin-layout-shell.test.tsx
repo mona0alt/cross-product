@@ -13,8 +13,18 @@ vi.mock('@/lib/auth', async () => {
   };
 });
 
+vi.mock('next/navigation', async () => {
+  const actual =
+    await vi.importActual<typeof import('next/navigation')>('next/navigation');
+
+  return {
+    ...actual,
+    usePathname: () => '/admin/products'
+  };
+});
+
 describe('admin shell', () => {
-  it('renders the left navigation labels', async () => {
+  it('renders the upgraded admin shell structure', async () => {
     requireAdminSession.mockResolvedValue({
       id: 'admin-1',
       username: 'admin'
@@ -27,7 +37,10 @@ describe('admin shell', () => {
       await AdminProtectedLayout({ children: <div>Child</div> })
     );
 
-    expect(html).toContain('工作台');
+    expect(html).toContain('Demo Preview');
+    expect(html).toContain('适合客户静态确认的后台原型');
+    expect(html).toContain('工作台总览');
+    expect(html).toContain('Cross Admin Demo');
     expect(html).toContain('商品中心');
     expect(html).toContain('AI 数据分析');
   });
