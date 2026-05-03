@@ -26,7 +26,7 @@ export default async function AdminNewProductPage() {
       <AdminSectionHeader
         label="Products"
         title="手动新建商品"
-        description="创建后的商品不会直接上架，而是进入统一审核链路，和自动抓取商品一起处理。"
+        description="用统一表单节奏展示商品基础信息、多语言内容和图片素材，强调创建后仍需进入审核链路。"
       />
       <ProductForm mode="create" categories={flattenCategories(categories)} />
     </section>

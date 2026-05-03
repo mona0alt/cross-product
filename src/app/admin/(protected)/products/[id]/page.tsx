@@ -45,7 +45,7 @@ export default async function AdminEditProductPage({
       <AdminSectionHeader
         label="Products"
         title="编辑并重新审核商品"
-        description="修改内容后可以重新进入审核链路，确保前台上架商品的字段完整度一致。"
+        description="修改现有商品后重新进入审核确认，让演示流程保持与自动抓取商品一致。"
       />
       <ProductForm
         mode="edit"

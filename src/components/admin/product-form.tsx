@@ -43,32 +43,27 @@ export function ProductForm({
     'w-full rounded-lg border border-admin-border bg-admin-surface px-4 py-2.5 text-sm text-admin-text-primary outline-none transition-all duration-200 placeholder:text-admin-text-muted focus:border-admin-accent/30 focus:ring-1 focus:ring-admin-accent/20';
 
   const labelClass = 'block text-sm font-medium text-admin-text-secondary mb-1.5';
+  const sectionTitleClass = 'text-xl font-semibold text-admin-text-primary font-display';
 
   return (
     <form className="space-y-6">
       <AdminCard delay={1}>
-        <p className="text-[10px] uppercase tracking-[0.2em] text-admin-text-muted font-body">
-          Manual Import
-        </p>
-        <h2 className="mt-2 text-xl font-semibold text-admin-text-primary font-display">
-          {mode === 'create' ? '创建后进入待审核' : '编辑后重新进入审核确认'}
+        <p className="admin-kicker">Manual Import</p>
+        <h2 className="mt-2 text-2xl font-semibold text-admin-text-primary font-display">
+          {mode === 'create' ? '创建后进入审核' : '编辑后重新进入审核'}
         </h2>
-        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-admin-text-secondary">
-          手动导入的商品也不能绕过审核。优先补齐基础信息、英文摘要和封面图，再提交给商品中心统一处理。
+        <p className="mt-3 max-w-3xl text-sm leading-7 text-admin-text-secondary">
+          手动录入商品也遵循统一审核规则。页面视觉重点放在信息完整度和提交流程，而不是直接发布。
         </p>
       </AdminCard>
 
       <AdminCard delay={2}>
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-admin-text-muted font-body">
-              Basic Info
-            </p>
-            <h3 className="mt-1 text-lg font-semibold text-admin-text-primary font-display">
-              基础信息
-            </h3>
+            <p className="admin-kicker">Basic Info</p>
+            <h3 className={sectionTitleClass}>基础信息</h3>
           </div>
-          <span className="rounded-md bg-admin-elevated border border-admin-border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-admin-text-secondary">
+          <span className="rounded-full border border-admin-border bg-admin-elevated px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-secondary">
             来源：手动导入
           </span>
         </div>
@@ -109,12 +104,8 @@ export function ProductForm({
 
       <AdminCard delay={3}>
         <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-admin-text-muted font-body">
-            Localized Content
-          </p>
-          <h3 className="mt-1 text-lg font-semibold text-admin-text-primary font-display">
-            多语言内容
-          </h3>
+          <p className="admin-kicker">Localized Content</p>
+          <h3 className={sectionTitleClass}>多语言内容</h3>
           <p className="mt-2 text-sm text-admin-text-secondary">
             中文优先录入，英文摘要建议作为审核前的必备字段。
           </p>
@@ -157,12 +148,8 @@ export function ProductForm({
 
       <AdminCard delay={4}>
         <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-admin-text-muted font-body">
-            Media
-          </p>
-          <h3 className="mt-1 text-lg font-semibold text-admin-text-primary font-display">
-            图片素材
-          </h3>
+          <p className="admin-kicker">Media</p>
+          <h3 className={sectionTitleClass}>图片素材</h3>
         </div>
         <div className="mt-5 space-y-4">
           <div>
@@ -181,12 +168,8 @@ export function ProductForm({
 
       <AdminCard delay={5}>
         <div>
-          <p className="text-[10px] uppercase tracking-[0.2em] text-admin-text-muted font-body">
-            Review Notes
-          </p>
-          <h3 className="mt-1 text-lg font-semibold text-admin-text-primary font-display">
-            审核提示
-          </h3>
+          <p className="admin-kicker">Review Notes</p>
+          <h3 className={sectionTitleClass}>审核提示</h3>
           <p className="mt-2 text-sm leading-relaxed text-admin-text-secondary">
             系统会提示图片数量、英文摘要和重复风险。当前原型默认走&ldquo;提交审核&rdquo;而不是直接发布。
           </p>
@@ -209,7 +192,7 @@ export function ProductForm({
         </div>
       </AdminCard>
 
-      <div className="flex flex-col gap-3 rounded-lg border border-admin-border bg-admin-surface p-5 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-3 rounded-[24px] border border-admin-border bg-admin-surface p-5 shadow-[0_14px_40px_rgba(15,23,42,0.04)] md:flex-row md:items-center md:justify-between">
         <AdminButton type="button" variant="ghost">
           保存草稿
         </AdminButton>

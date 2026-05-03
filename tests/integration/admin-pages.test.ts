@@ -98,7 +98,7 @@ describe('admin pages', () => {
 
     const ProductsPage =
       (await import('@/app/admin/(protected)/products/page')).default;
-    const html = renderToStaticMarkup(await ProductsPage());
+    const html = renderToStaticMarkup(ProductsPage());
 
     expect(html).toContain('商品中心');
     expect(html).toContain('自动抓取');
@@ -126,8 +126,45 @@ describe('admin pages', () => {
     const html = renderToStaticMarkup(await NewProductPage());
 
     expect(html).toContain('手动新建商品');
-    expect(html).toContain('审核提示');
-    expect(html).toContain('提交审核');
+    expect(html).toContain('创建后进入审核');
+    expect(html).toContain('基础信息');
+    expect(html).toContain('图片素材');
+    expect(html).toContain('提交审核前预览');
+
+    productFindUnique.mockResolvedValue({
+      id: 'product-1',
+      categoryId: 'cat-1',
+      productCode: 'P-1001',
+      slug: 'product-1',
+      priceUsd: { toString: () => '199' },
+      coverImageUrl: '/cover.jpg',
+      status: 'draft',
+      isRecommended: false,
+      nameZh: '示例商品',
+      nameEn: 'Sample Product',
+      nameEs: 'Producto',
+      namePt: 'Produto',
+      introZh: '简介',
+      introEn: 'Intro',
+      introEs: 'Intro',
+      introPt: 'Intro',
+      detailZh: '详情',
+      detailEn: 'Detail',
+      detailEs: 'Detalle',
+      detailPt: 'Detalhe',
+      images: []
+    });
+
+    const EditProductPage =
+      (await import('@/app/admin/(protected)/products/[id]/page')).default;
+    const editHtml = renderToStaticMarkup(
+      await EditProductPage({
+        params: Promise.resolve({ id: 'product-1' })
+      })
+    );
+
+    expect(editHtml).toContain('编辑并重新审核商品');
+    expect(editHtml).toContain('保存并重新审核');
   });
 
   it('renders the messages and subscribers pages', async () => {
@@ -188,9 +225,9 @@ describe('admin pages', () => {
       (await import('@/app/admin/(protected)/banners/page')).default;
 
     const messagesHtml = renderToStaticMarkup(await MessagesPage());
-    const subscribersHtml = renderToStaticMarkup(await SubscribersPage());
-    const crawlHtml = renderToStaticMarkup(await CrawlTasksPage());
-    const analyticsHtml = renderToStaticMarkup(await AnalyticsPage());
+    const subscribersHtml = renderToStaticMarkup(SubscribersPage());
+    const crawlHtml = renderToStaticMarkup(CrawlTasksPage());
+    const analyticsHtml = renderToStaticMarkup(AnalyticsPage());
     const categoriesHtml = renderToStaticMarkup(await CategoriesPage());
     const bannersHtml = renderToStaticMarkup(await BannersPage());
 
