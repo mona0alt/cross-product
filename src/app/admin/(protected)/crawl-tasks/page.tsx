@@ -8,9 +8,9 @@ export default function AdminCrawlTasksPage() {
   return (
     <section className="space-y-6">
       <AdminSectionHeader
-        label="Crawler"
-        title="抓取任务"
-        description="展示来源站点、解析质量与入审核池逻辑，让客户先确认抓取流程的后台表达方式。"
+        label="Settings"
+        title="系统设置"
+        description="管理抓取系统配置、接口集成与源站任务策略。"
       />
       <CrawlTaskBoard data={mockBackoffice.crawlTasks} />
     </section>

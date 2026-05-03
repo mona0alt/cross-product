@@ -14,9 +14,9 @@ export default async function AdminBannersPage() {
   return (
     <section className="space-y-6">
       <AdminSectionHeader
-        label="Banners"
-        title="Banner 管理"
-        description="维护首页展示素材、跳转目标和启用状态，作为前台首屏内容的后台配置入口。"
+        label="Settings"
+        title="系统设置"
+        description="管理首页展示素材与启用状态。"
       />
       <BannerForm banners={banners} />
     </section>

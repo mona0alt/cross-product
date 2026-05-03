@@ -1,8 +1,6 @@
 import React from 'react';
-import { Activity } from 'lucide-react';
 import { StatusBadge } from '@/components/admin/status-badge';
-import { AdminCard } from './admin-card';
-import { AdminPageHero } from './admin-page-hero';
+import { AdminTableShell } from './admin-table-shell';
 
 type CrawlTaskData = {
   headline: string;
@@ -19,73 +17,54 @@ export function CrawlTaskBoard({
 }: {
   data: CrawlTaskData;
 }) {
-  const healthySources = data.sourceSites.filter((site) => site.status === '正常').length;
-
   return (
     <section className="space-y-6">
-      <AdminPageHero
-        eyebrow="Crawler"
-        title="候选商品入口页"
-        description="抓取任务只负责把候选商品送入审核池，不直接承担最终发布动作，便于用户理解来源配置和解析质量。"
-        metrics={[
-          {
-            label: '今日抓取摘要',
-            value: '11',
-            detail: data.headline
-          },
-          {
-            label: '来源站点健康状态',
-            value: `${healthySources} 正常`,
-            detail: '其余来源需人工修复解析规则'
-          },
-          {
-            label: '入审核池说明',
-            value: '统一入池',
-            detail: data.summary
-          },
-          {
-            label: '异常修复',
-            value: '3 项',
-            detail: '图片字段或分类映射待修正'
-          }
-        ]}
-      />
-
-      <AdminCard delay={2}>
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-admin-text-muted font-body">
-              Sources
-            </p>
-            <h3 className="mt-1 text-xl font-semibold text-admin-text-primary font-display">
-              来源站点
-            </h3>
-          </div>
-          <StatusBadge label="入审核池" tone="blue" />
+      <AdminTableShell
+        title="抓取系统配置"
+        description="按系统设置页骨架展示抓取入口与任务策略。"
+      >
+        <div className="grid gap-4 p-6 md:grid-cols-2">
+          <input
+            className="w-full rounded border border-admin-border bg-white px-3 py-2 text-[13px] text-admin-text-primary"
+            readOnly
+            value="crawler.global.internal"
+          />
+          <input
+            className="w-full rounded border border-admin-border bg-white px-3 py-2 text-[13px] text-admin-text-primary"
+            readOnly
+            value="443"
+          />
+          <input
+            className="w-full rounded border border-admin-border bg-white px-3 py-2 text-[13px] text-admin-text-primary md:col-span-2"
+            readOnly
+            value={data.headline}
+          />
+          <textarea
+            className="min-h-[120px] w-full rounded border border-admin-border bg-white px-3 py-2 text-[13px] text-admin-text-primary md:col-span-2"
+            defaultValue={data.summary}
+          />
         </div>
-        <div className="mt-5 grid gap-4 xl:grid-cols-2">
+      </AdminTableShell>
+
+      <AdminTableShell
+        title="源站任务配置"
+        description="保留现有 source site 信息，改为配置状态块。"
+      >
+        <div className="grid gap-3 p-6">
           {data.sourceSites.map((site) => (
-            <div
-              key={site.label}
-              className="rounded-lg border border-admin-border bg-admin-elevated p-5 transition-all duration-200 hover:border-admin-border-strong"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <p className="font-medium text-admin-text-primary">{site.label}</p>
-                <div className="flex items-center gap-2">
-                  <Activity className={`h-3.5 w-3.5 ${site.status === '正常' ? 'text-admin-success' : 'text-admin-warning'}`} />
-                  <StatusBadge
-                    label={site.status}
-                    tone={site.status === '正常' ? 'green' : 'amber'}
-                  />
-                </div>
+            <div key={site.label} className="rounded-md border border-admin-border bg-slate-50 p-4">
+              <div className="flex items-center justify-between">
+                <span className="font-semibold text-admin-text-primary">{site.label}</span>
+                <StatusBadge
+                  label={site.status}
+                  tone={site.status === '正常' ? 'green' : 'amber'}
+                />
               </div>
-              <p className="mt-3 text-sm leading-relaxed text-admin-text-secondary">
-                {site.detail}
-              </p>
+              <p className="mt-2 text-[13px] text-admin-text-secondary">{site.detail}</p>
             </div>
           ))}
         </div>
-      </AdminCard>
+      </AdminTableShell>
     </section>
   );
 }

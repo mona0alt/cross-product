@@ -125,11 +125,11 @@ describe('admin pages', () => {
       (await import('@/app/admin/(protected)/products/new/page')).default;
     const html = renderToStaticMarkup(await NewProductPage());
 
-    expect(html).toContain('手动新建商品');
+    expect(html).toContain('系统设置');
     expect(html).toContain('创建后进入审核');
     expect(html).toContain('基础信息');
     expect(html).toContain('图片素材');
-    expect(html).toContain('提交审核前预览');
+    expect(html).toContain('审核提示');
 
     productFindUnique.mockResolvedValue({
       id: 'product-1',
@@ -163,8 +163,8 @@ describe('admin pages', () => {
       })
     );
 
-    expect(editHtml).toContain('编辑并重新审核商品');
-    expect(editHtml).toContain('保存并重新审核');
+    expect(editHtml).toContain('系统设置');
+    expect(editHtml).toContain('编辑后重新进入审核');
   });
 
   it('renders the messages and subscribers pages', async () => {
@@ -240,12 +240,14 @@ describe('admin pages', () => {
     expect(subscribersHtml).toContain('总订阅数');
     expect(subscribersHtml).toContain('自动化发送规则配置');
     expect(subscribersHtml).toContain('订阅者列表');
-    expect(crawlHtml).toContain('候选商品入口页');
-    expect(crawlHtml).toContain('来源站点');
+    expect(crawlHtml).toContain('系统设置');
+    expect(crawlHtml).toContain('抓取系统配置');
+    expect(crawlHtml).toContain('源站任务配置');
     expect(analyticsHtml).toContain('企业级 AI 数据分析概览');
     expect(analyticsHtml).toContain('用户转化漏斗');
+    expect(categoriesHtml).toContain('系统设置');
+    expect(categoriesHtml).toContain('数据库配置');
     expect(categoriesHtml).toContain('分类结构与映射');
-    expect(categoriesHtml).toContain('分类录入区');
     expect(bannersHtml).toContain('首页展示素材');
     expect(bannersHtml).toContain('Banner 列表');
   });

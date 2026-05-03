@@ -24,9 +24,9 @@ export default async function AdminCategoriesPage() {
   return (
     <section className="space-y-6">
       <AdminSectionHeader
-        label="Categories"
-        title="分类管理"
-        description="维护分类结构、图标和多语言映射，配合前台分类浏览与商品归档。"
+        label="Settings"
+        title="系统设置"
+        description="管理分类结构与映射。"
       />
       <CategoryForm categories={flattenCategories(categories)} />
     </section>
