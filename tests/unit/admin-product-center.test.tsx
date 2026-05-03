@@ -6,14 +6,14 @@ import { ProductCenter } from '@/components/admin/product-center';
 import { mockBackoffice } from '@/features/admin/mock-backoffice';
 
 describe('ProductCenter', () => {
-  it('renders both source labels and review actions', () => {
+  it('renders the upgraded product hero and review workspace', () => {
     const html = renderToStaticMarkup(
       <ProductCenter data={mockBackoffice.products} />
     );
 
-    expect(html).toContain('自动抓取');
-    expect(html).toContain('手动导入');
-    expect(html).toContain('内容完整度');
+    expect(html).toContain('统一商品池');
+    expect(html).toContain('总商品规模');
+    expect(html).toContain('审核工作区');
     expect(html).toContain('发起抓取');
     expect(html).toContain('新建商品');
   });

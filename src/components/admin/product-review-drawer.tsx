@@ -20,13 +20,14 @@ export function ProductReviewDrawer({
   review: ProductReviewData;
 }) {
   return (
-    <AdminCard delay={3} className="h-fit">
-      <p className="text-[10px] uppercase tracking-[0.2em] text-admin-text-muted font-body">
-        Review Panel
-      </p>
-      <h3 className="mt-2 text-xl font-semibold text-admin-text-primary font-display">
+    <AdminCard delay={3} className="sticky top-28 h-fit">
+      <p className="admin-kicker">Review Panel</p>
+      <h3 className="mt-2 text-2xl font-semibold text-admin-text-primary font-display">
         {review.title}
       </h3>
+      <p className="mt-2 text-sm leading-7 text-admin-text-secondary">
+        审核建议集中呈现标题、图片、摘要完整度和下一步动作，作为商品中心右侧的固定工作区。
+      </p>
       <div className="mt-4 flex flex-wrap gap-2">
         <StatusBadge label={review.source} tone="slate" />
         <StatusBadge label={review.status} tone="amber" />

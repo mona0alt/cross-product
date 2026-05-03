@@ -1,7 +1,8 @@
 import React from 'react';
-import { Globe, Activity } from 'lucide-react';
+import { Activity } from 'lucide-react';
 import { StatusBadge } from '@/components/admin/status-badge';
 import { AdminCard } from './admin-card';
+import { AdminPageHero } from './admin-page-hero';
 
 type CrawlTaskData = {
   headline: string;
@@ -18,27 +19,37 @@ export function CrawlTaskBoard({
 }: {
   data: CrawlTaskData;
 }) {
+  const healthySources = data.sourceSites.filter((site) => site.status === '正常').length;
+
   return (
     <section className="space-y-6">
-      <AdminCard delay={1}>
-        <div className="flex items-start gap-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-admin-accent/10">
-            <Globe className="h-5 w-5 text-admin-accent" />
-          </div>
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-admin-text-muted font-body">
-              Crawler
-            </p>
-            <h2 className="mt-1 text-2xl font-semibold text-admin-text-primary font-display">
-              抓取任务看板
-            </h2>
-            <p className="mt-2 text-lg text-admin-text-primary">{data.headline}</p>
-            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-admin-text-secondary">
-              {data.summary}
-            </p>
-          </div>
-        </div>
-      </AdminCard>
+      <AdminPageHero
+        eyebrow="Crawler"
+        title="候选商品入口页"
+        description="抓取任务只负责把候选商品送入审核池，不直接承担最终发布动作，便于用户理解来源配置和解析质量。"
+        metrics={[
+          {
+            label: '今日抓取摘要',
+            value: '11',
+            detail: data.headline
+          },
+          {
+            label: '来源站点健康状态',
+            value: `${healthySources} 正常`,
+            detail: '其余来源需人工修复解析规则'
+          },
+          {
+            label: '入审核池说明',
+            value: '统一入池',
+            detail: data.summary
+          },
+          {
+            label: '异常修复',
+            value: '3 项',
+            detail: '图片字段或分类映射待修正'
+          }
+        ]}
+      />
 
       <AdminCard delay={2}>
         <div className="flex items-center justify-between gap-4">
