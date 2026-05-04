@@ -8,8 +8,8 @@ type Lang = 'zh' | 'en' | 'es' | 'pt';
 type ModalProduct = {
   id: string;
   name: string;
-  content: Record<Lang, { name: string; copy: string }>;
-  gallery: ReadonlyArray<{ id: string; url: string; isPrimary: boolean }>;
+  content?: Record<Lang, { name: string; copy: string }>;
+  gallery?: ReadonlyArray<{ id: string; url: string; isPrimary: boolean }>;
 };
 
 interface ProductAuditModalProps {
@@ -25,7 +25,7 @@ export function ProductAuditModal({ isOpen, product, onClose, onApprove, onDelet
 
   if (!isOpen || !product) return null;
 
-  const currentContent = product.content[activeLang];
+  const currentContent = product.content?.[activeLang];
   const maxGallery = 10;
 
   return (
@@ -36,7 +36,7 @@ export function ProductAuditModal({ isOpen, product, onClose, onApprove, onDelet
         {/* Header */}
         <header className="flex-none bg-slate-50 border-b border-slate-200 px-6 py-4 flex justify-between items-center">
           <div>
-            <h1 className="text-lg font-bold text-slate-900">{product.content.zh.name}</h1>
+            <h1 className="text-lg font-bold text-slate-900">{product.content?.zh.name ?? product.name}</h1>
             <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-500 mt-1">
               ID: {product.id}
             </p>
@@ -80,7 +80,7 @@ export function ProductAuditModal({ isOpen, product, onClose, onApprove, onDelet
                 </label>
                 <input
                   type="text"
-                  defaultValue={currentContent.name}
+                  defaultValue={currentContent?.name ?? ''}
                   className="w-full border-slate-200 focus:ring-teal-500 focus:border-teal-500 rounded-md p-3 bg-slate-50/50 text-sm"
                 />
               </div>
@@ -98,7 +98,7 @@ export function ProductAuditModal({ isOpen, product, onClose, onApprove, onDelet
                     <Link className="w-4 h-4 cursor-pointer hover:text-slate-900" />
                   </div>
                   <textarea
-                    defaultValue={currentContent.copy}
+                    defaultValue={currentContent?.copy ?? ''}
                     rows={8}
                     className="w-full border-none focus:ring-0 p-4 bg-white text-sm leading-relaxed resize-none"
                   />
@@ -109,10 +109,10 @@ export function ProductAuditModal({ isOpen, product, onClose, onApprove, onDelet
             {/* Right: Gallery */}
             <div className="col-span-12 lg:col-span-5 bg-slate-50/30 p-6">
               <label className="block text-xs font-semibold text-slate-600 mb-4">
-                产品图库 ({product.gallery.length}/{maxGallery})
+                产品图库 ({product.gallery?.length ?? 0}/{maxGallery})
               </label>
               <div className="grid grid-cols-2 gap-3">
-                {product.gallery.map((img) => (
+                {(product.gallery ?? []).map((img) => (
                   <div
                     key={img.id}
                     className="aspect-square bg-white border border-slate-200 rounded-lg overflow-hidden relative"
@@ -125,7 +125,7 @@ export function ProductAuditModal({ isOpen, product, onClose, onApprove, onDelet
                     )}
                   </div>
                 ))}
-                {Array.from({ length: Math.max(0, 4 - product.gallery.length) }).map((_, i) => (
+                {Array.from({ length: Math.max(0, 4 - (product.gallery?.length ?? 0)) }).map((_, i) => (
                   <div
                     key={`placeholder-${i}`}
                     className="aspect-square bg-slate-100 border border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center text-slate-400 hover:bg-slate-200 transition-colors cursor-pointer"

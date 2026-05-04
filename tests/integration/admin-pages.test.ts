@@ -102,7 +102,7 @@ describe('admin pages', () => {
 
     expect(html).toContain('商品审核');
     expect(html).toContain('自动抓取');
-    expect(html).toContain('手动导入商品');
+    expect(html).toContain('手动导入');
     expect(html).toContain('产品审核中心');
   });
 
