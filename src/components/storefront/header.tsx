@@ -246,7 +246,7 @@ export function StorefrontHeader({
                               <img
                                 src={child.iconImageUrl}
                                 alt=""
-                                className="h-6 w-6 object-contain"
+                                className="h-10 w-10 rounded-md object-cover"
                               />
                             ) : null}
                             <span>{child.name}</span>
