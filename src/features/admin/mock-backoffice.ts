@@ -1,9 +1,8 @@
 export const mockBackoffice = {
   products: {
     summary: {
-      total: 286,
       pending: 26,
-      incomingToday: 18
+      todayProcessed: 14
     },
     rows: [
       {
@@ -12,9 +11,20 @@ export const mockBackoffice = {
         productCode: 'RC-1038',
         category: '清洁机器人',
         source: '自动抓取',
-        status: '待审核',
-        completeness: '82%',
-        action: '补图后发布'
+        status: '补充信息',
+        aiScore: 82,
+        langCompletion: { en: 'ok', es: 'missing', pt: 'ok' },
+        action: '封面图数量不足，建议补 2 张细节图',
+        content: {
+          zh: { name: 'Portable Cleaning Robot X2', copy: '该清洁机器人采用最先进的导航技术，专为家庭环境设计。' },
+          en: { name: 'Portable Cleaning Robot X2', copy: 'This cleaning robot uses advanced navigation technology, designed for home environments.' },
+          es: { name: 'Robot de Limpieza Portátil X2', copy: 'Este robot de limpieza utiliza tecnología de navegación avanzada, diseñado para entornos domésticos.' },
+          pt: { name: 'Robô de Limpeza Portátil X2', copy: 'Este robô de limpeza utiliza tecnologia de navegação avançada, projetado para ambientes domésticos.' }
+        },
+        gallery: [
+          { id: 'img-1', url: '/products/robot-x2-1.jpg', isPrimary: true },
+          { id: 'img-2', url: '/products/robot-x2-2.jpg', isPrimary: false }
+        ]
       },
       {
         id: 'product-2',
@@ -23,8 +33,18 @@ export const mockBackoffice = {
         category: '巡检无人机',
         source: '手动导入',
         status: '待审核',
-        completeness: '76%',
-        action: '补英文标题'
+        aiScore: 76,
+        langCompletion: { en: 'missing', es: 'ok', pt: 'missing' },
+        action: '缺少英文摘要',
+        content: {
+          zh: { name: 'Warehouse Drone Mini', copy: '紧凑型仓库巡检无人机，支持自动航线规划。' },
+          en: { name: 'Warehouse Drone Mini', copy: '' },
+          es: { name: 'Dron de Almacén Mini', copy: 'Dron compacto de inspección de almacén con planificación automática de rutas.' },
+          pt: { name: 'Drone de Armazém Mini', copy: '' }
+        },
+        gallery: [
+          { id: 'img-3', url: '/products/drone-mini-1.jpg', isPrimary: true }
+        ]
       },
       {
         id: 'product-3',
@@ -33,24 +53,28 @@ export const mockBackoffice = {
         category: '工业机械臂',
         source: '自动抓取',
         status: '可发布',
-        completeness: '96%',
-        action: '加入推荐位'
+        aiScore: 96,
+        langCompletion: { en: 'ok', es: 'ok', pt: 'ok' },
+        action: '加入推荐位',
+        content: {
+          zh: { name: 'Industrial Arm Pro 8', copy: '高精度工业机械臂，适用于精密装配任务。' },
+          en: { name: 'Industrial Arm Pro 8', copy: 'High-precision industrial robotic arm for precision assembly tasks.' },
+          es: { name: 'Brazo Industrial Pro 8', copy: 'Brazo robótico industrial de alta precisión para tareas de ensamblaje de precisión.' },
+          pt: { name: 'Braço Industrial Pro 8', copy: 'Braço robótico industrial de alta precisão para tarefas de montagem de precisão.' }
+        },
+        gallery: [
+          { id: 'img-4', url: '/products/arm-pro8-1.jpg', isPrimary: true },
+          { id: 'img-5', url: '/products/arm-pro8-2.jpg', isPrimary: false },
+          { id: 'img-6', url: '/products/arm-pro8-3.jpg', isPrimary: false }
+        ]
       }
     ],
-    review: {
-      title: 'Warehouse Drone Mini',
-      source: '手动导入',
-      status: '待审核',
-      completeness: '76%',
-      checks: [
-        { label: '标题', value: '完整' },
-        { label: '图片', value: '3/5' },
-        { label: '英文摘要', value: '缺失' },
-        { label: '重复风险', value: '低' }
-      ],
-      advice:
-        '当前商品与已发布商品无明显重复，但缺少英文摘要，不建议直接上架。建议先补齐短描述，再进入可发布状态。'
-    }
+    createChecklist: [
+      { label: '基础信息完整', detail: '标题、分类、SKU 已填写', status: '通过' },
+      { label: '图片数量', detail: '当前上传 3 张，建议至少 5 张', status: '待补充' },
+      { label: '多语言内容', detail: '英文摘要为空时会进入待补充状态', status: '风险提示' },
+      { label: '提交结果', detail: '保存后自动进入审核池，可继续回到审核视图处理', status: '说明' }
+    ]
   },
   crawlTasks: {
     headline: '今天已抓取 11 个候选商品',
