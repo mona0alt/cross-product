@@ -1,11 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Shield, Lock, User } from 'lucide-react';
 
 export default function AdminLoginPage() {
-  const router = useRouter();
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -29,12 +27,16 @@ export default function AdminLoginPage() {
       });
 
       if (!response.ok) {
-        setError('用户名或密码错误。');
+        const data = await response.json().catch(() => ({}));
+        setError(data.error === 'INVALID_CREDENTIALS' ? '用户名或密码错误。' : '登录失败，请重试。');
         return;
       }
 
-      router.push('/admin');
-      router.refresh();
+      window.location.href = '/admin/analytics';
+    } catch (err) {
+      setError('网络错误，请检查连接后重试。');
+      // eslint-disable-next-line no-console
+      console.error('Login error:', err);
     } finally {
       setIsSubmitting(false);
     }

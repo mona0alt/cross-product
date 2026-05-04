@@ -67,13 +67,11 @@ export function ProductCenter({
   };
 
   const handleApprove = (productId: string) => {
-    // eslint-disable-next-line no-console
     console.log('Approved:', productId);
     handleClose();
   };
 
   const handleDelete = (productId: string) => {
-    // eslint-disable-next-line no-console
     console.log('Deleted:', productId);
     handleClose();
   };
@@ -105,16 +103,10 @@ export function ProductCenter({
             手动新增
           </button>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <AdminLinkButton href="/admin/crawl-tasks" variant="secondary" size="sm">
-            <Globe className="h-3.5 w-3.5" />
-            抓取日志
-          </AdminLinkButton>
-        </div>
       </div>
 
       {isCreateTab ? (
-        <ProductCreateTab checklist={data.createChecklist} />
+        <ProductCreateTab />
       ) : (
         <>
           <ProductAuditTable

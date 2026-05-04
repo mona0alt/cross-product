@@ -190,3 +190,14 @@ img {
 .admin-stagger-6 { animation-delay: 0.30s; }
 .admin-stagger-7 { animation-delay: 0.35s; }
 .admin-stagger-8 { animation-delay: 0.40s; }
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

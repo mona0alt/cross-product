@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { X, Bold, Italic, List, Link, ImagePlus, Upload, CheckCircle } from 'lucide-react';
 
 type Lang = 'zh' | 'en' | 'es' | 'pt';
@@ -117,7 +118,7 @@ export function ProductAuditModal({ isOpen, product, onClose, onApprove, onDelet
                     key={img.id}
                     className="aspect-square bg-white border border-slate-200 rounded-lg overflow-hidden relative"
                   >
-                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                    <Image src={img.url} alt="" fill className="object-cover" unoptimized />
                     {img.isPrimary && (
                       <span className="absolute top-2 right-2 bg-teal-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
                         主图

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -9,7 +10,7 @@ import {
   Mail,
   BarChart3,
   FolderTree,
-  Image,
+  Image as ImageIcon,
   MessageSquare,
   type LucideIcon
 } from 'lucide-react';
@@ -27,7 +28,7 @@ const iconMap: Record<string, LucideIcon> = {
   Mail,
   BarChart3,
   FolderTree,
-  Image,
+  Image: ImageIcon,
   MessageSquare
 };
 
@@ -38,7 +39,7 @@ export function AdminNav({ items }: { items: AdminNavItem[] }) {
     <aside className="flex h-full flex-col justify-between bg-white text-slate-700">
       <div>
         <div className="flex h-14 items-center justify-center border-b border-admin-border bg-white px-4">
-          <img src="/logo.jpg" alt="FBGM" className="h-9 w-auto" />
+          <Image src="/logo.jpg" alt="FBGM" width={144} height={36} className="h-9 w-auto" unoptimized />
         </div>
 
         <nav className="mt-4">

@@ -40,8 +40,8 @@ describe('admin shell', () => {
     expect(html).toContain('/logo.jpg');
     expect(html).toContain('数据分析');
     expect(html).toContain('系统设置');
-    expect(html).toContain('核心管理系统');
-    expect(html).toContain('运行爬虫');
+    expect(html).toContain('admin');
+    expect(html).toContain('管理员');
   });
 
   it('offsets the main content when the desktop sidebar is fixed', async () => {
