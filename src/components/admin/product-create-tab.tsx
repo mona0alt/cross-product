@@ -6,7 +6,6 @@ import {
   Box,
   ImagePlus,
   FileText,
-  Save,
   Send,
   UploadCloud,
   X,

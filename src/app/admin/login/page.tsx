@@ -35,7 +35,6 @@ export default function AdminLoginPage() {
       window.location.href = '/admin/analytics';
     } catch (err) {
       setError('网络错误，请检查连接后重试。');
-      // eslint-disable-next-line no-console
       console.error('Login error:', err);
     } finally {
       setIsSubmitting(false);

@@ -56,7 +56,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // eslint-disable-next-line no-console
     console.error('Login API error:', error);
 
     return NextResponse.json(
