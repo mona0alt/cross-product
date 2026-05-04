@@ -226,45 +226,31 @@ export function StorefrontHeader({
                 </Link>
 
                 {hasDropdown && openDropdown === item.label && (
-                  <div className="absolute left-0 top-full z-40 w-[720px] border border-[var(--mk-border)] bg-white shadow-lg">
-                    <div className="grid grid-cols-3 gap-6 p-6">
-                      <div className="col-span-2 grid grid-cols-2 gap-x-6 gap-y-3">
+                  <div className="absolute left-0 top-full z-40 w-[600px] border border-[var(--mk-border)] bg-white shadow-lg">
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-4 p-6">
+                      <Link
+                        href={item.href}
+                        className="col-span-2 text-sm font-bold uppercase text-[var(--mk-highlight)] hover:underline"
+                      >
+                        {`${copy.categoryPromo.viewAll} ${item.label}`}
+                      </Link>
+                      {group.children.map((child) => (
                         <Link
-                          href={item.href}
-                          className="col-span-2 text-sm font-bold uppercase text-[var(--mk-highlight)] hover:underline"
+                          key={child.slug}
+                          href={`/${locale}/categories/${child.slug}`}
+                          className="flex items-center gap-3 text-sm text-[var(--mk-text-muted)] hover:text-black"
                         >
-                          {`${copy.categoryPromo.viewAll} ${item.label}`}
+                          {child.iconImageUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={child.iconImageUrl}
+                              alt=""
+                              className="h-20 w-20 rounded-lg object-cover"
+                            />
+                          ) : null}
+                          <span>{child.name}</span>
                         </Link>
-                        {group.children.map((child) => (
-                          <Link
-                            key={child.slug}
-                            href={`/${locale}/categories/${child.slug}`}
-                            className="flex items-center gap-2 text-sm text-[var(--mk-text-muted)] hover:text-black"
-                          >
-                            {child.iconImageUrl ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                src={child.iconImageUrl}
-                                alt=""
-                                className="h-10 w-10 rounded-md object-cover"
-                              />
-                            ) : null}
-                            <span>{child.name}</span>
-                          </Link>
-                        ))}
-                      </div>
-                      <div className="flex flex-col gap-3">
-                        <div className="rounded-md bg-[var(--mk-bg-muted)] p-3">
-                          <p className="text-xs font-bold uppercase text-black">{copy.categoryPromo.offerTitle}</p>
-                          <Link href={`/${locale}/products`} className="mt-1 text-xs text-[var(--mk-highlight)] hover:underline">
-                            {copy.categoryPromo.offerLink}
-                          </Link>
-                        </div>
-                        <div className="rounded-md bg-[var(--mk-bg-muted)] p-3">
-                          <p className="text-xs font-bold uppercase text-black">{copy.categoryPromo.featuredTitle}</p>
-                          <p className="mt-1 text-xs text-[var(--mk-text-muted)]">{copy.categoryPromo.featuredDescription}</p>
-                        </div>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 )}
