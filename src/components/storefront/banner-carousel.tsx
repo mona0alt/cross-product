@@ -33,7 +33,7 @@ export function BannerCarousel({
 
   return (
     <div className="relative w-full">
-      <div className="relative aspect-video max-h-[520px] w-full overflow-hidden">
+      <div className="relative h-[340px] w-full overflow-hidden sm:h-[420px] lg:h-[520px]">
         {banners.map((banner, index) => (
           <img
             key={banner.id}
