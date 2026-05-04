@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        /* Custom scrollbar for high-density data */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f8fafc;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 2px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed": "#6ffbbe",
+                      "background": "#f7f9fb",
+                      "primary-fixed-dim": "#bec6e0",
+                      "on-tertiary": "#ffffff",
+                      "inverse-on-surface": "#eff1f3",
+                      "on-primary-fixed": "#131b2e",
+                      "on-error-container": "#93000a",
+                      "on-primary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary-fixed-dim": "#4edea3",
+                      "surface-dim": "#d8dadc",
+                      "outline": "#76777d",
+                      "on-secondary": "#ffffff",
+                      "surface-container-low": "#f2f4f6",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "surface-variant": "#e0e3e5",
+                      "primary-container": "#131b2e",
+                      "on-tertiary-container": "#75859d",
+                      "on-background": "#191c1e",
+                      "surface-container": "#eceef0",
+                      "surface": "#f7f9fb",
+                      "tertiary-container": "#0b1c30",
+                      "error-container": "#ffdad6",
+                      "outline-variant": "#c6c6cd",
+                      "on-surface": "#191c1e",
+                      "on-secondary-fixed": "#002113",
+                      "tertiary": "#000000",
+                      "surface-tint": "#565e74",
+                      "primary": "#000000",
+                      "tertiary-fixed-dim": "#b7c8e1",
+                      "primary-fixed": "#dae2fd",
+                      "on-surface-variant": "#45464d",
+                      "on-error": "#ffffff",
+                      "inverse-surface": "#2d3133",
+                      "tertiary-fixed": "#d3e4fe",
+                      "surface-container-highest": "#e0e3e5",
+                      "inverse-primary": "#bec6e0",
+                      "surface-bright": "#f7f9fb",
+                      "on-secondary-fixed-variant": "#005236",
+                      "on-primary-container": "#7c839b",
+                      "on-secondary-container": "#00714d",
+                      "on-tertiary-fixed-variant": "#38485d",
+                      "on-tertiary-fixed": "#0b1c30",
+                      "error": "#ba1a1a",
+                      "secondary-container": "#6cf8bb",
+                      "secondary": "#006c49",
+                      "surface-container-high": "#e6e8ea"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "xl": "32px",
+                      "layout-margin": "24px",
+                      "base-unit": "4px",
+                      "md": "16px",
+                      "gutter": "16px",
+                      "lg": "24px",
+                      "xs": "4px",
+                      "sm": "8px"
+              },
+              "fontFamily": {
+                      "label-caps": ["Inter"],
+                      "h2": ["Inter"],
+                      "button": ["Inter"],
+                      "body-base": ["Inter"],
+                      "table-data": ["Inter"],
+                      "h1": ["Inter"],
+                      "body-sm": ["Inter"]
+              },
+              "fontSize": {
+                      "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "h2": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "button": ["13px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "body-base": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "table-data": ["13px", {"lineHeight": "16px", "fontWeight": "400"}],
+                      "h1": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface antialiased">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-60 z-50 bg-[#0F172A] border-r border-slate-800 flex flex-col justify-between shadow-xl">
+<div class="flex flex-col">
+<div class="p-6">
+<span class="text-lg font-bold text-white tracking-widest uppercase">管理后台</span>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider mt-1">企业级产品套件</p>
+</div>
+<nav class="mt-4">
+<div class="bg-slate-800 text-white border-l-4 border-emerald-500 flex items-center py-3 px-4 cursor-pointer active:opacity-80 transition-all duration-200">
+<span class="material-symbols-outlined mr-3" data-icon="dashboard">dashboard</span>
+<span class="text-[13px] font-medium tracking-tight">数据分析</span>
+</div>
+<div class="text-slate-400 flex items-center py-3 px-4 cursor-pointer hover:bg-slate-800 hover:text-white transition-all duration-200 active:opacity-80">
+<span class="material-symbols-outlined mr-3" data-icon="inventory_2">inventory_2</span>
+<span class="text-[13px] font-medium tracking-tight">商品审核</span>
+</div>
+<div class="text-slate-400 flex items-center py-3 px-4 cursor-pointer hover:bg-slate-800 hover:text-white transition-all duration-200 active:opacity-80">
+<span class="material-symbols-outlined mr-3" data-icon="mail">mail</span>
+<span class="text-[13px] font-medium tracking-tight">邮件</span>
+</div>
+<div class="text-slate-400 flex items-center py-3 px-4 cursor-pointer hover:bg-slate-800 hover:text-white transition-all duration-200 active:opacity-80">
+<span class="material-symbols-outlined mr-3" data-icon="forum">forum</span>
+<span class="text-[13px] font-medium tracking-tight">支持中心</span>
+</div>
+<div class="text-slate-400 flex items-center py-3 px-4 cursor-pointer hover:bg-slate-800 hover:text-white transition-all duration-200 active:opacity-80">
+<span class="material-symbols-outlined mr-3" data-icon="settings">settings</span>
+<span class="text-[13px] font-medium tracking-tight">系统设置</span>
+</div>
+</nav>
+</div>
+<div class="mb-6">
+<div class="text-slate-400 flex items-center py-3 px-4 cursor-pointer hover:bg-slate-800 hover:text-white transition-all duration-200">
+<span class="material-symbols-outlined mr-3" data-icon="description">description</span>
+<span class="text-[13px] font-medium tracking-tight">技术文档</span>
+</div>
+<div class="text-slate-400 flex items-center py-3 px-4 cursor-pointer hover:bg-slate-800 hover:text-white transition-all duration-200">
+<span class="material-symbols-outlined mr-3" data-icon="check_circle">check_circle</span>
+<span class="text-[13px] font-medium tracking-tight">系统状态</span>
+</div>
+<div class="mt-4 px-4 flex items-center space-x-3 border-t border-slate-800 pt-4">
+<img alt="管理员头像" class="w-8 h-8 rounded-full border border-slate-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgluAUtWYhNBofR3KXm7FhIokicuFQllaSeg6LA5HJv6b5kuXp7cwJ7Tqa_CZuxCFcxp-PrpoxQFV9_2CYQWd1CU9Qjz5tw8-ae56xeQFpWKV2RsrSnFiHq5j9-tDYgCnrZOADc0eAg35qUvX01fJhF7AMV1EvYypZaWDsKIrxEKsuiNbdsG_e3lQYYHA9u45MwuO6gZpYmE17Dq9KS6i1NgQz9KLPDx7Ifb7dv_dhBx0QsdYx9ZGNy8IzfCSrF8THq6pn5ji-zac"/>
+<div class="overflow-hidden">
+<p class="text-white text-xs font-bold truncate">系统管理员</p>
+<p class="text-slate-500 text-[10px] truncate">admin@enterprise.ai</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-60 h-14 z-40 bg-white border-b border-slate-200 flex items-center justify-between px-6 shadow-sm">
+<div class="flex items-center space-x-6">
+<span class="text-lg font-black text-slate-900">核心管理系统</span>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]" data-icon="search">search</span>
+<input class="w-64 bg-slate-100 border-transparent rounded-lg pl-9 pr-4 py-1.5 text-[13px] focus:bg-white focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 transition-all" placeholder="快速搜索数据或报告..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<div class="flex items-center space-x-1 border-r border-slate-200 pr-4">
+<button class="p-2 hover:bg-slate-100 rounded-full text-slate-600 transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+</button>
+<button class="p-2 hover:bg-slate-100 rounded-full text-slate-600 transition-colors">
+<span class="material-symbols-outlined" data-icon="translate">translate</span>
+</button>
+<button class="p-2 hover:bg-slate-100 rounded-full text-slate-600 transition-colors">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+<div class="flex items-center space-x-2">
+<button class="bg-emerald-600 text-white px-4 py-1.5 rounded text-button font-semibold hover:bg-emerald-700 transition-all active:scale-95 flex items-center">
+<span class="material-symbols-outlined text-[16px] mr-1.5" data-icon="bolt">bolt</span>
+                    运行爬虫
+                </button>
+<button class="border border-slate-200 text-slate-700 px-4 py-1.5 rounded text-button font-semibold hover:bg-slate-50 transition-all active:scale-95">系统日志</button>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-60 pt-14 min-h-screen">
+<div class="p-8">
+<!-- Header Section -->
+<div class="mb-8 flex justify-between items-center">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface">企业级 AI 数据分析概览</h1>
+<p class="font-body-base text-body-base text-on-surface-variant mt-1">实时监控全球业务绩效与 AI 智能决策建议</p>
+</div>
+<div class="flex items-center space-x-3">
+<div class="bg-white border border-slate-200 rounded px-4 py-2 flex items-center text-sm font-medium text-slate-700 cursor-pointer hover:bg-slate-50 transition-colors">
+<span class="material-symbols-outlined text-[18px] mr-2 text-slate-400" data-icon="calendar_today">calendar_today</span>
+                        2023年10月01日 - 2023年10月31日
+                        <span class="material-symbols-outlined text-[18px] ml-2 text-slate-400" data-icon="expand_more">expand_more</span>
+</div>
+<button class="bg-white border border-slate-200 rounded p-2 flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-emerald-600 transition-colors shadow-sm">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+</button>
+</div>
+</div>
+<!-- KPI Metrics Row -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+<div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-emerald-50 rounded-lg">
+<span class="material-symbols-outlined text-emerald-600" data-icon="payments">payments</span>
+</div>
+<div class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full flex items-center">
+<span class="material-symbols-outlined text-[12px] mr-1" data-icon="trending_up">trending_up</span>
+                            12.5%
+                        </div>
+</div>
+<span class="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1">总营收 (Total Revenue)</span>
+<div class="flex items-baseline space-x-1">
+<span class="text-3xl font-bold text-slate-900 tracking-tight">¥4,280,000</span>
+</div>
+<div class="mt-4 flex items-center text-[11px] text-slate-400 font-medium">
+<span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>
+                        已完成本月目标的 72%
+                    </div>
+</div>
+<div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-blue-50 rounded-lg">
+<span class="material-symbols-outlined text-blue-600" data-icon="query_stats">query_stats</span>
+</div>
+<div class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full flex items-center">
+<span class="material-symbols-outlined text-[12px] mr-1" data-icon="trending_up">trending_up</span>
+                            2.1%
+                        </div>
+</div>
+<span class="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1">转化率 (Conversion Rate)</span>
+<div class="flex items-baseline space-x-1">
+<span class="text-3xl font-bold text-slate-900 tracking-tight">3.48%</span>
+</div>
+<div class="mt-4 flex items-center text-[11px] text-slate-400 font-medium">
+<span class="w-2 h-2 rounded-full bg-blue-400 mr-2"></span>
+                        行业基准值为 2.8%
+                    </div>
+</div>
+<div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-red-50 rounded-lg">
+<span class="material-symbols-outlined text-red-600" data-icon="door_open">door_open</span>
+</div>
+<div class="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-1 rounded-full flex items-center">
+<span class="material-symbols-outlined text-[12px] mr-1" data-icon="trending_up">trending_up</span>
+                            0.4%
+                        </div>
+</div>
+<span class="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1">跳出率 (Bounce Rate)</span>
+<div class="flex items-baseline space-x-1">
+<span class="text-3xl font-bold text-slate-900 tracking-tight">24.12%</span>
+</div>
+<div class="mt-4 flex items-center text-[11px] text-slate-400 font-medium">
+<span class="w-2 h-2 rounded-full bg-red-400 mr-2"></span>
+                        异常警告：移动端波动
+                    </div>
+</div>
+<div class="bg-white border border-slate-200 p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-slate-50 rounded-lg">
+<span class="material-symbols-outlined text-slate-600" data-icon="group">group</span>
+</div>
+<div class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full flex items-center">
+<span class="material-symbols-outlined text-[12px] mr-1" data-icon="trending_up">trending_up</span>
+                            8.3%
+                        </div>
+</div>
+<span class="text-xs font-bold text-slate-500 uppercase tracking-widest block mb-1">活跃用户 (Active Users)</span>
+<div class="flex items-baseline space-x-1">
+<span class="text-3xl font-bold text-slate-900 tracking-tight">12,842</span>
+</div>
+<div class="mt-4 flex items-center text-[11px] text-slate-400 font-medium">
+<span class="w-2 h-2 rounded-full bg-slate-800 mr-2"></span>
+                        当前实时在线: 421
+                    </div>
+</div>
+</div>
+<!-- Dashboard Grid Layout -->
+<div class="grid grid-cols-12 gap-8">
+<!-- Left Column: Primary Charts -->
+<div class="col-span-12 lg:col-span-8 space-y-8">
+<!-- User Conversion Funnel -->
+<div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+<div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+<h3 class="font-h2 text-h2 text-slate-900">用户转化漏斗 (Sankey 分析)</h3>
+<button class="text-xs font-bold text-emerald-600 hover:bg-emerald-50 px-2 py-1 rounded transition-colors">详细报表</button>
+</div>
+<div class="p-8 space-y-6">
+<!-- Funnel Item 1 -->
+<div class="relative">
+<div class="flex justify-between items-end mb-2">
+<div>
+<span class="text-sm font-bold text-slate-800">网站总访问量</span>
+<span class="text-xs text-slate-400 ml-2">128,421 用户</span>
+</div>
+<span class="text-xs font-bold text-slate-500">100%</span>
+</div>
+<div class="h-10 bg-slate-900 rounded-lg flex items-center px-4 shadow-inner">
+<div class="w-full h-1 bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-slate-500 w-full"></div>
+</div>
+</div>
+</div>
+<!-- Funnel Item 2 -->
+<div class="relative">
+<div class="absolute -top-4 left-1/2 -translate-x-1/2">
+<span class="material-symbols-outlined text-slate-300 text-[24px]" data-icon="arrow_downward">arrow_downward</span>
+</div>
+<div class="flex justify-between items-end mb-2">
+<div>
+<span class="text-sm font-bold text-slate-800">产品列表/搜索</span>
+<span class="text-xs text-slate-400 ml-2">82,189 用户</span>
+</div>
+<span class="text-xs font-bold text-slate-500">64%</span>
+</div>
+<div class="h-10 bg-emerald-800 rounded-lg flex items-center px-4 w-[64%] shadow-lg border-l-4 border-emerald-500">
+<div class="w-full h-1 bg-emerald-900/50 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-400 w-full"></div>
+</div>
+</div>
+</div>
+<!-- Funnel Item 3 -->
+<div class="relative">
+<div class="absolute -top-4 left-[11%]">
+<span class="material-symbols-outlined text-slate-300 text-[24px]" data-icon="arrow_downward">arrow_downward</span>
+</div>
+<div class="flex justify-between items-end mb-2">
+<div>
+<span class="text-sm font-bold text-slate-800">加入购物车</span>
+<span class="text-xs text-slate-400 ml-2">28,252 用户</span>
+</div>
+<span class="text-xs font-bold text-slate-500">22%</span>
+</div>
+<div class="h-10 bg-emerald-600 rounded-lg flex items-center px-4 w-[22%] shadow-lg border-l-4 border-emerald-400">
+<div class="w-full h-1 bg-emerald-700/50 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-300 w-full"></div>
+</div>
+</div>
+</div>
+<!-- Funnel Item 4 -->
+<div class="relative">
+<div class="absolute -top-4 left-[1.7%]">
+<span class="material-symbols-outlined text-slate-300 text-[24px]" data-icon="arrow_downward">arrow_downward</span>
+</div>
+<div class="flex justify-between items-end mb-2">
+<div>
+<span class="text-sm font-bold text-slate-800">成功支付完成</span>
+<span class="text-xs text-slate-400 ml-2">4,366 用户</span>
+</div>
+<span class="text-xs font-bold text-emerald-600">3.4% (目标达标)</span>
+</div>
+<div class="h-10 bg-emerald-500 rounded-lg flex items-center px-4 w-[3.4%] min-w-[60px] shadow-lg border-l-4 border-white">
+<div class="w-full h-1 bg-emerald-600/50 rounded-full overflow-hidden">
+<div class="h-full bg-white w-full"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Product Category Ranking Table -->
+<div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+<div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/30">
+<h3 class="font-h2 text-h2 text-slate-900">热门产品类别排名</h3>
+<div class="flex space-x-2">
+<button class="bg-white border border-slate-200 text-slate-500 px-3 py-1 text-xs rounded hover:bg-slate-50 transition-colors">导出表格</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-slate-50 border-b border-slate-200">
+<tr>
+<th class="px-6 py-4 font-label-caps text-slate-500 uppercase tracking-wider">类别名称</th>
+<th class="px-6 py-4 font-label-caps text-slate-500 uppercase tracking-wider">市场份额占比</th>
+<th class="px-6 py-4 font-label-caps text-slate-500 uppercase tracking-wider">季度增长 (QoQ)</th>
+<th class="px-6 py-4 font-label-caps text-slate-500 uppercase tracking-wider text-right">总营收贡献</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center mr-3">
+<span class="material-symbols-outlined text-slate-500" data-icon="devices">devices</span>
+</div>
+<span class="text-sm font-bold text-slate-800">电子数码</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center">
+<span class="text-xs font-bold text-slate-700 w-10 mr-2">42%</span>
+<div class="flex-1 max-w-[120px] h-2 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500 rounded-full" style="width: 42%;"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-emerald-600 text-xs font-bold flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1" data-icon="arrow_upward">arrow_upward</span>
+                                                +15.2%
+                                            </span>
+</td>
+<td class="px-6 py-4 text-right text-sm font-bold text-slate-900">¥1,797,600</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center mr-3">
+<span class="material-symbols-outlined text-slate-500" data-icon="home_smart_lock">home_smart_lock</span>
+</div>
+<span class="text-sm font-bold text-slate-800">智能家居</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center">
+<span class="text-xs font-bold text-slate-700 w-10 mr-2">28%</span>
+<div class="flex-1 max-w-[120px] h-2 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500 rounded-full" style="width: 28%;"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-emerald-600 text-xs font-bold flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1" data-icon="arrow_upward">arrow_upward</span>
+                                                +8.4%
+                                            </span>
+</td>
+<td class="px-6 py-4 text-right text-sm font-bold text-slate-900">¥1,198,400</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center mr-3">
+<span class="material-symbols-outlined text-slate-500" data-icon="checkroom">checkroom</span>
+</div>
+<span class="text-sm font-bold text-slate-800">时尚服饰</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center">
+<span class="text-xs font-bold text-slate-700 w-10 mr-2">15%</span>
+<div class="flex-1 max-w-[120px] h-2 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-400 rounded-full" style="width: 15%;"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-red-500 text-xs font-bold flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1" data-icon="arrow_downward">arrow_downward</span>
+                                                -2.1%
+                                            </span>
+</td>
+<td class="px-6 py-4 text-right text-sm font-bold text-slate-900">¥642,000</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="px-6 py-4">
+<div class="flex items-center">
+<div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center mr-3">
+<span class="material-symbols-outlined text-slate-500" data-icon="fitness_center">fitness_center</span>
+</div>
+<span class="text-sm font-bold text-slate-800">户外运动</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex items-center">
+<span class="text-xs font-bold text-slate-700 w-10 mr-2">10%</span>
+<div class="flex-1 max-w-[120px] h-2 bg-slate-100 rounded-full overflow-hidden">
+<div class="h-full bg-emerald-400 rounded-full" style="width: 10%;"></div>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<span class="text-emerald-600 text-xs font-bold flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1" data-icon="arrow_upward">arrow_upward</span>
+                                                +24.0%
+                                            </span>
+</td>
+<td class="px-6 py-4 text-right text-sm font-bold text-slate-900">¥428,000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right Column: AI Insight Panel -->
+<div class="col-span-12 lg:col-span-4 space-y-6">
+<div class="bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col h-full sticky top-[72px]">
+<div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-emerald-600" data-icon="auto_awesome" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<h3 class="font-h2 text-h2 text-slate-900">AI 智能洞察</h3>
+</div>
+<span class="flex items-center text-[10px] text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-bold">
+<span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse mr-1.5"></span>
+                                实时扫描中
+                            </span>
+</div>
+<div class="p-6 space-y-5 overflow-y-auto max-h-[calc(100vh-200px)]">
+<!-- Suggestion 1 -->
+<div class="p-4 bg-emerald-50/40 border border-emerald-100 rounded-xl relative group">
+<div class="flex items-center justify-between mb-3">
+<span class="text-[10px] font-black text-emerald-700 uppercase tracking-widest bg-emerald-100 px-2 py-0.5 rounded">库存优化</span>
+<span class="text-[10px] text-slate-400">2小时前</span>
+</div>
+<h4 class="text-sm font-bold text-slate-900 mb-2">无线耳机类目补货预警</h4>
+<p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                    模型预测下周“无线蓝牙耳机”需求将激增 15%。建议在 11月1日 前将深圳 03 号仓库库存水平提高 20% 以应对营销峰值。
+                                </p>
+<div class="flex items-center justify-between">
+<button class="bg-emerald-600 text-white text-[11px] font-bold px-3 py-1.5 rounded hover:bg-emerald-700 transition-colors">自动执行</button>
+<button class="text-[11px] font-bold text-slate-400 hover:text-slate-600 transition-colors">查看分析</button>
+</div>
+</div>
+<!-- Suggestion 2 -->
+<div class="p-4 bg-blue-50/40 border border-blue-100 rounded-xl">
+<div class="flex items-center justify-between mb-3">
+<span class="text-[10px] font-black text-blue-700 uppercase tracking-widest bg-blue-100 px-2 py-0.5 rounded">营销召回</span>
+<span class="text-[10px] text-slate-400">5小时前</span>
+</div>
+<h4 class="text-sm font-bold text-slate-900 mb-2">高意向流失用户自动触达</h4>
+<p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                    检测到 240 名用户在购物车阶段异常流失。建议发送“限时 85 折”个性化召回邮件，系统预估可挽回约 4.2% 的订单流失。
+                                </p>
+<div class="flex items-center space-x-3">
+<button class="bg-blue-600 text-white text-[11px] font-bold px-3 py-1.5 rounded hover:bg-blue-700 transition-colors">开启触达</button>
+<button class="text-[11px] font-bold text-slate-400 hover:text-slate-600 transition-colors">详情</button>
+</div>
+</div>
+<!-- Suggestion 3 -->
+<div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+<div class="flex items-center justify-between mb-3">
+<span class="text-[10px] font-black text-slate-700 uppercase tracking-widest bg-slate-200 px-2 py-0.5 rounded">性能警报</span>
+<span class="text-[10px] text-slate-400">昨天 18:32</span>
+</div>
+<h4 class="text-sm font-bold text-slate-900 mb-2">Safari 浏览器加载异常</h4>
+<p class="text-xs text-slate-600 leading-relaxed mb-4">
+                                    检测到移动端 Safari 支付页加载时长波动 (+2.4s)。该问题正导致结账步骤跳出率上升，建议前端团队立即排查。
+                                </p>
+<button class="text-[11px] font-bold text-emerald-600 hover:underline">查看完整技术日志</button>
+</div>
+<!-- Context Image -->
+<div class="mt-4 rounded-xl overflow-hidden border border-slate-200 relative aspect-video shadow-inner">
+<img alt="AI 运算模拟图" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/ADBb0ug2e08tyDJGyctTnPANX7IZab8683d4FlfNdi3siFoUojZ50U2RLJhCteEMq5SlDeZZSGJUIwURWIzBJEnh3fDj50K7BUmaGzICFFilOJqeOiMG_kH93bd_LRNrzL5F33q7dEJs-bVjE1Rk5m7fVLvsKCCGoDnZcYLiicP5RtAtGiZ5V5Tq_PmmJvAtcPjffGAxcqYAIgMnDMAweWLyETrZ52hF78iKAByQl1MBqKC7ot_8p2hq6kNPcdxGTbyMJUAtQ80z4-pQ"/>
+<div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent flex flex-col justify-end p-4">
+<span class="text-white font-bold text-xs">分布式决策系统 V4.2</span>
+<span class="text-slate-400 text-[10px]">自学习模型运行中</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="mt-12 pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center text-slate-400 text-[11px] font-medium space-y-4 md:space-y-0">
+<div class="flex items-center space-x-6">
+<span>© 2023 Enterprise Global Manager. 版权所有。</span>
+<a class="hover:text-slate-900 transition-colors" href="#">隐私政策</a>
+<a class="hover:text-slate-900 transition-colors" href="#">服务条款</a>
+<a class="hover:text-slate-900 transition-colors" href="#">系统架构日志</a>
+</div>
+<div class="flex items-center bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+<span class="mr-3">最后数据同步: 2023-10-27 14:32:01 (GMT+8)</span>
+<div class="flex items-center text-emerald-500">
+<span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse mr-1.5"></span>
+                        系统连接正常
+                    </div>
+</div>
+</footer>
+</div>
+</main>
+</body></html>

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>商品审核 - 核心管理系统</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+            },
+            surface: {
+              50: '#f9fafb',
+              100: '#f3f4f6',
+              200: '#e5e7eb',
+              white: '#ffffff',
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-utilities">
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-[#f3f4f6] font-sans text-gray-800 antialiased overflow-hidden flex h-screen">
+<!-- BEGIN: Sidebar -->
+<aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0 relative z-20">
+<!-- Logo -->
+<div class="h-16 flex items-center justify-center border-b border-gray-100">
+<div class="flex items-center gap-2">
+<svg class="w-8 h-8 text-red-600" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"></path>
+</svg>
+</div>
+</div>
+<!-- Navigation -->
+<nav class="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors" href="#">
+<i class="fa-solid fa-chart-line w-5 text-center"></i>
+<span class="text-sm font-medium">数据分析</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-md bg-green-50 text-green-700 transition-colors" href="#">
+<i class="fa-solid fa-box-check w-5 text-center"></i>
+<span class="text-sm font-medium">商品审核</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors" href="#">
+<i class="fa-regular fa-envelope w-5 text-center"></i>
+<span class="text-sm font-medium">邮件</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors" href="#">
+<i class="fa-regular fa-life-ring w-5 text-center"></i>
+<span class="text-sm font-medium">支持中心</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors" href="#">
+<i class="fa-solid fa-gear w-5 text-center"></i>
+<span class="text-sm font-medium">系统设置</span>
+</a>
+</nav>
+</aside>
+<!-- END: Sidebar -->
+<!-- BEGIN: Main Container -->
+<div class="flex-1 flex flex-col overflow-hidden relative z-10">
+<!-- BEGIN: Top Header -->
+<header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 flex-shrink-0">
+<div class="flex items-center gap-6">
+<h1 class="text-lg font-semibold text-gray-800">核心管理系统</h1>
+<!-- Search -->
+<div class="relative">
+<i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+<input class="pl-9 pr-4 py-1.5 w-64 bg-gray-100 border-transparent rounded-md text-sm focus:bg-white focus:border-gray-300 focus:ring-0 transition-colors" placeholder="快速搜索数据或报告..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<!-- Icons -->
+<div class="flex items-center gap-3 text-gray-500">
+<button class="hover:text-gray-700 transition-colors"><i class="fa-regular fa-bell"></i></button>
+<button class="hover:text-gray-700 transition-colors"><i class="fa-solid fa-language"></i></button>
+<button class="hover:text-gray-700 transition-colors"><i class="fa-regular fa-circle-question"></i></button>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-2">
+<button class="px-4 py-1.5 bg-teal-600 text-white text-sm font-medium rounded-md hover:bg-teal-700 transition-colors">运行爬虫</button>
+<button class="px-4 py-1.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 transition-colors border border-gray-200">系统日志</button>
+</div>
+<!-- User -->
+<div class="flex items-center gap-2 ml-2">
+<span class="text-sm font-medium text-gray-700">admin</span>
+</div>
+</div>
+</header>
+<!-- END: Top Header -->
+<!-- BEGIN: Page Content -->
+<main class="flex-1 overflow-y-auto p-6 bg-[#f8fafc]">
+<!-- Page Header -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+<p class="text-xs font-semibold tracking-wider text-gray-400 uppercase mb-1">Products</p>
+<h2 class="text-2xl font-bold text-gray-900 mb-2">商品审核</h2>
+<p class="text-sm text-gray-500">管理自动抓取源及手动导入的跨语言商品目录。</p>
+</div>
+<!-- Sub Navigation -->
+<div class="flex items-center justify-between mb-6">
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-full shadow-sm">商品审核</button>
+<button class="px-4 py-2 bg-white text-gray-600 text-sm font-medium rounded-full hover:bg-gray-50 transition-colors shadow-sm border border-gray-200">手动新增</button>
+</div>
+<button class="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors bg-white rounded-md border border-gray-200 shadow-sm">
+<i class="fa-solid fa-list-check text-xs"></i> 抓取日志
+        </button>
+</div>
+<!-- Stats Row -->
+<div class="flex gap-4 mb-6">
+<div class="flex-1 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+<p class="text-sm text-gray-500 mb-1">待审核</p>
+<p class="text-2xl font-bold text-gray-900">26</p>
+</div>
+<div class="flex-1 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+<p class="text-sm text-gray-500 mb-1">补充信息</p>
+<p class="text-2xl font-bold text-gray-900">9</p>
+</div>
+<div class="flex-1 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+<p class="text-sm text-gray-500 mb-1">可发布</p>
+<p class="text-2xl font-bold text-gray-900">2</p>
+</div>
+<div class="flex-1 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+<p class="text-sm text-gray-500 mb-1">今日已处理</p>
+<p class="text-2xl font-bold text-gray-900">14</p>
+</div>
+</div>
+<!-- Full Width List Layout -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+<div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+<div>
+<h3 class="text-lg font-semibold text-gray-900 mb-1">待审核队列</h3>
+<p class="text-xs text-gray-500">点击「审核」按钮进入内容校验详情页。</p>
+</div>
+<div class="flex gap-2">
+<select class="text-sm border-gray-200 rounded-md text-gray-600 py-1.5 pl-3 pr-8 focus:ring-teal-500 focus:border-teal-500">
+<option>所有状态</option>
+<option>待审核</option>
+<option>补充信息</option>
+</select>
+<select class="text-sm border-gray-200 rounded-md text-gray-600 py-1.5 pl-3 pr-8 focus:ring-teal-500 focus:border-teal-500">
+<option>按完整度排序 (降序)</option>
+<option>按时间排序 (最新)</option>
+</select>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-gray-50/80 border-b border-gray-100 text-xs text-gray-500 uppercase tracking-wider">
+<th class="px-6 py-3 font-medium">Product</th>
+<th class="px-6 py-3 font-medium">Source / Status</th>
+<th class="px-6 py-3 font-medium text-center">AI Score</th>
+<th class="px-6 py-3 font-medium">Completion (EN/ES/PT)</th>
+<th class="px-6 py-3 font-medium">Issue</th>
+<th class="px-6 py-3 font-medium text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-gray-100">
+<!-- Row 1 -->
+<tr class="hover:bg-gray-50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-gray-100 rounded-md flex items-center justify-center flex-shrink-0 border border-gray-200">
+<i class="fa-solid fa-robot text-gray-400 text-xl"></i>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-gray-900 group-hover:text-teal-700 transition-colors">Portable Cleaning Robot X2</h4>
+<p class="text-xs text-gray-500 mt-0.5">SKU RC-1038 · 清洁机器人</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col gap-1.5 items-start">
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-green-50 text-green-700 border border-green-100">自动抓取</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-orange-50 text-orange-700 border border-orange-100">补充信息</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-teal-50 text-teal-700 font-bold text-sm border border-teal-100">
+              82
+            </div>
+</td>
+<td class="px-6 py-4">
+<div class="flex gap-2">
+<span class="flex items-center justify-center w-6 h-6 rounded bg-gray-100 text-gray-600 text-xs font-medium" title="English - OK">EN</span>
+<span class="flex items-center justify-center w-6 h-6 rounded bg-red-50 text-red-600 text-xs font-medium border border-red-100" title="Spanish - Missing">ES</span>
+<span class="flex items-center justify-center w-6 h-6 rounded bg-gray-100 text-gray-600 text-xs font-medium" title="Portuguese - OK">PT</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-xs text-gray-600 max-w-xs truncate" title="封面图数量不足，建议补 2 张细节图">封面图数量不足...</p>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="px-4 py-1.5 bg-teal-600 text-white text-sm font-medium rounded-md hover:bg-teal-700 transition-colors shadow-sm">审核</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-gray-50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-gray-100 rounded-md flex items-center justify-center flex-shrink-0 border border-gray-200">
+<i class="fa-solid fa-helicopter text-gray-400 text-xl"></i>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-gray-900 group-hover:text-teal-700 transition-colors">Warehouse Drone Mini</h4>
+<p class="text-xs text-gray-500 mt-0.5">SKU DR-2041 · 巡检无人机</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col gap-1.5 items-start">
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-gray-100 text-gray-600 border border-gray-200">手动导入</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-yellow-50 text-yellow-700 border border-yellow-100">待审核</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-yellow-50 text-yellow-700 font-bold text-sm border border-yellow-100">
+              76
+            </div>
+</td>
+<td class="px-6 py-4">
+<div class="flex gap-2">
+<span class="flex items-center justify-center w-6 h-6 rounded bg-red-50 text-red-600 text-xs font-medium border border-red-100" title="English - Missing">EN</span>
+<span class="flex items-center justify-center w-6 h-6 rounded bg-gray-100 text-gray-600 text-xs font-medium" title="Spanish - OK">ES</span>
+<span class="flex items-center justify-center w-6 h-6 rounded bg-red-50 text-red-600 text-xs font-medium border border-red-100" title="Portuguese - Missing">PT</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-xs text-gray-600 max-w-xs truncate" title="缺少英文摘要">缺少英文摘要</p>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="px-4 py-1.5 bg-white text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50 border border-gray-300 transition-colors shadow-sm">审核</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-gray-50 transition-colors group">
+<td class="px-6 py-4">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-gray-100 rounded-md flex items-center justify-center flex-shrink-0 border border-gray-200">
+<i class="fa-solid fa-industry text-gray-400 text-xl"></i>
+</div>
+<div>
+<h4 class="text-sm font-semibold text-gray-900 group-hover:text-teal-700 transition-colors">Industrial Arm Pro 8</h4>
+<p class="text-xs text-gray-500 mt-0.5">SKU IA-7702 · 工业机械臂</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4">
+<div class="flex flex-col gap-1.5 items-start">
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-green-50 text-green-700 border border-green-100">自动抓取</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-blue-50 text-blue-700 border border-blue-100">可发布</span>
+</div>
+</td>
+<td class="px-6 py-4 text-center">
+<div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-blue-50 text-blue-700 font-bold text-sm border border-blue-100">
+              96
+            </div>
+</td>
+<td class="px-6 py-4">
+<div class="flex gap-2">
+<span class="flex items-center justify-center w-6 h-6 rounded bg-gray-100 text-gray-600 text-xs font-medium" title="English - OK">EN</span>
+<span class="flex items-center justify-center w-6 h-6 rounded bg-gray-100 text-gray-600 text-xs font-medium" title="Spanish - OK">ES</span>
+<span class="flex items-center justify-center w-6 h-6 rounded bg-gray-100 text-gray-600 text-xs font-medium" title="Portuguese - OK">PT</span>
+</div>
+</td>
+<td class="px-6 py-4">
+<p class="text-xs text-gray-600 max-w-xs truncate" title="加入推荐位">加入推荐位</p>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="px-4 py-1.5 bg-white text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50 border border-gray-300 transition-colors shadow-sm">复核</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="p-4 border-t border-gray-100 bg-white flex items-center justify-between">
+<p class="text-sm text-gray-500">Showing 1 to 3 of 35 entries</p>
+<div class="flex gap-1">
+<button class="px-3 py-1 rounded border border-gray-200 text-gray-400 bg-gray-50 cursor-not-allowed text-sm">Prev</button>
+<button class="px-3 py-1 rounded border border-teal-500 bg-teal-50 text-teal-700 font-medium text-sm">1</button>
+<button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm">2</button>
+<button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm">3</button>
+<span class="px-2 py-1 text-gray-400 text-sm">...</span>
+<button class="px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50 text-sm">Next</button>
+</div>
+</div>
+</div>
+</main>
+<!-- END: Page Content -->
+</div>
+<!-- END: Main Container -->
+</body></html>

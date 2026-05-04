@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html lang="zh"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>邮件管理 - GlobalCore</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "primary-fixed-dim": "#bec6e0",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "error-container": "#ffdad6",
+                        "secondary": "#006c49",
+                        "error": "#ba1a1a",
+                        "primary-container": "#131b2e",
+                        "surface-bright": "#f7f9fb",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c6c6cd",
+                        "surface-container": "#eceef0",
+                        "primary": "#000000",
+                        "on-surface": "#191c1e",
+                        "on-secondary-fixed": "#002113",
+                        "surface-variant": "#e0e3e5",
+                        "inverse-primary": "#bec6e0",
+                        "background": "#f7f9fb",
+                        "surface-container-high": "#e6e8ea",
+                        "surface-container-low": "#f2f4f6",
+                        "on-secondary-fixed-variant": "#005236",
+                        "secondary-container": "#6cf8bb",
+                        "on-background": "#191c1e",
+                        "secondary-fixed-dim": "#4edea3",
+                        "outline": "#76777d",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-tertiary-container": "#75859d",
+                        "tertiary": "#000000",
+                        "inverse-surface": "#2d3133",
+                        "on-surface-variant": "#45464d",
+                        "on-primary-container": "#7c839b",
+                        "tertiary-container": "#0b1c30",
+                        "surface": "#f7f9fb",
+                        "on-primary-fixed": "#131b2e",
+                        "primary-fixed": "#dae2fd",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "inverse-on-surface": "#eff1f3",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "surface-tint": "#565e74",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#00714d",
+                        "surface-dim": "#d8dadc",
+                        "tertiary-fixed": "#d3e4fe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "layout-margin": "24px",
+                        "base-unit": "4px",
+                        "lg": "24px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "h2": ["Inter"],
+                        "body-base": ["Inter"],
+                        "h1": ["Inter"],
+                        "table-data": ["Inter"],
+                        "button": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["11px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "h2": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-base": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "h1": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "table-data": ["13px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "button": ["13px", { "lineHeight": "16px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-surface-container-low text-on-surface antialiased min-h-screen">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-60 z-50 bg-[#0F172A] border-r border-slate-800 flex flex-col justify-between shadow-xl">
+<div class="flex flex-col">
+<div class="p-6">
+<span class="text-lg font-bold text-white tracking-widest uppercase">管理后台</span>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider mt-1">企业级产品套件</p>
+</div>
+<nav class="mt-4">
+<div class="text-slate-400 flex items-center py-3 px-4 cursor-pointer hover:bg-slate-800 hover:text-white transition-all duration-200 active:opacity-80">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="text-[13px] font-medium tracking-tight">数据分析</span>
+</div>
+<div class="text-slate-400 flex items-center py-3 px-4 cursor-pointer hover:bg-slate-800 hover:text-white transition-all duration-200 active:opacity-80">
+<span class="material-symbols-outlined mr-3">inventory_2</span>
+<span class="text-[13px] font-medium tracking-tight">商品审核</span>
+</div>
+<div class="bg-slate-800 text-white border-l-4 border-emerald-500 flex items-center py-3 px-4 cursor-pointer active:opacity-80 transition-all duration-200">
+<span class="material-symbols-outlined mr-3">mail</span>
+<span class="text-[13px] font-medium tracking-tight">邮件</span>
+</div>
+<div class="text-slate-400 flex items-center py-3 px-4 cursor-pointer hover:bg-slate-800 hover:text-white transition-all duration-200 active:opacity-80">
+<span class="material-symbols-outlined mr-3">forum</span>
+<span class="text-[13px] font-medium tracking-tight">支持中心</span>
+</div>
+<div class="text-slate-400 flex items-center py-3 px-4 cursor-pointer hover:bg-slate-800 hover:text-white transition-all duration-200 active:opacity-80">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span class="text-[13px] font-medium tracking-tight">系统设置</span>
+</div>
+</nav>
+</div>
+<div class="mb-6">
+<div class="text-slate-400 flex items-center py-3 px-4 cursor-pointer hover:bg-slate-800 hover:text-white transition-all duration-200">
+<span class="material-symbols-outlined mr-3">description</span>
+<span class="text-[13px] font-medium tracking-tight">技术文档</span>
+</div>
+<div class="text-slate-400 flex items-center py-3 px-4 cursor-pointer hover:bg-slate-800 hover:text-white transition-all duration-200">
+<span class="material-symbols-outlined mr-3">check_circle</span>
+<span class="text-[13px] font-medium tracking-tight">系统状态</span>
+</div>
+<div class="mt-4 px-4 flex items-center space-x-3 border-t border-slate-800 pt-4">
+<img alt="管理员头像" class="w-8 h-8 rounded-full border border-slate-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCgluAUtWYhNBofR3KXm7FhIokicuFQllaSeg6LA5HJv6b5kuXp7cwJ7Tqa_CZuxCFcxp-PrpoxQFV9_2CYQWd1CU9Qjz5tw8-ae56xeQFpWKV2RsrSnFiHq5j9-tDYgCnrZOADc0eAg35qUvX01fJhF7AMV1EvYypZaWDsKIrxEKsuiNbdsG_e3lQYYHA9u45MwuO6gZpYmE17Dq9KS6i1NgQz9KLPDx7Ifb7dv_dhBx0QsdYx9ZGNy8IzfCSrF8THq6pn5ji-zac"/>
+<div class="overflow-hidden">
+<p class="text-white text-xs font-bold truncate">系统管理员</p>
+<p class="text-slate-500 text-[10px] truncate">admin@enterprise.ai</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="p-layout-margin ml-60">
+<div class="max-w-[1200px] mx-auto">
+<header class="mb-lg flex justify-between items-end">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface mb-xs">邮件</h1>
+<p class="font-body-base text-body-base text-on-surface-variant">管理所有订阅者、自动化发送规则及整体统计指标。</p>
+</div>
+<button class="bg-secondary text-on-secondary font-button text-button px-md py-sm rounded hover:opacity-90 transition-opacity flex items-center gap-2 shadow-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                    新增订阅者
+                </button>
+</header>
+<!-- Metrics Grid -->
+<div class="grid grid-cols-3 gap-md mb-lg">
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-lg">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-sm uppercase">总订阅数</p>
+<div class="flex items-baseline gap-3">
+<span class="font-h1 text-h1 text-on-surface text-[32px] leading-none">42,891</span>
+<span class="font-body-sm text-body-sm text-secondary flex items-center">
+<span class="material-symbols-outlined text-[14px]" data-icon="trending_up">trending_up</span>
+                            +5.2%
+                        </span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-lg">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-sm uppercase">平均打开率</p>
+<div class="flex items-baseline gap-3">
+<span class="font-h1 text-h1 text-on-surface text-[32px] leading-none">38.4%</span>
+<span class="font-body-sm text-body-sm text-secondary flex items-center">
+<span class="material-symbols-outlined text-[14px]" data-icon="trending_up">trending_up</span>
+                            +1.1%
+                        </span>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded p-lg">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-sm uppercase">平均点击率</p>
+<div class="flex items-baseline gap-3">
+<span class="font-h1 text-h1 text-on-surface text-[32px] leading-none">12.7%</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center">
+<span class="material-symbols-outlined text-[14px]" data-icon="trending_flat">trending_flat</span>
+                            0.0%
+                        </span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-lg mb-lg">
+<!-- Automation Config -->
+<div class="col-span-8 bg-surface-container-lowest border border-outline-variant rounded flex flex-col">
+<div class="p-md border-b-[0.5px] border-outline-variant flex items-center justify-between">
+<h2 class="font-h2 text-h2 text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary" data-icon="smart_toy">smart_toy</span>
+                            自动化发送规则配置
+                        </h2>
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">状态</span>
+<div class="w-8 h-4 bg-secondary rounded-full relative cursor-pointer">
+<div class="w-3 h-3 bg-white rounded-full absolute right-0.5 top-0.5"></div>
+</div>
+</div>
+</div>
+<div class="p-lg flex-1">
+<div class="grid grid-cols-2 gap-md">
+<div>
+<label class="font-label-caps text-label-caps text-on-surface-variant block mb-sm">触发条件</label>
+<select class="w-full bg-surface border border-outline-variant rounded p-sm font-body-sm text-body-sm text-on-surface focus:border-secondary focus:ring-0">
+<option>产品上新时触发</option>
+<option>库存更新时触发</option>
+<option>定期汇总触发</option>
+</select>
+</div>
+<div>
+<label class="font-label-caps text-label-caps text-on-surface-variant block mb-sm">触发频率限制</label>
+<select class="w-full bg-surface border border-outline-variant rounded p-sm font-body-sm text-body-sm text-on-surface focus:border-secondary focus:ring-0">
+<option>最多每天 1 封</option>
+<option>最多每周 1 封</option>
+<option>无限制</option>
+</select>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-md">配置更改将立即对所有新满足条件的订阅者生效。已在发送队列中的任务不受影响。</p>
+<div class="mt-lg flex justify-end gap-3">
+<button class="font-button text-button text-on-surface px-md py-sm border border-outline-variant rounded hover:bg-surface-container transition-colors">取消</button>
+<button class="font-button text-button bg-primary text-on-primary px-md py-sm rounded hover:bg-on-surface-variant transition-colors">保存规则</button>
+</div>
+</div>
+</div>
+<!-- Decorative Image Panel / Tip -->
+<div class="col-span-4 bg-surface-container-lowest border border-outline-variant rounded overflow-hidden relative min-h-[240px]">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="A striking digital installation art piece featuring glowing, generative geometric shapes suspended in a vast, minimalist gallery space." style="background-image: url('https://lh3.googleusercontent.com/aida/ADBb0ug2e08tyDJGyctTnPANX7IZab8683d4FlfNdi3siFoUojZ50U2RLJhCteEMq5SlDeZZSGJUIwURWIzBJEnh3fDj50K7BUmaGzICFFilOJqeOiMG_kH93bd_LRNrzL5F33q7dEJs-bVjE1Rk5m7fVLvsKCCGoDnZcYLiicP5RtAtGiZ5V5Tq_PmmJvAtcPjffGAxcqYAIgMnDMAweWLyETrZ52hF78iKAByQl1MBqKC7ot_8p2hq6kNPcdxGTbyMJUAtQ80z4-pQ');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-lg">
+<p class="font-label-caps text-label-caps text-white/80 uppercase mb-xs">系统提示</p>
+<p class="font-body-sm text-body-sm text-white">请确保您的自动化策略符合各区域的数字通讯合规标准。</p>
+</div>
+</div>
+</div>
+<!-- Subscribers Table -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded">
+<div class="p-md border-b-[0.5px] border-outline-variant flex items-center justify-between">
+<h2 class="font-h2 text-h2 text-on-surface">订阅者列表</h2>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-sm bg-surface border border-outline-variant rounded font-body-sm text-body-sm text-on-surface focus:border-secondary focus:ring-0 w-64" placeholder="搜索邮箱..." type="text"/>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant">
+<th class="py-sm px-md font-label-caps text-label-caps text-on-surface-variant uppercase bg-surface-bright">邮箱地址</th>
+<th class="py-sm px-md font-label-caps text-label-caps text-on-surface-variant uppercase bg-surface-bright">加入日期</th>
+<th class="py-sm px-md font-label-caps text-label-caps text-on-surface-variant uppercase bg-surface-bright">语言偏好</th>
+<th class="py-sm px-md font-label-caps text-label-caps text-on-surface-variant uppercase bg-surface-bright">状态</th>
+<th class="py-sm px-md font-label-caps text-label-caps text-on-surface-variant uppercase bg-surface-bright text-right">操作</th>
+</tr>
+</thead>
+<tbody class="font-table-data text-table-data text-on-surface">
+<tr class="border-b-[0.5px] border-surface-variant hover:bg-surface-container-low transition-colors">
+<td class="py-sm px-md">albert.wang@example.com</td>
+<td class="py-sm px-md text-on-surface-variant">2023-10-12</td>
+<td class="py-sm px-md">中文 (简体)</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-caps text-[10px]">已启用</span>
+</td>
+<td class="py-sm px-md text-right flex justify-end gap-2">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span></button>
+<button class="text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span></button>
+</td>
+</tr>
+<tr class="border-b-[0.5px] border-surface-variant hover:bg-surface-container-low transition-colors">
+<td class="py-sm px-md">sarah.jenkins@acmecorp.com</td>
+<td class="py-sm px-md text-on-surface-variant">2023-10-11</td>
+<td class="py-sm px-md">English</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-caps text-[10px]">已启用</span>
+</td>
+<td class="py-sm px-md text-right flex justify-end gap-2">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span></button>
+<button class="text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span></button>
+</td>
+</tr>
+<tr class="border-b-[0.5px] border-surface-variant hover:bg-surface-container-low transition-colors">
+<td class="py-sm px-md">li.wei@techventures.cn</td>
+<td class="py-sm px-md text-on-surface-variant">2023-10-09</td>
+<td class="py-sm px-md">中文 (简体)</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-variant text-on-surface-variant font-label-caps text-[10px]">已禁用</span>
+</td>
+<td class="py-sm px-md text-right flex justify-end gap-2">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span></button>
+<button class="text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span></button>
+</td>
+</tr>
+<tr class="border-b-[0.5px] border-surface-variant hover:bg-surface-container-low transition-colors">
+<td class="py-sm px-md">m.dupont@logistiques.fr</td>
+<td class="py-sm px-md text-on-surface-variant">2023-10-05</td>
+<td class="py-sm px-md">Français</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-caps text-[10px]">已启用</span>
+</td>
+<td class="py-sm px-md text-right flex justify-end gap-2">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span></button>
+<button class="text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-sm px-md">elena.rodriguez@studio.es</td>
+<td class="py-sm px-md text-on-surface-variant">2023-10-01</td>
+<td class="py-sm px-md">Español</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-caps text-[10px]">已启用</span>
+</td>
+<td class="py-sm px-md text-right flex justify-end gap-2">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]" data-icon="edit">edit</span></button>
+<button class="text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[18px]" data-icon="delete">delete</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-sm px-md border-t border-outline-variant flex justify-between items-center bg-surface-bright rounded-b">
+<span class="font-body-sm text-body-sm text-on-surface-variant">显示 1-5 条，共 42,891 条</span>
+<div class="flex gap-1">
+<button class="p-1 border border-outline-variant rounded text-on-surface-variant hover:bg-surface-container disabled:opacity-50"><span class="material-symbols-outlined text-[18px]" data-icon="chevron_left">chevron_left</span></button>
+<button class="p-1 border border-outline-variant rounded text-on-surface-variant hover:bg-surface-container"><span class="material-symbols-outlined text-[18px]" data-icon="chevron_right">chevron_right</span></button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

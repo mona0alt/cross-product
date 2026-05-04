@@ -103,7 +103,7 @@ describe('admin pages', () => {
     expect(html).toContain('商品审核');
     expect(html).toContain('自动抓取');
     expect(html).toContain('手动导入');
-    expect(html).toContain('产品审核中心');
+    expect(html).toContain('待审核队列');
   });
 
   it('renders the manual product creation page with review framing', async () => {

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+
+<html class="light" lang="zh-CN"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            font-size: 20px;
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "surface-container-highest": "#e0e3e5",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-container": "#75859d",
+                        "on-primary-container": "#7c839b",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "on-error": "#ffffff",
+                        "secondary-container": "#6cf8bb",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-variant": "#e0e3e5",
+                        "surface-container-high": "#e6e8ea",
+                        "inverse-surface": "#2d3133",
+                        "outline-variant": "#c6c6cd",
+                        "surface-tint": "#565e74",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#76777d",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "primary-fixed-dim": "#bec6e0",
+                        "tertiary-container": "#0b1c30",
+                        "tertiary": "#000000",
+                        "on-surface-variant": "#45464d",
+                        "on-primary-fixed": "#131b2e",
+                        "secondary-fixed-dim": "#4edea3",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#eff1f3",
+                        "primary-container": "#131b2e",
+                        "background": "#f7f9fb",
+                        "primary": "#000000",
+                        "on-surface": "#191c1e",
+                        "surface-dim": "#d8dadc",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-secondary-fixed": "#002113",
+                        "inverse-primary": "#bec6e0",
+                        "surface-container": "#eceef0",
+                        "surface-container-low": "#f2f4f6",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "error": "#ba1a1a",
+                        "surface": "#f7f9fb",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#00714d",
+                        "tertiary-fixed": "#d3e4fe",
+                        "secondary-fixed": "#6ffbbe",
+                        "primary-fixed": "#dae2fd",
+                        "surface-bright": "#f7f9fb",
+                        "on-error-container": "#93000a",
+                        "secondary": "#006c49",
+                        "on-background": "#191c1e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "gutter": "16px",
+                        "base-unit": "4px",
+                        "layout-margin": "24px",
+                        "md": "16px",
+                        "sm": "8px",
+                        "xs": "4px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "body-base": ["Inter"],
+                        "h2": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "h1": ["Inter"],
+                        "button": ["Inter"],
+                        "table-data": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-base": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "h2": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "h1": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "button": ["13px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "table-data": ["13px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "body-sm": ["13px", {"lineHeight": "18px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-base antialiased">
+<!-- SIDEBAR NAVIGATION -->
+<aside class="fixed left-0 top-0 h-screen w-60 z-50 bg-[#0F172A] border-r border-slate-800 flex flex-col justify-between overflow-hidden">
+<div>
+<div class="p-6">
+<h1 class="text-lg font-bold text-white tracking-widest uppercase font-h1">管理后台</h1>
+<p class="text-[10px] text-slate-500 font-label-caps uppercase tracking-wider mt-1">企业级产品套件</p>
+</div>
+<nav class="mt-4 flex flex-col"><a class="text-slate-400 flex items-center py-3 px-4 border-l-4 border-transparent hover:bg-slate-800 hover:text-white transition-all duration-200 cursor-pointer active:opacity-80 font-medium text-[13px] tracking-tight" href="#">
+<span class="material-symbols-outlined mr-3">dashboard</span>
+                    数据分析
+                </a>
+<a class="bg-slate-800 text-white border-l-4 border-emerald-500 flex items-center py-3 px-4 transition-all duration-200 cursor-pointer active:opacity-80 font-medium text-[13px] tracking-tight" href="#">
+<span class="material-symbols-outlined mr-3 text-emerald-500">inventory_2</span>
+                    商品审核
+                </a>
+<a class="text-slate-400 flex items-center py-3 px-4 border-l-4 border-transparent hover:bg-slate-800 hover:text-white transition-all duration-200 cursor-pointer active:opacity-80 font-medium text-[13px] tracking-tight" href="#">
+<span class="material-symbols-outlined mr-3">mail</span>
+                    邮件
+                </a>
+<a class="text-slate-400 flex items-center py-3 px-4 border-l-4 border-transparent hover:bg-slate-800 hover:text-white transition-all duration-200 cursor-pointer active:opacity-80 font-medium text-[13px] tracking-tight" href="#">
+<span class="material-symbols-outlined mr-3">forum</span>
+                    支持中心
+                </a>
+<a class="text-slate-400 flex items-center py-3 px-4 border-l-4 border-transparent hover:bg-slate-800 hover:text-white transition-all duration-200 cursor-pointer active:opacity-80 font-medium text-[13px] tracking-tight" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+                    系统设置
+                </a></nav>
+</div>
+<div class="mb-4 border-t border-slate-800 pt-4">
+<a class="text-slate-400 flex items-center py-2 px-6 hover:bg-slate-800 hover:text-white transition-all duration-200 text-[12px]" href="#">
+<span class="material-symbols-outlined mr-3 text-[18px]">description</span>
+                系统文档
+            </a>
+<a class="text-slate-400 flex items-center py-2 px-6 hover:bg-slate-800 hover:text-white transition-all duration-200 text-[12px]" href="#">
+<span class="material-symbols-outlined mr-3 text-[18px]">check_circle</span>
+                系统状态
+            </a>
+<div class="mt-6 px-6 pb-6 flex items-center space-x-3">
+<img alt="System Administrator" class="w-8 h-8 rounded-full border border-slate-700 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbXa2DounqXoE-9-buUCGhWM3s-plFPEnDT9bIHGgvKt8vv9-K61oLOBel6-PUNIRkMghTf4Qh5zXxzR5BWAzTvi5dNynCnCBdUFVKE9McoxOKyyFP7-z6tWvPZM2cIih8qfSXJCNnbD_wgECxtM5_LvvjtftaxaAVEKhXKCtPX9Xnn9tdis9aLw3pryjeUQy8s_rv8v2EvZw9t0-AwQ_bc7ack2Zmsh1YDBbpXO67NuMFB5D0sU-iplAEGolAeWtHzEDBxEbQu7s"/>
+<div>
+<p class="text-white text-[12px] font-bold">系统管理员</p>
+<p class="text-slate-500 text-[10px]">admin@enterprise.com</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- TOP NAVIGATION - SIMPLIFIED -->
+<header class="fixed top-0 right-0 left-60 h-14 z-40 bg-white border-b border-slate-200 flex items-center justify-between px-6">
+<div class="flex items-center space-x-6">
+<h2 class="text-xl font-black text-slate-900 tracking-tight font-h2">全球商品管理</h2>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
+<input class="pl-10 pr-4 py-1.5 bg-slate-50 border border-slate-200 rounded text-sm w-80 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all" placeholder="搜索 SKU、标题或来源..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<div class="flex items-center space-x-2 border-r border-slate-200 pr-4">
+<button class="p-2 text-slate-500 hover:bg-slate-50 rounded transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+</button>
+<button class="p-2 text-slate-500 hover:bg-slate-50 rounded transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+</div>
+<button class="bg-secondary text-white px-5 py-1.5 rounded font-button flex items-center space-x-2 hover:bg-opacity-90 transition-all shadow-sm">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+<span>开始自动抓取</span>
+</button>
+</div>
+</header>
+<!-- MAIN CONTENT -->
+<main class="ml-60 pt-14 min-h-screen">
+<div class="p-lg grid grid-cols-12 gap-gutter max-w-[1600px] mx-auto">
+<!-- HEADER SECTION -->
+<div class="col-span-12 flex justify-between items-end mb-4">
+<div>
+<h1 class="font-h1 text-h1 text-slate-900">产品审核中心</h1>
+<p class="text-body-sm text-slate-500 mt-1">管理自动抓取源及手动导入的跨语言商品目录。</p>
+</div>
+<div class="flex space-x-3">
+<button class="bg-white border border-emerald-600 text-emerald-600 px-4 py-2 rounded text-[13px] font-bold flex items-center hover:bg-emerald-50 transition-all active:scale-95 shadow-sm">
+<span class="material-symbols-outlined mr-2">add_circle</span>
+                        手动导入商品
+                    </button>
+<button class="border border-slate-200 bg-white px-4 py-2 rounded text-sm font-medium text-slate-700 hover:bg-slate-50 flex items-center transition-all">
+<span class="material-symbols-outlined mr-2 text-[18px]">history</span> 日志记录
+                    </button>
+<button class="border border-slate-200 bg-white px-4 py-2 rounded text-sm font-medium text-slate-700 hover:bg-slate-50 flex items-center transition-all">
+<span class="material-symbols-outlined mr-2 text-[18px]">edit_note</span> 批量编辑
+                    </button>
+</div>
+</div>
+<!-- MANUAL IMPORT SECTION (Dedicated Pane) -->
+<section class="col-span-12 lg:col-span-4 space-y-gutter">
+<div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+<div class="p-4 border-b border-slate-100 bg-slate-50/80 flex justify-between items-center">
+<h3 class="font-h2 text-body-base font-bold uppercase tracking-wider text-slate-800">手动新增商品</h3>
+<span class="text-[10px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded font-bold uppercase">草稿模式</span>
+</div>
+<div class="p-4 space-y-4">
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1">
+<label class="font-label-caps text-slate-500 uppercase">商品名称 (中文)</label>
+<input class="w-full border border-slate-200 rounded px-3 py-1.5 text-sm focus:ring-1 focus:ring-emerald-500 outline-none" placeholder="输入核心标题" type="text"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-slate-500 uppercase">分类</label>
+<select class="w-full border border-slate-200 rounded px-3 py-1.5 text-sm focus:ring-1 focus:ring-emerald-500 outline-none bg-white">
+<option>电子产品</option>
+<option>家居生活</option>
+<option>时尚服饰</option>
+<option>户外运动</option>
+</select>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1">
+<label class="font-label-caps text-slate-500 uppercase">基础价格 (USD)</label>
+<input class="w-full border border-slate-200 rounded px-3 py-1.5 text-sm focus:ring-1 focus:ring-emerald-500 outline-none" placeholder="0.00" type="number"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-slate-500 uppercase">库存数量</label>
+<input class="w-full border border-slate-200 rounded px-3 py-1.5 text-sm focus:ring-1 focus:ring-emerald-500 outline-none" placeholder="100" type="number"/>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-slate-500 uppercase">商品图片</label>
+<div class="border-2 border-dashed border-slate-200 rounded-lg p-6 flex flex-col items-center justify-center bg-slate-50 hover:bg-white transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-emerald-500 text-3xl mb-2">upload_file</span>
+<p class="text-xs text-slate-500">点击或拖拽图片上传</p>
+<p class="text-[10px] text-slate-400 mt-1">支持 JPG, PNG (最大 5MB)</p>
+</div>
+</div>
+<div class="pt-2">
+<button class="w-full py-2.5 bg-slate-900 text-white rounded font-bold text-[13px] hover:bg-black transition-all active:opacity-90">保存到待审核列表</button>
+</div>
+</div>
+</div>
+<!-- SOURCE MONITORING (Repurposed as secondary panel) -->
+<div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+<div class="p-4 border-b border-slate-100 flex justify-between items-center">
+<h3 class="font-h2 text-body-base font-bold uppercase tracking-wider text-slate-800">自动抓取源监控</h3>
+<button class="text-emerald-600 hover:bg-emerald-50 p-1 rounded transition-colors">
+<span class="material-symbols-outlined">add_box</span>
+</button>
+</div>
+<div class="p-4 space-y-3">
+<div class="p-3 bg-slate-50 border border-slate-200 rounded-md">
+<div class="flex justify-between items-center mb-1">
+<span class="text-xs font-bold text-slate-700">Amazon US Electronics</span>
+<span class="text-[10px] px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded font-bold">运行中</span>
+</div>
+<p class="text-[11px] text-slate-500 truncate">上次同步: 12分钟前</p>
+</div>
+<div class="p-3 bg-slate-50 border border-slate-200 rounded-md">
+<div class="flex justify-between items-center mb-1">
+<span class="text-xs font-bold text-slate-700">AliExpress Global</span>
+<span class="text-[10px] px-1.5 py-0.5 bg-slate-200 text-slate-600 rounded font-bold">已挂起</span>
+</div>
+<p class="text-[11px] text-slate-500 truncate">需要重新验证 API</p>
+</div>
+</div>
+</div>
+</section>
+<!-- PRODUCT LIST & FLOW -->
+<section class="col-span-12 lg:col-span-8 grid grid-rows-[auto_1fr] gap-gutter">
+<div class="bg-white border border-slate-200 rounded-lg overflow-hidden flex flex-col min-h-[400px] shadow-sm">
+<div class="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+<h3 class="font-h2 text-body-base font-bold uppercase tracking-wider text-slate-800">待审核商品列表 (抓取 + 手动)</h3>
+<div class="flex items-center space-x-3">
+<div class="flex space-x-1">
+<button class="px-2 py-1 text-[11px] bg-emerald-600 text-white rounded font-bold">全部</button>
+<button class="px-2 py-1 text-[11px] text-slate-500 hover:bg-slate-100 rounded font-bold">手动</button>
+<button class="px-2 py-1 text-[11px] text-slate-500 hover:bg-slate-100 rounded font-bold">抓取</button>
+</div>
+<span class="text-[11px] font-medium text-slate-500 border-l border-slate-200 pl-3">共 1,284 个项目</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-white border-b border-slate-100">
+<th class="px-4 py-3 font-label-caps text-slate-400 uppercase">预览</th>
+<th class="px-4 py-3 font-label-caps text-slate-400 uppercase">商品标题/SKU</th>
+<th class="px-4 py-3 font-label-caps text-slate-400 uppercase">价格</th>
+<th class="px-4 py-3 font-label-caps text-slate-400 uppercase">来源/类型</th>
+<th class="px-4 py-3 font-label-caps text-slate-400 uppercase">审核状态</th>
+<th class="px-4 py-3 font-label-caps text-slate-400 uppercase">操作</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100">
+<!-- Manual Entry Example -->
+<tr class="hover:bg-slate-50 transition-colors cursor-pointer bg-emerald-50/10">
+<td class="px-4 py-2">
+<div class="w-10 h-10 rounded border border-emerald-200 bg-emerald-50 flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-emerald-400">image</span>
+</div>
+</td>
+<td class="px-4 py-2">
+<p class="font-table-data font-bold text-slate-900">新产品原型 - 智能手表 V3</p>
+<p class="text-[11px] text-emerald-600 font-medium">手动导入 · 草稿</p>
+</td>
+<td class="px-4 py-2 font-table-data text-slate-700">$599.00</td>
+<td class="px-4 py-2">
+<span class="px-2 py-0.5 rounded-sm bg-slate-100 text-slate-600 text-[10px] font-bold uppercase">内部库</span>
+</td>
+<td class="px-4 py-2">
+<span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase">编辑中</span>
+</td>
+<td class="px-4 py-2">
+<button class="text-emerald-600 hover:text-emerald-700 font-bold text-xs uppercase">审核</button>
+</td>
+</tr>
+<!-- Scraped Entry Example -->
+<tr class="hover:bg-slate-50 transition-colors cursor-pointer">
+<td class="px-4 py-2">
+<img alt="Product" class="w-10 h-10 rounded border border-slate-200 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1LSl2_D3Jk6wQ5f816qRzyyd3XVo2rO0uIa4X3wQd7t3nQztu8zRksXb7w9aJtTFi-ATt6LvK4NF3WaeL7ebboImniBRSjkdFErGXWqoHXUdDR5GpOGUt9LO7hlbCF5oZZj5jJWMh95XMN9stWkhQsytYB_FbbRahRXShEpoma6qAihOelh0Yzg58W4rgMLqLnO-MJxv5jwNmqFLKL4ZOjNWXOfnJ7slBOXaJ_P1S6yNaPUxHXotfaV2TOPXL0JD95xAUkmdxDkQ"/>
+</td>
+<td class="px-4 py-2">
+<p class="font-table-data font-bold text-slate-900">高端降噪无线耳机 Pro</p>
+<p class="text-[11px] text-slate-500">SKU: HD-9920-BLK</p>
+</td>
+<td class="px-4 py-2 font-table-data text-slate-700">$299.00</td>
+<td class="px-4 py-2 font-table-data text-slate-600 text-[12px]">Amazon US</td>
+<td class="px-4 py-2">
+<span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 text-[10px] font-bold uppercase">待审核</span>
+</td>
+<td class="px-4 py-2">
+<button class="text-emerald-600 hover:text-emerald-700 font-bold text-xs uppercase">审核</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- MULTI-LANGUAGE EDIT PANE -->
+<div class="bg-white border border-slate-200 rounded-lg flex flex-col shadow-sm">
+<div class="p-4 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+<div class="flex items-center space-x-2">
+<h3 class="font-h2 text-body-base font-bold uppercase tracking-wider text-slate-800">多语言内容翻译与审核</h3>
+<span class="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded font-bold">智能翻译已激活</span>
+</div>
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-slate-400 text-sm">translate</span>
+</div>
+</div>
+<div class="p-4 grid grid-cols-3 gap-4 h-full custom-scrollbar overflow-y-auto">
+<!-- English Content -->
+<div class="space-y-4 border-r border-slate-100 pr-4">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center space-x-2">
+<span class="w-4 h-3 bg-blue-800 rounded-sm"></span>
+<span class="text-xs font-bold text-slate-700 uppercase">English</span>
+</div>
+<span class="material-symbols-outlined text-slate-300 text-sm">check_circle</span>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase">Product Title</label>
+<input class="w-full border border-slate-200 rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-emerald-500 outline-none" type="text" value="High-End Noise Cancelling Wireless Headphones Pro"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase">Description</label>
+<textarea class="w-full border border-slate-200 rounded px-2 py-1.5 text-xs h-32 focus:ring-1 focus:ring-emerald-500 outline-none leading-relaxed">Experience pure audio bliss with active noise cancellation and 40-hour battery life. Premium memory foam ear cups for ultimate comfort.</textarea>
+</div>
+</div>
+<!-- Spanish Content -->
+<div class="space-y-4 border-r border-slate-100 pr-4">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center space-x-2">
+<span class="w-4 h-3 bg-red-600 rounded-sm"></span>
+<span class="text-xs font-bold text-slate-700 uppercase">Español</span>
+</div>
+<button class="text-[10px] text-emerald-600 font-bold uppercase hover:underline">重新生成</button>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase">Título del Producto</label>
+<input class="w-full border border-slate-200 rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-emerald-500 outline-none" type="text" value="Auriculares Inalámbricos Pro con Cancelación de Ruido"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase">Descripción</label>
+<textarea class="w-full border border-slate-200 rounded px-2 py-1.5 text-xs h-32 focus:ring-1 focus:ring-emerald-500 outline-none leading-relaxed">Disfruta de la pureza del sonido con cancelación activa de ruido y 40 horas de batería. Almohadillas de espuma premium para máximo confort.</textarea>
+</div>
+</div>
+<!-- Portuguese Content -->
+<div class="space-y-4">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center space-x-2">
+<span class="w-4 h-3 bg-green-600 rounded-sm"></span>
+<span class="text-xs font-bold text-slate-700 uppercase">Português</span>
+</div>
+<button class="text-[10px] text-emerald-600 font-bold uppercase hover:underline">重新生成</button>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase">Título do Produto</label>
+<input class="w-full border border-slate-200 rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-emerald-500 outline-none" type="text" value="Fones de Ouvido Sem Fio Pro com Cancelamento de Ruído"/>
+</div>
+<div class="space-y-1">
+<label class="text-[10px] font-bold text-slate-400 uppercase">Descrição</label>
+<textarea class="w-full border border-slate-200 rounded px-2 py-1.5 text-xs h-32 focus:ring-1 focus:ring-emerald-500 outline-none leading-relaxed">Experimente a pureza do áudio com cancelamento de ruído ativo e 40 horas de bateria. Almofadas de espuma de memória premium.</textarea>
+</div>
+</div>
+</div>
+<div class="p-4 bg-slate-50 border-t border-slate-100 flex justify-end space-x-4">
+<button class="px-6 py-2 border border-error text-error text-[13px] font-bold uppercase rounded hover:bg-red-50 transition-all active:opacity-80">
+                            拒绝此条目
+                        </button>
+<button class="px-10 py-2 bg-emerald-600 text-white text-[13px] font-bold uppercase rounded hover:bg-emerald-700 transition-all shadow-md active:opacity-80">
+                            审核通过并上架
+                        </button>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>
