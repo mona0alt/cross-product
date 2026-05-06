@@ -5,15 +5,8 @@ cd "$(dirname "$0")"
 
 PORT=3000
 
-echo "Killing process on port ${PORT}..."
-PIDS=$(lsof -ti:${PORT} 2>/dev/null || true)
-if [ -n "$PIDS" ]; then
-  echo "$PIDS" | xargs kill -9 2>/dev/null || true
-  for _ in 1 2 3 4 5; do
-    sleep 1
-    [ -z "$(lsof -ti:${PORT} 2>/dev/null || true)" ] && break
-  done
-fi
+# Ensure logs directory exists
+mkdir -p logs
 
 echo "Installing dependencies..."
 npm install
@@ -21,5 +14,13 @@ npm install
 echo "Building..."
 npm run build
 
-echo "Starting server on 0.0.0.0:${PORT}..."
-HOSTNAME=0.0.0.0 PORT=${PORT} npm start
+echo "Restarting server with PM2..."
+if pm2 describe cross >/dev/null 2>&1; then
+  pm2 restart ecosystem.config.js
+else
+  pm2 start ecosystem.config.js
+fi
+
+pm2 save >/dev/null 2>&1 || true
+
+echo "Server restarted on 0.0.0.0:${PORT}"

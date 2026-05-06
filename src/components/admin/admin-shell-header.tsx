@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { Bell, HelpCircle, Languages, LogOut } from 'lucide-react';
 
@@ -46,19 +48,21 @@ export function AdminShellHeader({
           </div>
 
           {/* Hover reveal: logout */}
-          <form
-            action="/api/admin/logout"
-            method="post"
-            className="ml-0 max-w-0 overflow-hidden opacity-0 transition-all duration-300 ease-out group-hover:ml-2 group-hover:max-w-[5rem] group-hover:opacity-100"
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                await fetch('/api/admin/logout', { method: 'POST' });
+              } catch {
+                // ignore network errors and still redirect
+              }
+              window.location.href = '/admin/login';
+            }}
+            className="ml-0 max-w-0 overflow-hidden opacity-0 transition-all duration-300 ease-out group-hover:ml-2 group-hover:max-w-[5rem] group-hover:opacity-100 flex items-center gap-1.5 whitespace-nowrap rounded-lg bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-600 hover:bg-red-100 hover:text-red-700"
           >
-            <button
-              type="submit"
-              className="flex items-center gap-1.5 whitespace-nowrap rounded-lg bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-600 transition-colors hover:bg-red-100 hover:text-red-700"
-            >
-              <LogOut className="h-3 w-3" />
-              退出
-            </button>
-          </form>
+            <LogOut className="h-3 w-3" />
+            退出
+          </button>
         </div>
       </div>
     </header>
