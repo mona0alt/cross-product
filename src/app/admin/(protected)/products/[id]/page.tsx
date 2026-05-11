@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { AdminSectionHeader } from '@/components/admin/admin-section-header';
 import { ProductForm } from '@/components/admin/product-form';
 import { getAdminCategoryTree } from '@/features/catalog/queries';
+import { getAdminDictionary } from '@/lib/admin-i18n';
 import { db } from '@/lib/db';
 
 function flattenCategories(
@@ -26,14 +27,15 @@ export default async function AdminEditProductPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [categories, product] = await Promise.all([
+  const [categories, product, { Admin }] = await Promise.all([
     getAdminCategoryTree(),
     db.product.findUnique({
       where: { id },
       include: {
         images: true
       }
-    })
+    }),
+    getAdminDictionary()
   ]);
 
   if (!product) {
@@ -44,8 +46,8 @@ export default async function AdminEditProductPage({
     <section className="space-y-6">
       <AdminSectionHeader
         label="Settings"
-        title="系统设置"
-        description="管理手动录入商品与复审配置。"
+        title={Admin.products.title}
+        description={Admin.products.description}
       />
       <ProductForm
         mode="edit"
@@ -54,6 +56,8 @@ export default async function AdminEditProductPage({
           ...product,
           priceUsd: product.priceUsd.toString()
         }}
+        copy={Admin.products}
+        uploadLabel={Admin.common.upload}
       />
     </section>
   );

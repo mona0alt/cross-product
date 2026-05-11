@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const getAdminProductList = vi.fn();
 const getAdminCategoryTree = vi.fn();
 const requireAdminSession = vi.fn();
+const cookiesMock = vi.fn();
 const bannerFindMany = vi.fn();
 const messageFindMany = vi.fn();
 const subscriberFindMany = vi.fn();
@@ -23,6 +24,10 @@ vi.mock('@/lib/auth', async () => {
     requireAdminSession
   };
 });
+
+vi.mock('next/headers', () => ({
+  cookies: cookiesMock
+}));
 
 vi.mock('@/lib/db', () => ({
   db: {
@@ -50,6 +55,10 @@ describe('admin pages', () => {
     messageFindMany.mockReset();
     subscriberFindMany.mockReset();
     productFindUnique.mockReset();
+    cookiesMock.mockReset();
+    cookiesMock.mockResolvedValue({
+      get: () => undefined
+    });
     requireAdminSession.mockResolvedValue({
       id: 'admin-1',
       username: 'admin'
@@ -125,7 +134,7 @@ describe('admin pages', () => {
       (await import('@/app/admin/(protected)/products/new/page')).default;
     const html = renderToStaticMarkup(await NewProductPage());
 
-    expect(html).toContain('系统设置');
+    expect(html).toContain('商品管理');
     expect(html).toContain('创建后进入审核');
     expect(html).toContain('基础信息');
     expect(html).toContain('图片素材');
@@ -163,7 +172,7 @@ describe('admin pages', () => {
       })
     );
 
-    expect(editHtml).toContain('系统设置');
+    expect(editHtml).toContain('商品管理');
     expect(editHtml).toContain('编辑后重新进入审核');
   });
 
@@ -232,13 +241,13 @@ describe('admin pages', () => {
     const bannersHtml = renderToStaticMarkup(await BannersPage());
 
     expect(messagesHtml).toContain('支持中心');
-    expect(messagesHtml).toContain('待处理收件箱');
-    expect(messagesHtml).toContain('回复界面');
-    expect(messagesHtml).toContain('系统活动日志');
-    expect(messagesHtml).toContain('Alice');
+    expect(messagesHtml).toContain('留言清单');
+    expect(messagesHtml).toContain('总留言');
+    expect(messagesHtml).toContain('待处理');
+    expect(messagesHtml).toContain('张明远');
     expect(subscribersHtml).toContain('邮件');
     expect(subscribersHtml).toContain('总订阅数');
-    expect(subscribersHtml).toContain('自动化发送规则配置');
+    expect(subscribersHtml).toContain('自动化发送规则');
     expect(subscribersHtml).toContain('订阅者列表');
     expect(crawlHtml).toContain('系统设置');
     expect(crawlHtml).toContain('抓取系统配置');

@@ -1,3 +1,5 @@
+'use server';
+
 import { db } from '@/lib/db';
 import { getPublishBlockers } from '@/features/catalog/publishable';
 
@@ -32,6 +34,82 @@ type ProductUpdateInput = Partial<{
   detailPt: string;
 }>;
 
+type ProductFormStatus = 'draft' | 'pending' | 'published' | 'archived';
+
+function getFormString(formData: FormData, key: string) {
+  const value = formData.get(key);
+
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function getRequiredFormString(formData: FormData, key: string) {
+  const value = getFormString(formData, key);
+
+  if (!value) {
+    throw new Error(`MISSING_${key}`);
+  }
+
+  return value;
+}
+
+function getFormNumber(formData: FormData, key: string, fallback = 0) {
+  const value = getFormString(formData, key);
+  const parsed = Number(value);
+
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function getFormStatus(formData: FormData): ProductFormStatus {
+  const value = getFormString(formData, 'status');
+
+  if (['draft', 'pending', 'published', 'archived'].includes(value)) {
+    return value as ProductFormStatus;
+  }
+
+  return 'draft';
+}
+
+function getGalleryUrls(formData: FormData) {
+  return getFormString(formData, 'galleryImageUrls')
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+}
+
+function getProductFormPayload(formData: FormData) {
+  return {
+    categoryId: getRequiredFormString(formData, 'categoryId'),
+    productCode: getRequiredFormString(formData, 'productCode'),
+    slug: getRequiredFormString(formData, 'slug'),
+    priceUsd: getFormNumber(formData, 'priceUsd'),
+    coverImageUrl: getRequiredFormString(formData, 'coverImageUrl'),
+    status: getFormStatus(formData),
+    isRecommended: formData.get('isRecommended') === 'on',
+    sortOrder: getFormNumber(formData, 'sortOrder'),
+    nameZh: getRequiredFormString(formData, 'nameZh'),
+    nameEn: getRequiredFormString(formData, 'nameEn'),
+    nameEs: getRequiredFormString(formData, 'nameEs'),
+    namePt: getRequiredFormString(formData, 'namePt'),
+    introZh: getRequiredFormString(formData, 'introZh'),
+    introEn: getRequiredFormString(formData, 'introEn'),
+    introEs: getRequiredFormString(formData, 'introEs'),
+    introPt: getRequiredFormString(formData, 'introPt'),
+    detailZh: getRequiredFormString(formData, 'detailZh'),
+    detailEn: getRequiredFormString(formData, 'detailEn'),
+    detailEs: getRequiredFormString(formData, 'detailEs'),
+    detailPt: getRequiredFormString(formData, 'detailPt')
+  };
+}
+
+function getImageCreateData(productId: string, nameEn: string, urls: string[]) {
+  return urls.map((imageUrl, sortOrder) => ({
+    productId,
+    imageUrl,
+    altText: nameEn,
+    sortOrder
+  }));
+}
+
 function getEmptyLocalizedFields() {
   return {
     nameZh: '',
@@ -59,10 +137,53 @@ export async function createProductDraft(input: ProductDraftInput) {
   });
 }
 
+export async function createProductFromForm(formData: FormData) {
+  const payload = getProductFormPayload(formData);
+  const galleryUrls = getGalleryUrls(formData);
+
+  return db.product.create({
+    data: {
+      ...payload,
+      images: {
+        create: galleryUrls.map((imageUrl, sortOrder) => ({
+          imageUrl,
+          altText: payload.nameEn,
+          sortOrder
+        }))
+      }
+    }
+  });
+}
+
 export async function updateProduct(id: string, input: ProductUpdateInput) {
   return db.product.update({
     where: { id },
     data: input
+  });
+}
+
+export async function updateProductFromForm(id: string, formData: FormData) {
+  const payload = getProductFormPayload(formData);
+  const galleryUrls = getGalleryUrls(formData);
+
+  return db.$transaction(async (tx) => {
+    const product = await tx.product.update({
+      where: { id },
+      data: payload
+    });
+
+    await tx.productImage.deleteMany({
+      where: { productId: id }
+    });
+
+    const imageData = getImageCreateData(id, payload.nameEn, galleryUrls);
+    if (imageData.length > 0) {
+      await tx.productImage.createMany({
+        data: imageData
+      });
+    }
+
+    return product;
   });
 }
 
