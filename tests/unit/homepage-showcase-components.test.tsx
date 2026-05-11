@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import { HomepageCategoryGrid } from '@/components/storefront/homepage-category-grid';
 import { HomepageProductMatrix } from '@/components/storefront/homepage-product-matrix';
+import { SocialShowcase } from '@/components/storefront/social-showcase';
 
 const categories = [
   {
@@ -82,5 +83,27 @@ describe('homepage showcase components', () => {
     expect(html).toContain('/en/products/alpha');
     expect(html).toContain('/show/robot_drone.png');
     expect(html).not.toContain('empty-slot');
+  });
+
+  it('renders social media cards with platform tabs', () => {
+    const html = renderToStaticMarkup(
+      <SocialShowcase
+        copy={{
+          title: 'Social Media',
+          handle: '@fbgm_robotics',
+          tabs: {
+            windowRobots: 'Window Robots',
+            drones: 'Drones',
+            humanoidRobots: 'Humanoids',
+            vacuumRobots: 'Vacuum Robots',
+            scenes: 'Highlights'
+          }
+        }}
+      />
+    );
+
+    expect(html).toContain('Social Media');
+    expect(html).toContain('@fbgm_robotics');
+    expect(html).toContain('Window Robots');
   });
 });

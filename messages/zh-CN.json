@@ -101,14 +101,14 @@
       }
     },
     "socialShowcase": {
-      "title": "机器人应用场景 #FBGM",
+      "title": "社交媒体 #FBGM",
       "handle": "@fbgm_robotics",
       "tabs": {
         "windowRobots": "擦窗机器人",
         "drones": "无人机",
         "humanoidRobots": "人形机器人",
         "vacuumRobots": "扫地机器人",
-        "scenes": "场景"
+        "scenes": "精选内容"
       }
     },
     "home": {

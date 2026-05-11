@@ -54,17 +54,42 @@ export function SocialShowcase({
   };
 }) {
   const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['key']>('windowRobots');
+  const activeImages = images[activeTab] ?? images.windowRobots;
+  const platforms = ['TikTok', 'Instagram', 'YouTube', 'Facebook'];
 
   return (
-    <section className="py-8">
-      <div className="mk-container mb-5 text-center">
-        <h2 className="mk-section-title">{copy.title}</h2>
-        <p className="mt-2 text-sm text-[var(--mk-text-muted)]">{copy.handle}</p>
-      </div>
+    <section className="bg-white py-10 sm:py-12">
+      <div className="mk-container">
+        <div className="mb-6 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--mk-accent)]">
+              SOCIAL MEDIA
+            </p>
+            <h2 className="mt-2 text-2xl font-bold text-[var(--mk-text)]">
+              {copy.title}
+            </h2>
+            <p className="mt-2 text-sm text-[var(--mk-text-muted)]">{copy.handle}</p>
+          </div>
 
-      {/* Tabs */}
-      <div className="mk-container mb-5">
-        <div className="flex flex-wrap justify-center gap-2">
+          <div className="flex gap-2">
+            <button
+              type="button"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--mk-border-strong)] text-[var(--mk-accent)]"
+              aria-label="previous-social-card"
+            >
+              <span aria-hidden="true">‹</span>
+            </button>
+            <button
+              type="button"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--mk-accent)] text-white"
+              aria-label="next-social-card"
+            >
+              <span aria-hidden="true">›</span>
+            </button>
+          </div>
+        </div>
+
+        <div className="mb-5 flex flex-wrap gap-2">
           {tabs.map((tab) => (
             <button
               key={tab.key}
@@ -72,26 +97,38 @@ export function SocialShowcase({
               onClick={() => setActiveTab(tab.key)}
               className={`rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wide transition ${
                 activeTab === tab.key
-                  ? 'bg-black text-white'
-                  : 'border border-[var(--mk-border)] text-black hover:bg-[var(--mk-bg-muted)]'
+                  ? 'bg-[var(--mk-accent)] text-white'
+                  : 'border border-[var(--mk-border)] text-[var(--mk-text)] hover:bg-[var(--mk-bg-muted)]'
               }`}
             >
               {copy.tabs[tab.key]}
             </button>
           ))}
         </div>
-      </div>
 
-      {/* Image grid */}
-      <div className="mk-container">
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {(images[activeTab] ?? images.windowRobots).map((src, index) => (
-            <div key={`${activeTab}-${index}`} className="overflow-hidden rounded-md">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {activeImages.slice(0, 4).map((src, index) => (
+            <div
+              key={`${activeTab}-${index}`}
+              className="group relative aspect-[9/13] overflow-hidden rounded-xl border border-[var(--mk-border)] bg-[var(--mk-bg-muted)] shadow-[0_16px_38px_rgba(29,126,234,0.08)]"
+            >
               <img
                 src={src}
                 alt=""
-                className="aspect-square w-full object-cover transition duration-300 hover:scale-105"
+                className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#061b38]/84 via-[#0f63ce]/14 to-transparent" />
+              <div className="absolute left-4 right-4 top-4 flex justify-end">
+                <span className="rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--mk-text)]">
+                  {platforms[index] ?? 'Social'}
+                </span>
+              </div>
+              <div className="absolute bottom-4 left-4 right-4 text-white">
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#bfe1ff]">
+                  {copy.handle}
+                </p>
+                <h3 className="mt-1 text-sm font-bold">{copy.tabs[activeTab]}</h3>
+              </div>
             </div>
           ))}
         </div>

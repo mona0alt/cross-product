@@ -101,14 +101,14 @@
       }
     },
     "socialShowcase": {
-      "title": "Robótica en acción #FBGM",
+      "title": "Redes sociales #FBGM",
       "handle": "@fbgm_robotics",
       "tabs": {
         "windowRobots": "ROBOTS LIMPIACRISTALES",
         "drones": "DRONES",
         "humanoidRobots": "HUMANOIDES",
         "vacuumRobots": "ROBOTS ASPIRADORES",
-        "scenes": "ESCENAS"
+        "scenes": "DESTACADOS"
       }
     },
     "home": {
