@@ -74,6 +74,7 @@
     },
     "sections": {
       "topCategories": "一级分类导航",
+      "productSeries": "系列产品",
       "categoryGrid": "按分类浏览",
       "recommended": "推荐商品",
       "related": "相关推荐",

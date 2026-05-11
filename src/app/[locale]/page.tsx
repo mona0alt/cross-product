@@ -2,6 +2,7 @@ import React from 'react';
 
 import { BannerCarousel } from '@/components/storefront/banner-carousel';
 import { CatalogCarousel } from '@/components/storefront/catalog-carousel';
+import { HomepageCategoryGrid } from '@/components/storefront/homepage-category-grid';
 import { ProductCarousel } from '@/components/storefront/product-carousel';
 import { SocialShowcase } from '@/components/storefront/social-showcase';
 import { getHomepagePayload } from '@/features/catalog/queries';
@@ -39,6 +40,12 @@ export default async function LocalizedHomePage({
         copy={Storefront.home}
         primaryHref={`/${locale}/products`}
         secondaryHref={`/${locale}/contact`}
+      />
+
+      <HomepageCategoryGrid
+        locale={locale}
+        title={Storefront.sections.productSeries}
+        categories={payload.featuredCategories}
       />
 
       {/* Offers carousel */}
