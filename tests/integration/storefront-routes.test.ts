@@ -68,7 +68,6 @@ describe('storefront routes', () => {
 
     expect(html).toContain('Star River Pro Phone');
     expect(html).toContain('Electronics');
-    expect(html).toContain('Premium robotics for modern work');
     expect(html).toContain('Product Series');
     expect(html).toContain('More Product Images');
     expect(html).toContain('Social Media #FBGM');

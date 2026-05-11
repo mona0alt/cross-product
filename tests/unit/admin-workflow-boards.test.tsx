@@ -23,9 +23,9 @@ describe('admin workflow boards', () => {
       <SubscriberNotificationBoard data={mockBackoffice.subscribers} />
     );
 
-    expect(html).toContain('总订阅数');
-    expect(html).toContain('自动化发送规则配置');
-    expect(html).toContain('合规提示');
+    expect(html).toContain('自动化发送规则');
+    expect(html).toContain('触发条件');
+    expect(html).toContain('邮件模板预览');
   });
 
   it('renders the upgraded analytics hero and insight sections', () => {

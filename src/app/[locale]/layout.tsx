@@ -11,6 +11,8 @@ import { defaultLocale, isLocale, locales, type Locale } from '@/lib/i18n/config
 import { getDictionary } from '@/lib/i18n/get-dictionary';
 import { getStorefrontCategoryGroups } from '@/features/catalog/queries';
 
+export const dynamic = 'force-dynamic';
+
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }

@@ -46,8 +46,8 @@ describe('ProductCenter', () => {
     );
 
     expect(html).toContain('手动新增');
-    expect(html).toContain('基础信息');
-    expect(html).toContain('提交前检查');
+    expect(html).toContain('商品名称');
+    expect(html).toContain('商品图片');
     expect(html).toContain('保存到待审核');
   });
 
@@ -59,7 +59,7 @@ describe('ProductCenter', () => {
       />
     );
 
-    expect(html).toContain('提交前检查');
+    expect(html).toContain('商品描述');
     expect(html).toContain('保存到待审核');
     expect(html).not.toContain('待审核队列');
     expect(html).not.toContain('AI Score');

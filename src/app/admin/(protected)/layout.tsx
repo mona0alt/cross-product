@@ -5,6 +5,8 @@ import { AdminShellHeader } from '@/components/admin/admin-shell-header';
 import { getAdminDictionary } from '@/lib/admin-i18n';
 import { requireAdminSession } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminProtectedLayout({
   children
 }: {
