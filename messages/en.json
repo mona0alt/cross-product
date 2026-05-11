@@ -156,6 +156,71 @@
     }
   },
   "Admin": {
-    "title": "Admin"
+    "title": "Admin",
+    "nav": {
+      "analytics": "Analytics",
+      "products": "Products",
+      "subscribers": "Subscribers",
+      "messages": "Support",
+      "categories": "Categories",
+      "banners": "Banners"
+    },
+    "common": {
+      "save": "Save",
+      "create": "Create",
+      "edit": "Edit",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "upload": "Upload image",
+      "language": "Language"
+    },
+    "shell": {
+      "role": "Admin",
+      "logout": "Logout"
+    },
+    "login": {
+      "tagline": "Professional ecommerce admin system",
+      "eyebrow": "Secure Access",
+      "title": "Admin login",
+      "username": "Username",
+      "password": "Password",
+      "passwordPlaceholder": "Enter password",
+      "submit": "Log in",
+      "submitting": "Logging in...",
+      "invalidCredentials": "Invalid username or password.",
+      "genericError": "Login failed. Please try again.",
+      "networkError": "Network error. Check your connection and try again."
+    },
+    "banners": {
+      "title": "Homepage banners",
+      "description": "Manage homepage carousel images, targets, sorting and visibility.",
+      "formTitle": "Banner management",
+      "imageUrl": "Banner image URL",
+      "targetType": "Target type",
+      "targetValue": "Target ID / URL",
+      "sortOrder": "Sort order",
+      "create": "Create banner",
+      "list": "Banner list"
+    },
+    "products": {
+      "title": "Products",
+      "description": "Manage manually entered products, image assets and multilingual content.",
+      "createTitle": "Create and send to review",
+      "editTitle": "Edit and resubmit for review",
+      "basicInfo": "Basic info",
+      "localizedContent": "Localized content",
+      "media": "Media",
+      "reviewNotes": "Review notes",
+      "productCode": "Product code",
+      "slug": "Slug",
+      "category": "Category",
+      "priceUsd": "Price USD",
+      "coverImageUrl": "Cover image URL",
+      "galleryImageUrls": "Gallery image URLs",
+      "recommended": "Recommended product",
+      "saveDraft": "Save draft",
+      "preview": "Preview before review",
+      "submit": "Submit for review"
+    }
   }
 }

@@ -2,12 +2,22 @@
 
 import React from 'react';
 import { Bell, HelpCircle, Languages, LogOut } from 'lucide-react';
+import { AdminLanguageSwitcher } from '@/components/admin/admin-language-switcher';
+import type { Locale } from '@/lib/i18n/config';
 
 export function AdminShellHeader({
-  admin
+  admin,
+  locale,
+  copy
 }: {
   admin: {
     username: string;
+  };
+  locale: Locale;
+  copy: {
+    language: string;
+    role: string;
+    logout: string;
   };
 }) {
   return (
@@ -17,9 +27,10 @@ export function AdminShellHeader({
           <button type="button" className="rounded-full p-2 transition-colors hover:bg-slate-100">
             <Bell className="h-4 w-4" />
           </button>
-          <button type="button" className="rounded-full p-2 transition-colors hover:bg-slate-100">
+          <div className="flex items-center gap-2 rounded-full p-1">
             <Languages className="h-4 w-4" />
-          </button>
+            <AdminLanguageSwitcher locale={locale} label={copy.language} />
+          </div>
           <button type="button" className="rounded-full p-2 transition-colors hover:bg-slate-100">
             <HelpCircle className="h-4 w-4" />
           </button>
@@ -43,7 +54,7 @@ export function AdminShellHeader({
               {admin.username}
             </span>
             <span className="mt-1 text-[9px] font-bold uppercase tracking-[0.15em] text-admin-text-muted">
-              管理员
+              {copy.role}
             </span>
           </div>
 
@@ -61,7 +72,7 @@ export function AdminShellHeader({
             className="ml-0 max-w-0 overflow-hidden opacity-0 transition-all duration-300 ease-out group-hover:ml-2 group-hover:max-w-[5rem] group-hover:opacity-100 flex items-center gap-1.5 whitespace-nowrap rounded-lg bg-red-50 px-2.5 py-1.5 text-[11px] font-semibold text-red-600 hover:bg-red-100 hover:text-red-700"
           >
             <LogOut className="h-3 w-3" />
-            退出
+            {copy.logout}
           </button>
         </div>
       </div>

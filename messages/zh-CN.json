@@ -156,6 +156,71 @@
     }
   },
   "Admin": {
-    "title": "后台管理"
+    "title": "后台管理",
+    "nav": {
+      "analytics": "数据分析",
+      "products": "商品管理",
+      "subscribers": "邮件订阅",
+      "messages": "支持中心",
+      "categories": "分类管理",
+      "banners": "轮播图"
+    },
+    "common": {
+      "save": "保存",
+      "create": "新建",
+      "edit": "编辑",
+      "enabled": "启用",
+      "disabled": "停用",
+      "upload": "上传图片",
+      "language": "语言"
+    },
+    "shell": {
+      "role": "管理员",
+      "logout": "退出"
+    },
+    "login": {
+      "tagline": "专业电商平台后台管理系统",
+      "eyebrow": "安全访问",
+      "title": "管理员登录",
+      "username": "用户名",
+      "password": "密码",
+      "passwordPlaceholder": "请输入密码",
+      "submit": "登录",
+      "submitting": "登录中...",
+      "invalidCredentials": "用户名或密码错误。",
+      "genericError": "登录失败，请重试。",
+      "networkError": "网络错误，请检查连接后重试。"
+    },
+    "banners": {
+      "title": "首页展示素材",
+      "description": "统一管理首页轮播图、跳转目标和启用状态。",
+      "formTitle": "横幅管理",
+      "imageUrl": "Banner 图片 URL",
+      "targetType": "目标类型",
+      "targetValue": "目标 ID / URL",
+      "sortOrder": "排序",
+      "create": "新建 Banner",
+      "list": "Banner 列表"
+    },
+    "products": {
+      "title": "商品管理",
+      "description": "管理手动录入商品、图片素材和多语言内容。",
+      "createTitle": "创建后进入审核",
+      "editTitle": "编辑后重新进入审核",
+      "basicInfo": "基础信息",
+      "localizedContent": "多语言内容",
+      "media": "图片素材",
+      "reviewNotes": "审核提示",
+      "productCode": "商品编码",
+      "slug": "Slug",
+      "category": "分类",
+      "priceUsd": "价格 USD",
+      "coverImageUrl": "封面图 URL",
+      "galleryImageUrls": "更多图片 URL",
+      "recommended": "推荐商品",
+      "saveDraft": "保存草稿",
+      "preview": "提交审核前预览",
+      "submit": "提交审核"
+    }
   }
 }

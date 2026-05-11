@@ -156,6 +156,71 @@
     }
   },
   "Admin": {
-    "title": "Administración"
+    "title": "Administración",
+    "nav": {
+      "analytics": "Analítica",
+      "products": "Productos",
+      "subscribers": "Suscriptores",
+      "messages": "Soporte",
+      "categories": "Categorías",
+      "banners": "Banners"
+    },
+    "common": {
+      "save": "Guardar",
+      "create": "Crear",
+      "edit": "Editar",
+      "enabled": "Activo",
+      "disabled": "Inactivo",
+      "upload": "Subir imagen",
+      "language": "Idioma"
+    },
+    "shell": {
+      "role": "Administrador",
+      "logout": "Salir"
+    },
+    "login": {
+      "tagline": "Sistema profesional de administración ecommerce",
+      "eyebrow": "Acceso seguro",
+      "title": "Inicio de sesión",
+      "username": "Usuario",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Introduce la contraseña",
+      "submit": "Entrar",
+      "submitting": "Entrando...",
+      "invalidCredentials": "Usuario o contraseña inválidos.",
+      "genericError": "Error de inicio de sesión. Inténtalo de nuevo.",
+      "networkError": "Error de red. Revisa la conexión e inténtalo de nuevo."
+    },
+    "banners": {
+      "title": "Banners de inicio",
+      "description": "Gestiona imágenes del carrusel, destinos, orden y visibilidad.",
+      "formTitle": "Gestión de banners",
+      "imageUrl": "URL de imagen del banner",
+      "targetType": "Tipo de destino",
+      "targetValue": "ID / URL de destino",
+      "sortOrder": "Orden",
+      "create": "Crear banner",
+      "list": "Lista de banners"
+    },
+    "products": {
+      "title": "Productos",
+      "description": "Gestiona productos manuales, imágenes y contenido multilingüe.",
+      "createTitle": "Crear y enviar a revisión",
+      "editTitle": "Editar y reenviar a revisión",
+      "basicInfo": "Información básica",
+      "localizedContent": "Contenido localizado",
+      "media": "Imágenes",
+      "reviewNotes": "Notas de revisión",
+      "productCode": "Código de producto",
+      "slug": "Slug",
+      "category": "Categoría",
+      "priceUsd": "Precio USD",
+      "coverImageUrl": "URL de imagen principal",
+      "galleryImageUrls": "URLs de galería",
+      "recommended": "Producto recomendado",
+      "saveDraft": "Guardar borrador",
+      "preview": "Vista previa",
+      "submit": "Enviar a revisión"
+    }
   }
 }

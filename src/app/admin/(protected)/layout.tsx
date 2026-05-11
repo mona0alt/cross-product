@@ -2,6 +2,7 @@ import React, { type ReactNode } from 'react';
 
 import { AdminNav } from '@/components/admin/admin-nav';
 import { AdminShellHeader } from '@/components/admin/admin-shell-header';
+import { getAdminDictionary } from '@/lib/admin-i18n';
 import { requireAdminSession } from '@/lib/auth';
 
 export default async function AdminProtectedLayout({
@@ -9,31 +10,39 @@ export default async function AdminProtectedLayout({
 }: {
   children: ReactNode;
 }) {
-  const admin = await requireAdminSession();
+  const [admin, { locale, Admin }] = await Promise.all([
+    requireAdminSession(),
+    getAdminDictionary()
+  ]);
   const navItems = [
     {
       href: '/admin/analytics',
-      label: '数据分析',
+      label: Admin.nav.analytics,
       icon: 'BarChart3'
     },
     {
       href: '/admin/products',
-      label: '商品审核',
+      label: Admin.nav.products,
       icon: 'Package'
     },
     {
+      href: '/admin/banners',
+      label: Admin.nav.banners,
+      icon: 'Image'
+    },
+    {
       href: '/admin/subscribers',
-      label: '邮件',
+      label: Admin.nav.subscribers,
       icon: 'Mail'
     },
     {
       href: '/admin/messages',
-      label: '支持中心',
+      label: Admin.nav.messages,
       icon: 'MessageSquare'
     },
     {
       href: '/admin/categories',
-      label: '系统设置',
+      label: Admin.nav.categories,
       icon: 'FolderTree'
     }
   ];
@@ -44,7 +53,15 @@ export default async function AdminProtectedLayout({
         <AdminNav items={navItems} />
       </div>
       <div className="ml-60 min-h-screen bg-admin-bg">
-        <AdminShellHeader admin={admin} />
+        <AdminShellHeader
+          admin={admin}
+          locale={locale}
+          copy={{
+            language: Admin.common.language,
+            role: Admin.shell.role,
+            logout: Admin.shell.logout
+          }}
+        />
         <main className="min-h-[calc(100vh-56px)] px-6 py-6">
           <div className="flex w-full flex-col gap-6">
             {children}

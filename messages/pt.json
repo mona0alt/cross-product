@@ -156,6 +156,71 @@
     }
   },
   "Admin": {
-    "title": "Administração"
+    "title": "Administração",
+    "nav": {
+      "analytics": "Análises",
+      "products": "Produtos",
+      "subscribers": "Assinantes",
+      "messages": "Suporte",
+      "categories": "Categorias",
+      "banners": "Banners"
+    },
+    "common": {
+      "save": "Salvar",
+      "create": "Criar",
+      "edit": "Editar",
+      "enabled": "Ativo",
+      "disabled": "Inativo",
+      "upload": "Enviar imagem",
+      "language": "Idioma"
+    },
+    "shell": {
+      "role": "Administrador",
+      "logout": "Sair"
+    },
+    "login": {
+      "tagline": "Sistema profissional de administração ecommerce",
+      "eyebrow": "Acesso seguro",
+      "title": "Login administrativo",
+      "username": "Usuário",
+      "password": "Senha",
+      "passwordPlaceholder": "Digite a senha",
+      "submit": "Entrar",
+      "submitting": "Entrando...",
+      "invalidCredentials": "Usuário ou senha inválidos.",
+      "genericError": "Falha no login. Tente novamente.",
+      "networkError": "Erro de rede. Verifique a conexão e tente novamente."
+    },
+    "banners": {
+      "title": "Banners da página inicial",
+      "description": "Gerencie imagens do carrossel, destinos, ordem e visibilidade.",
+      "formTitle": "Gestão de banners",
+      "imageUrl": "URL da imagem do banner",
+      "targetType": "Tipo de destino",
+      "targetValue": "ID / URL de destino",
+      "sortOrder": "Ordem",
+      "create": "Criar banner",
+      "list": "Lista de banners"
+    },
+    "products": {
+      "title": "Produtos",
+      "description": "Gerencie produtos manuais, imagens e conteúdo multilíngue.",
+      "createTitle": "Criar e enviar para revisão",
+      "editTitle": "Editar e reenviar para revisão",
+      "basicInfo": "Informações básicas",
+      "localizedContent": "Conteúdo localizado",
+      "media": "Imagens",
+      "reviewNotes": "Notas de revisão",
+      "productCode": "Código do produto",
+      "slug": "Slug",
+      "category": "Categoria",
+      "priceUsd": "Preço USD",
+      "coverImageUrl": "URL da imagem principal",
+      "galleryImageUrls": "URLs da galeria",
+      "recommended": "Produto recomendado",
+      "saveDraft": "Salvar rascunho",
+      "preview": "Pré-visualizar",
+      "submit": "Enviar para revisão"
+    }
   }
 }
