@@ -3,6 +3,7 @@ import React from 'react';
 import { BannerCarousel } from '@/components/storefront/banner-carousel';
 import { CatalogCarousel } from '@/components/storefront/catalog-carousel';
 import { HomepageCategoryGrid } from '@/components/storefront/homepage-category-grid';
+import { HomepageProductMatrix } from '@/components/storefront/homepage-product-matrix';
 import { ProductCarousel } from '@/components/storefront/product-carousel';
 import { SocialShowcase } from '@/components/storefront/social-showcase';
 import { getHomepagePayload } from '@/features/catalog/queries';
@@ -46,6 +47,14 @@ export default async function LocalizedHomePage({
         locale={locale}
         title={Storefront.sections.productSeries}
         categories={payload.featuredCategories}
+      />
+
+      <HomepageProductMatrix
+        locale={locale}
+        eyebrow={Storefront.sections.productGalleryEyebrow}
+        title={Storefront.sections.productGallery}
+        viewAllLabel={Storefront.sections.viewAll}
+        products={payload.recommendedProducts}
       />
 
       {/* Offers carousel */}

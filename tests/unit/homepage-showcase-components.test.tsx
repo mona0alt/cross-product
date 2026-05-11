@@ -3,6 +3,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 
 import { HomepageCategoryGrid } from '@/components/storefront/homepage-category-grid';
+import { HomepageProductMatrix } from '@/components/storefront/homepage-product-matrix';
 
 const categories = [
   {
@@ -21,6 +22,35 @@ const categories = [
   }
 ];
 
+const products = [
+  {
+    id: 'product-1',
+    slug: 'alpha',
+    productCode: 'A-1',
+    coverImageUrl: '/show/robot_humanoid.png',
+    priceUsd: 100,
+    isRecommended: true,
+    name: 'Alpha Robot',
+    intro: 'Intro',
+    detail: 'Detail',
+    images: [],
+    category: { slug: 'humanoids', name: 'Humanoids' }
+  },
+  {
+    id: 'product-2',
+    slug: 'drone',
+    productCode: 'D-1',
+    coverImageUrl: '/show/robot_drone.png',
+    priceUsd: 200,
+    isRecommended: true,
+    name: 'Drone Robot',
+    intro: 'Intro',
+    detail: 'Detail',
+    images: [],
+    category: { slug: 'drones', name: 'Drones' }
+  }
+];
+
 describe('homepage showcase components', () => {
   it('renders category cards linked to product filters', () => {
     const html = renderToStaticMarkup(
@@ -35,5 +65,22 @@ describe('homepage showcase components', () => {
     expect(html).toContain('Humanoids');
     expect(html).toContain('/en/products?category=humanoids');
     expect(html).toContain('/show/robot_humanoid.png');
+  });
+
+  it('renders a product image matrix without empty placeholders', () => {
+    const html = renderToStaticMarkup(
+      <HomepageProductMatrix
+        locale="en"
+        eyebrow="Product Gallery"
+        title="More Product Images"
+        viewAllLabel="View all"
+        products={products}
+      />
+    );
+
+    expect(html).toContain('More Product Images');
+    expect(html).toContain('/en/products/alpha');
+    expect(html).toContain('/show/robot_drone.png');
+    expect(html).not.toContain('empty-slot');
   });
 });
