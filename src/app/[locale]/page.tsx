@@ -36,6 +36,9 @@ export default async function LocalizedHomePage({
       <BannerCarousel
         banners={payload.banners}
         emptyLabel={Storefront.banner.empty}
+        copy={Storefront.home}
+        primaryHref={`/${locale}/products`}
+        secondaryHref={`/${locale}/contact`}
       />
 
       {/* Offers carousel */}
