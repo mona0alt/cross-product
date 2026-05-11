@@ -16,7 +16,7 @@ vi.mock('@/components/storefront/language-switcher', () => ({
 }));
 
 describe('storefront layout shell', () => {
-  it('renders the retail header utility bar and quick actions', () => {
+  it('renders the blue brand header without storefront search', () => {
     const html = renderToStaticMarkup(
       <StorefrontHeader
         locale="en"
@@ -82,13 +82,14 @@ describe('storefront layout shell', () => {
       />
     );
 
-    expect(html).toContain('Blog');
     expect(html).toContain('Phone sales +1 555 123 4567');
-    expect(html).toContain('Track order');
-    expect(html).toContain('Help Center');
     expect(html).toContain('Language:en');
     expect(html).toContain('Floors &amp; Walls');
-    expect(html).toContain('Search products');
+    expect(html).toContain('Portal');
+    expect(html).toContain('WhatsApp');
+    expect(html).not.toContain('Search products');
+    expect(html).not.toContain('Track order');
+    expect(html).not.toContain('Help Center');
     expect(html).not.toContain('Sigue tu compra');
   });
 

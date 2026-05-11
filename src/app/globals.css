@@ -7,15 +7,15 @@
 :root {
   color-scheme: light;
   --mk-bg: #ffffff;
-  --mk-bg-muted: #f7f7f7;
+  --mk-bg-muted: #f6f9fd;
   --mk-surface: #ffffff;
-  --mk-border: #e3e4e6;
-  --mk-border-strong: #cacbcc;
-  --mk-text: #000000;
-  --mk-text-muted: #4a4a4a;
-  --mk-accent: #000000;
-  --mk-highlight: #b91c1c;
-  --mk-success: #2e7d32;
+  --mk-border: #d8e6f6;
+  --mk-border-strong: #9cc9f6;
+  --mk-text: #0b1f3a;
+  --mk-text-muted: #54708f;
+  --mk-accent: #1d7eea;
+  --mk-highlight: #0f63ce;
+  --mk-success: #127c49;
   --mk-radius-sm: 0.25rem;
   --mk-radius-md: 0.5rem;
   --mk-radius-lg: 0.75rem;
