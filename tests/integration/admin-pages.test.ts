@@ -93,14 +93,25 @@ describe('admin pages', () => {
     ]);
     getAdminCategoryTree.mockResolvedValue([
       {
-        id: 'cat-1',
-        slug: 'electronics',
+        id: 'cat-wearables',
+        slug: 'wearables',
         sortOrder: 1,
         isActive: true,
-        nameZh: '电子数码',
-        nameEn: 'Electronics',
-        nameEs: 'Electronica',
-        namePt: 'Eletronicos',
+        nameZh: '智能穿戴设备',
+        nameEn: 'Wearables',
+        nameEs: 'Wearables',
+        namePt: 'Wearables',
+        children: []
+      },
+      {
+        id: 'cat-audio',
+        slug: 'audio',
+        sortOrder: 2,
+        isActive: true,
+        nameZh: '影音娱乐',
+        nameEn: 'Audio',
+        nameEs: 'Audio',
+        namePt: 'Audio',
         children: []
       }
     ]);
@@ -109,23 +120,38 @@ describe('admin pages', () => {
       (await import('@/app/admin/(protected)/products/page')).default;
     const html = renderToStaticMarkup(ProductsPage());
 
-    expect(html).toContain('商品审核');
-    expect(html).toContain('自动抓取');
-    expect(html).toContain('手动导入');
-    expect(html).toContain('待审核队列');
+    expect(html).toContain('商品管理');
+    expect(html).toContain('产品类目');
+    expect(html).toContain('智能穿戴设备 详情');
+    expect(html).toContain('管理产品');
+    expect(html).toContain('新增商品');
+    expect(html).toContain('编辑商品');
+    expect(html).not.toContain('集中管理前台商品目录');
+    expect(html).not.toContain('导出 CSV');
   });
 
   it('renders the manual product creation page with review framing', async () => {
     getAdminCategoryTree.mockResolvedValue([
       {
-        id: 'cat-1',
-        slug: 'electronics',
+        id: 'cat-wearables',
+        slug: 'wearables',
         sortOrder: 1,
         isActive: true,
-        nameZh: '电子数码',
-        nameEn: 'Electronics',
-        nameEs: 'Electronica',
-        namePt: 'Eletronicos',
+        nameZh: '智能穿戴设备',
+        nameEn: 'Wearables',
+        nameEs: 'Wearables',
+        namePt: 'Wearables',
+        children: []
+      },
+      {
+        id: 'cat-audio',
+        slug: 'audio',
+        sortOrder: 2,
+        isActive: true,
+        nameZh: '影音娱乐',
+        nameEn: 'Audio',
+        nameEs: 'Audio',
+        namePt: 'Audio',
         children: []
       }
     ]);
@@ -179,14 +205,25 @@ describe('admin pages', () => {
   it('renders the messages and subscribers pages', async () => {
     getAdminCategoryTree.mockResolvedValue([
       {
-        id: 'cat-1',
-        slug: 'electronics',
+        id: 'cat-wearables',
+        slug: 'wearables',
         sortOrder: 1,
         isActive: true,
-        nameZh: '电子数码',
-        nameEn: 'Electronics',
-        nameEs: 'Electronica',
-        namePt: 'Eletronicos',
+        nameZh: '智能穿戴设备',
+        nameEn: 'Wearables',
+        nameEs: 'Wearables',
+        namePt: 'Wearables',
+        children: []
+      },
+      {
+        id: 'cat-audio',
+        slug: 'audio',
+        sortOrder: 2,
+        isActive: true,
+        nameZh: '影音娱乐',
+        nameEn: 'Audio',
+        nameEs: 'Audio',
+        namePt: 'Audio',
         children: []
       }
     ]);

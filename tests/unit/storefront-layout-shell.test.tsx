@@ -16,7 +16,7 @@ vi.mock('@/components/storefront/language-switcher', () => ({
 }));
 
 describe('storefront layout shell', () => {
-  it('renders the blue brand header without storefront search', () => {
+  it('renders a single dark enterprise header without storefront search', () => {
     const html = renderToStaticMarkup(
       <StorefrontHeader
         locale="en"
@@ -82,10 +82,16 @@ describe('storefront layout shell', () => {
       />
     );
 
+    expect(html).toContain('data-testid="storefront-header-shell"');
+    expect(html).toContain('bg-[#07111f]');
+    expect(html).not.toContain('bg-[#f0f6fd]');
     expect(html).toContain('Phone sales +1 555 123 4567');
+    expect(html).not.toContain('Blog');
+    expect(html).not.toContain('Studio MK');
+    expect(html).not.toContain('MK Pros');
     expect(html).toContain('Language:en');
     expect(html).toContain('Floors &amp; Walls');
-    expect(html).toContain('Portal');
+    expect(html).not.toContain('Portal');
     expect(html).toContain('WhatsApp');
     expect(html).not.toContain('Search products');
     expect(html).not.toContain('Track order');
@@ -93,7 +99,104 @@ describe('storefront layout shell', () => {
     expect(html).not.toContain('Sigue tu compra');
   });
 
-  it('renders the expanded footer sections', () => {
+  it('renders desktop category navigation as a full-width hover mega menu', () => {
+    const html = renderToStaticMarkup(
+      <StorefrontHeader
+        locale="en"
+        whatsAppNumber="+1 555 123 4567"
+        categoryGroups={[
+          {
+            id: 'group-1',
+            slug: 'commercial',
+            iconImageUrl: '/show/robot_industrial_arm.png',
+            name: 'Commercial',
+            description: 'Business robotics',
+            children: [
+              {
+                id: 'child-1',
+                slug: 'education',
+                iconImageUrl: '/show/robot_humanoid.png',
+                name: 'AI Education',
+                description: 'Robots for classrooms'
+              },
+              {
+                id: 'child-2',
+                slug: 'cleaning',
+                iconImageUrl: '/show/robot_floor_cleaner.png',
+                name: 'Cleaning',
+                description: 'Facility automation'
+              }
+            ]
+          }
+        ]}
+        copy={{
+          brand: 'Cross',
+          nav: {
+            home: 'Home',
+            products: 'Products',
+            contact: 'Contact',
+            subscribe: 'Subscribe'
+          },
+          searchPlaceholder: 'Search products',
+          portal: 'Portal',
+          whatsApp: 'WhatsApp',
+          languageLabel: 'Language',
+          topLinks: {
+            blog: 'Blog',
+            studio: 'Studio MK',
+            professionals: 'MK Pros'
+          },
+          phoneSales: 'Phone sales',
+          utilityBar: {
+            support: 'Support',
+            service: 'Customer Service'
+          },
+          quickActions: {
+            trackOrder: 'Track order',
+            stores: 'Stores',
+            helpCenter: 'Help Center',
+            account: 'My account'
+          },
+          featuredNav: {
+            inspiration: 'Inspiration',
+            outlet: 'Outlet'
+          },
+          categoryPromo: {
+            viewAll: 'View all',
+            offerTitle: 'Offers',
+            offerLink: 'Last chance',
+            featuredTitle: 'Featured',
+            featuredDescription: 'Discover best sellers'
+          }
+        }}
+      />
+    );
+
+    expect(html).toContain('data-testid="desktop-mega-menu"');
+    expect(html).toContain('left-1/2');
+    expect(html).toContain('w-screen');
+    expect(html).toContain('group-hover:opacity-100');
+    expect(html).toContain('self-stretch');
+    expect(html).toContain('items-center');
+    expect(html).toContain('h-10');
+    expect(html).toContain('text-[13px]');
+    expect(html).toContain('tracking-[0.04em]');
+    expect(html).toContain('bg-[#07111f] text-white');
+    expect(html).toContain('lg:grid-cols-4');
+    expect(html).toContain('absolute inset-x-0 bottom-0');
+    expect(html).toContain('bg-transparent');
+    expect(html).not.toContain('bg-gradient-to-t');
+    expect(html).not.toContain('backdrop-blur');
+    expect(html).not.toContain('bg-[#07111f]/76');
+    expect(html).not.toContain('min-h-[104px]');
+    expect(html).not.toContain('Business robotics');
+    expect(html).not.toContain('View all Commercial');
+    expect(html).not.toContain('bg-white text-[var(--mk-text)]');
+    expect(html).toContain('AI Education');
+    expect(html).toContain('Robots for classrooms');
+  });
+
+  it('renders the dark enterprise footer sections', () => {
     const html = renderToStaticMarkup(
       <StorefrontFooter
         locale="en"
@@ -124,9 +227,11 @@ describe('storefront layout shell', () => {
       />
     );
 
+    expect(html).toContain('data-testid="storefront-footer-shell"');
+    expect(html).toContain('bg-[#07111f]');
     expect(html).toContain('Retail storefront.');
     expect(html).toContain('Help');
-    expect(html).toContain('Portal');
+    expect(html).not.toContain('Portal');
     expect(html).toContain('WhatsApp');
     expect(html).toContain('Contact');
     expect(html).toContain('Phone sales: +1 555 123 4567');

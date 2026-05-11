@@ -55,11 +55,22 @@ export function SocialShowcase({
 }) {
   const [activeTab, setActiveTab] = useState<(typeof tabs)[number]['key']>('windowRobots');
   const activeImages = images[activeTab] ?? images.windowRobots;
-  const platforms = ['TikTok', 'Instagram', 'YouTube', 'Facebook'];
+
+  function getSocialCardLayout(index: number) {
+    if (index === 0) {
+      return 'sm:col-span-2 lg:col-span-2 lg:row-span-2';
+    }
+
+    if (index === 1) {
+      return 'lg:col-span-2';
+    }
+
+    return '';
+  }
 
   return (
     <section className="bg-white py-10 sm:py-12">
-      <div className="mk-container">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--mk-accent)]">
@@ -106,11 +117,11 @@ export function SocialShowcase({
           ))}
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:auto-rows-[220px]">
           {activeImages.slice(0, 4).map((src, index) => (
             <div
               key={`${activeTab}-${index}`}
-              className="group relative aspect-[9/13] overflow-hidden rounded-xl border border-[var(--mk-border)] bg-[var(--mk-bg-muted)] shadow-[0_16px_38px_rgba(29,126,234,0.08)]"
+              className={`group relative min-h-[260px] overflow-hidden rounded-xl border border-[var(--mk-border)] bg-[var(--mk-bg-muted)] shadow-[0_16px_38px_rgba(29,126,234,0.08)] sm:min-h-[320px] lg:min-h-0 ${getSocialCardLayout(index)}`}
             >
               <img
                 src={src}
@@ -118,11 +129,6 @@ export function SocialShowcase({
                 className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[#061b38]/84 via-[#0f63ce]/14 to-transparent" />
-              <div className="absolute left-4 right-4 top-4 flex justify-end">
-                <span className="rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-[var(--mk-text)]">
-                  {platforms[index] ?? 'Social'}
-                </span>
-              </div>
               <div className="absolute bottom-4 left-4 right-4 text-white">
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#bfe1ff]">
                   {copy.handle}

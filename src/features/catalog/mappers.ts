@@ -22,6 +22,34 @@ function getLocalizedPair<
   }
 }
 
+function normalizeStorefrontImageUrl(imageUrl: string | null) {
+  if (!imageUrl) {
+    return imageUrl;
+  }
+
+  if (!imageUrl.startsWith('http')) {
+    return imageUrl;
+  }
+
+  try {
+    const url = new URL(imageUrl);
+
+    if (url.hostname !== 'images.unsplash.com') {
+      return imageUrl;
+    }
+
+    const width = Number(url.searchParams.get('w') ?? 0);
+    if (!width || width < 800) {
+      url.searchParams.set('w', '800');
+    }
+    url.searchParams.delete('h');
+
+    return url.toString();
+  } catch {
+    return imageUrl;
+  }
+}
+
 export function mapLocalizedCategory<
   TValue extends {
     id: string;
@@ -32,7 +60,7 @@ export function mapLocalizedCategory<
   return {
     id: value.id,
     slug: value.slug,
-    iconImageUrl: value.iconImageUrl,
+    iconImageUrl: normalizeStorefrontImageUrl(value.iconImageUrl),
     name: getLocalizedPair(value, locale, 'name'),
     description: getLocalizedPair(value, locale, 'description') ?? null
   };

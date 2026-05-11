@@ -51,7 +51,7 @@ async function main() {
       {
         slug: 'window-cleaning-robots',
         iconImageUrl:
-          'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=200&h=200&fit=crop',
+          'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&fit=crop',
         names: {
           zh: '擦窗机器人',
           en: 'Window Cleaning Robots',
@@ -84,7 +84,7 @@ async function main() {
           {
             slug: 'commercial-window-robots',
             iconImageUrl:
-              'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=200&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&fit=crop',
             names: {
               zh: '商用擦窗机器人',
               en: 'Commercial',
@@ -103,7 +103,7 @@ async function main() {
       {
         slug: 'drones',
         iconImageUrl:
-          'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=200&h=200&fit=crop',
+          'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=800&fit=crop',
         names: {
           zh: '无人机',
           en: 'Drones',
@@ -120,7 +120,7 @@ async function main() {
           {
             slug: 'consumer-drones',
             iconImageUrl:
-              'https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=200&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=800&fit=crop',
             names: {
               zh: '消费级无人机',
               en: 'Consumer Drones',
@@ -137,7 +137,7 @@ async function main() {
           {
             slug: 'industrial-drones',
             iconImageUrl:
-              'https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=200&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=800&fit=crop',
             names: {
               zh: '工业级无人机',
               en: 'Industrial Drones',
@@ -156,7 +156,7 @@ async function main() {
       {
         slug: 'humanoid-robots',
         iconImageUrl:
-          'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=200&h=200&fit=crop',
+          'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&fit=crop',
         names: {
           zh: '人形机器人',
           en: 'Humanoid Robots',
@@ -173,7 +173,7 @@ async function main() {
           {
             slug: 'service-humanoids',
             iconImageUrl:
-              'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=200&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=800&fit=crop',
             names: {
               zh: '服务人形机器人',
               en: 'Service Humanoids',
@@ -208,7 +208,7 @@ async function main() {
       {
         slug: 'vacuum-robots',
         iconImageUrl:
-          'https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?w=200&h=200&fit=crop',
+          'https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?w=800&fit=crop',
         names: {
           zh: '扫地机器人',
           en: 'Vacuum Robots',
@@ -241,7 +241,7 @@ async function main() {
           {
             slug: 'robot-mops',
             iconImageUrl:
-              'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=200&h=200&fit=crop',
+              'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&fit=crop',
             names: {
               zh: '扫拖一体机',
               en: 'Vacuum-Mop Combos',

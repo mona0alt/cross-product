@@ -92,7 +92,6 @@ export function StorefrontHeader({
   categoryGroups: StorefrontCategoryGroup[];
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const normalizedWhatsAppNumber = whatsAppNumber.replace(/[^\d]/g, '');
 
   const mainNav: Array<{
@@ -110,39 +109,18 @@ export function StorefrontHeader({
     }))
   ];
 
-  const topLinks = [
-    { label: copy.topLinks.blog, href: `/${locale}/products` },
-    { label: copy.topLinks.studio, href: `/${locale}/products` },
-    { label: copy.topLinks.professionals, href: `/${locale}/products` }
-  ];
-
   return (
-    <header className="sticky top-0 z-30 border-b border-[var(--mk-border)] bg-white/95 backdrop-blur">
-      {/* Top bar */}
-      <div className="bg-[#f0f6fd] text-[var(--mk-text-muted)]">
-        <div className="mk-container flex items-center justify-between py-2 text-[11px]">
-          <div className="flex items-center gap-4">
-            {topLinks.map((link) => (
-              <Link key={link.label} href={link.href} className="hidden font-semibold tracking-wide transition hover:text-[var(--mk-accent)] sm:inline">
-                {link.label}
-              </Link>
-            ))}
-          </div>
-          <div className="flex items-center gap-1">
-            <PhoneIcon className="h-3 w-3" />
-            <span className="font-medium">{`${copy.phoneSales} ${whatsAppNumber}`}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Main header */}
-      <div>
-        <div className="mk-container flex items-center gap-3 py-4 lg:gap-7">
+    <header
+      data-testid="storefront-header-shell"
+      className="sticky top-0 z-30 border-b border-white/10 bg-[#07111f] text-white shadow-[0_18px_45px_rgba(0,0,0,0.18)]"
+    >
+      <div className="bg-[#07111f]">
+        <div className="mk-container flex min-h-[76px] items-center gap-3 py-3 lg:gap-6">
           {/* Mobile menu button */}
           <button
             type="button"
             aria-label="toggle-menu"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-[var(--mk-border)] text-[var(--mk-text)] lg:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-white/15 text-white lg:hidden"
             onClick={() => setIsMenuOpen((v) => !v)}
           >
             {isMenuOpen ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
@@ -154,52 +132,68 @@ export function StorefrontHeader({
             <img src="/logo.jpg" alt="FBGM" className="h-10 w-auto" />
           </Link>
 
-          <nav className="hidden flex-1 items-center gap-6 lg:flex">
+          <nav className="hidden self-stretch flex-1 items-center justify-center gap-5 lg:flex">
             {mainNav.map((item) => {
               const group = item.group;
               const hasDropdown = group && group.children.length > 0;
+              const featuredChildren = group?.children.slice(0, 6) ?? [];
 
               return (
                 <div
                   key={item.key}
-                  className="relative"
-                  onMouseEnter={() => hasDropdown && setOpenDropdown(item.label)}
-                  onMouseLeave={() => setOpenDropdown(null)}
+                  className="group flex self-stretch items-center"
                 >
                   <Link
                     href={item.href}
-                    className="inline-flex items-center gap-1 py-3 text-sm font-semibold uppercase tracking-wide text-[var(--mk-text)] transition hover:text-[var(--mk-accent)]"
+                    className="inline-flex h-10 items-center gap-1 rounded-full px-3 text-[13px] font-semibold uppercase tracking-[0.04em] text-white/78 transition hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white group-hover:bg-white/10 group-hover:text-white"
                   >
                     {item.label}
-                    {hasDropdown && <ChevronDownIcon className="h-3.5 w-3.5" />}
+                    {hasDropdown && <ChevronDownIcon className="h-3.5 w-3.5 transition group-hover:rotate-180" />}
                   </Link>
 
-                  {hasDropdown && openDropdown === item.label && (
-                    <div className="absolute left-0 top-full z-40 w-[600px] rounded-xl border border-[var(--mk-border)] bg-white shadow-[0_20px_50px_rgba(29,126,234,0.14)]">
-                      <div className="grid grid-cols-2 gap-x-6 gap-y-4 p-6">
-                        <Link
-                          href={item.href}
-                          className="col-span-2 text-sm font-bold uppercase text-[var(--mk-accent)] hover:underline"
-                        >
-                          {`${copy.categoryPromo.viewAll} ${item.label}`}
-                        </Link>
-                        {group.children.map((child) => (
-                          <Link
-                            key={child.slug}
-                            href={`/${locale}/categories/${child.slug}`}
-                            className="flex items-center gap-3 rounded-lg border border-transparent p-2 text-sm text-[var(--mk-text-muted)] transition hover:border-[var(--mk-border)] hover:bg-[var(--mk-bg-muted)] hover:text-[var(--mk-text)]"
-                          >
-                            {child.iconImageUrl ? (
-                              // eslint-disable-next-line @next/next/no-img-element
-                              <img
-                                src={child.iconImageUrl}
-                                alt=""
-                                className="h-16 w-16 rounded-lg object-cover"
-                              />
-                            ) : null}
-                            <span>{child.name}</span>
-                          </Link>
-                        ))}
+                  {hasDropdown && (
+                    <div
+                      data-testid="desktop-mega-menu"
+                      className="pointer-events-none absolute left-1/2 top-full z-40 w-screen -translate-x-1/2 opacity-0 transition duration-200 ease-out group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100"
+                    >
+                      <div className="h-2 bg-[#07111f]" />
+                      <div className="border-y border-white/10 bg-[#07111f] text-white shadow-[0_22px_55px_rgba(0,0,0,0.22)]">
+                        <div className="mk-container py-8">
+                          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                            {featuredChildren.map((child) => (
+                              <Link
+                                key={child.slug}
+                                href={`/${locale}/categories/${child.slug}`}
+                                className="group/card relative overflow-hidden rounded-lg border border-white/10 bg-[#0b1728] transition hover:border-white/25 hover:shadow-[0_18px_35px_rgba(0,0,0,0.18)]"
+                              >
+                                <div className="aspect-[4/3] bg-[#0f1c30]">
+                                  {child.iconImageUrl ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img
+                                      src={child.iconImageUrl}
+                                      alt=""
+                                      className="h-full w-full object-cover transition duration-300 group-hover/card:scale-105"
+                                    />
+                                  ) : (
+                                    <div className="flex h-full w-full items-center justify-center bg-[#0f1c30] text-sm font-semibold text-white/62">
+                                      {child.name}
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="absolute inset-x-0 bottom-0 bg-transparent p-4">
+                                  <h3 className="text-sm font-bold text-white drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)]">
+                                    {child.name}
+                                  </h3>
+                                  {child.description ? (
+                                    <p className="mt-2 line-clamp-2 text-xs font-medium leading-5 text-white/78 drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)]">
+                                      {child.description}
+                                    </p>
+                                  ) : null}
+                                </div>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -208,25 +202,23 @@ export function StorefrontHeader({
             })}
           </nav>
 
-          {/* Right side: language + WhatsApp (mobile) */}
-          <div className="ml-auto flex items-center gap-3 text-xs text-[var(--mk-text)] lg:gap-4">
-            <LanguageSwitcher currentLocale={locale} label={copy.languageLabel} />
-            <Link
-              href={`/${locale}/portal`}
-              className="hidden text-sm font-semibold text-[var(--mk-text)] transition hover:text-[var(--mk-accent)] lg:inline-flex"
-            >
-              {copy.portal}
-            </Link>
+          {/* Right side: language + contact */}
+          <div className="ml-auto flex items-center gap-3 text-white lg:gap-4">
+            <div className="hidden h-10 items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 text-[13px] font-semibold tracking-[0.02em] text-white/68 2xl:flex">
+              <PhoneIcon className="h-3.5 w-3.5" />
+              <span>{`${copy.phoneSales} ${whatsAppNumber}`}</span>
+            </div>
+            <LanguageSwitcher currentLocale={locale} label={copy.languageLabel} tone="dark" />
             <Link
               href={`https://wa.me/${normalizedWhatsAppNumber}`}
-              className="hidden rounded-full border border-[var(--mk-border-strong)] px-4 py-2 text-sm font-semibold text-[var(--mk-accent)] transition hover:bg-[var(--mk-bg-muted)] lg:inline-flex"
+              className="hidden h-10 items-center rounded-full border border-white/20 px-4 text-[13px] font-semibold tracking-[0.02em] text-white transition hover:border-white/45 hover:bg-white/10 lg:inline-flex"
             >
               {copy.whatsApp}
             </Link>
             <Link
               href={`https://wa.me/${normalizedWhatsAppNumber}`}
               aria-label={copy.whatsApp}
-              className="text-[var(--mk-text)] lg:hidden"
+              className="text-white lg:hidden"
             >
               <PhoneIcon className="h-5 w-5" />
             </Link>
@@ -236,25 +228,25 @@ export function StorefrontHeader({
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="border-t border-[var(--mk-border)] bg-white lg:hidden">
+        <div className="border-t border-white/10 bg-[#0b1728] lg:hidden">
           <div className="mk-container space-y-3 py-4">
             <div className="grid gap-2">
               {mainNav.map((item) => (
                 <Link
                   key={item.key}
                   href={item.href}
-                  className="rounded-md border border-[var(--mk-border)] px-4 py-3 text-sm font-semibold text-[var(--mk-text)]"
+                  className="rounded-md border border-white/10 px-4 py-3 text-sm font-semibold text-white"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item.label}
                 </Link>
               ))}
               <Link
-                href={`/${locale}/portal`}
-                className="rounded-md border border-[var(--mk-border)] px-4 py-3 text-sm font-semibold text-[var(--mk-text)]"
+                href={`https://wa.me/${normalizedWhatsAppNumber}`}
+                className="rounded-md border border-white/10 px-4 py-3 text-sm font-semibold text-white"
                 onClick={() => setIsMenuOpen(false)}
               >
-                {copy.portal}
+                {`${copy.phoneSales} ${whatsAppNumber}`}
               </Link>
             </div>
           </div>

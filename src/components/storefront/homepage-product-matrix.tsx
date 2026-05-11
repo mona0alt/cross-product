@@ -25,8 +25,8 @@ export function HomepageProductMatrix({
   }
 
   return (
-    <section className="bg-[var(--mk-bg-muted)] py-10 sm:py-12">
-      <div className="mk-container">
+    <section className="bg-white py-10 sm:py-12">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-[var(--mk-accent)]">
@@ -44,33 +44,28 @@ export function HomepageProductMatrix({
           </Link>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3 md:grid-rows-2">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:auto-rows-[220px]">
           {visibleProducts.map((product, index) => (
             <Link
               key={product.id}
               href={`/${locale}/products/${product.slug}`}
-              className={`group overflow-hidden rounded-xl border border-[var(--mk-border)] bg-white shadow-[0_16px_38px_rgba(29,126,234,0.08)] ${
-                index === 0 ? 'md:row-span-2' : ''
+              className={`group relative min-h-[260px] overflow-hidden rounded-xl border border-[var(--mk-border)] bg-[var(--mk-bg-muted)] shadow-[0_16px_38px_rgba(29,126,234,0.08)] sm:min-h-[320px] lg:min-h-0 ${
+                index === 0 ? 'sm:col-span-2 lg:col-span-2 lg:row-span-2' : ''
               }`}
             >
-              <div className="overflow-hidden">
-                <img
-                  src={product.coverImageUrl}
-                  alt={product.name}
-                  className={`w-full object-cover transition duration-300 group-hover:scale-105 ${
-                    index === 0 ? 'h-full min-h-[280px] md:min-h-[420px]' : 'h-44'
-                  }`}
-                />
-              </div>
-              <div className="p-4">
-                <h3 className="text-sm font-semibold text-[var(--mk-text)]">
+              <img
+                src={product.coverImageUrl}
+                alt={product.name}
+                className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#061b38]/84 via-[#0f63ce]/14 to-transparent" />
+              <div className="absolute bottom-4 left-4 right-4 text-white">
+                <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#bfe1ff]">
+                  {product.productCode}
+                </p>
+                <h3 className="mt-1 line-clamp-2 text-sm font-bold">
                   {product.name}
                 </h3>
-                {product.category ? (
-                  <p className="mt-1 text-xs text-[var(--mk-text-muted)]">
-                    {product.category.name}
-                  </p>
-                ) : null}
               </div>
             </Link>
           ))}
