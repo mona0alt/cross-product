@@ -68,12 +68,12 @@ describe('storefront routes', () => {
 
     expect(html).toContain('Star River Pro Phone');
     expect(html).toContain('Electronics');
-    expect(html).toContain('SHOP BY CATEGORY');
-    expect(html).toContain('UNMISSABLE OFFERS');
-    expect(html).toContain('Catalog: Window Cleaning Robots');
-    expect(html).toContain('View catalogs');
-    expect(html).toContain('Robotics in action #FBGM');
-    expect(html).toContain('In stock');
+    expect(html).toContain('Premium robotics for modern work');
+    expect(html).toContain('Product Series');
+    expect(html).toContain('More Product Images');
+    expect(html).toContain('Social Media #FBGM');
+    expect(html).not.toContain('UNMISSABLE OFFERS');
+    expect(html).not.toContain('Catalog: Window Cleaning Robots');
     expect(html).not.toContain('Catálogo Pisos y Muros');
     expect(html).not.toContain('VER LOS CATÁLOGOS');
     expect(html).not.toContain('Stock Disponible');
