@@ -251,4 +251,66 @@ describe('admin actions', () => {
     expect(messageUpdate).toHaveBeenCalled();
     expect(result.status).toBe('processed');
   });
+
+  it('creates banners from form data', async () => {
+    bannerCreate.mockResolvedValue({
+      id: 'banner-1',
+      imageUrl: '/uploads/banners/hero.png',
+      isActive: true
+    });
+
+    const formData = new FormData();
+    formData.set('imageUrl', '/uploads/banners/hero.png');
+    formData.set('targetType', 'product');
+    formData.set('targetId', 'product-1');
+    formData.set('targetUrl', '');
+    formData.set('sortOrder', '5');
+    formData.set('isActive', 'on');
+
+    const { createBannerFromForm } = await import('@/features/admin/banner-actions');
+    const result = await createBannerFromForm(formData);
+
+    expect(bannerCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: {
+          imageUrl: '/uploads/banners/hero.png',
+          targetType: 'product',
+          targetId: 'product-1',
+          targetUrl: null,
+          sortOrder: 5,
+          isActive: true
+        }
+      })
+    );
+    expect(result.id).toBe('banner-1');
+  });
+
+  it('updates banners from form data', async () => {
+    bannerUpdate.mockResolvedValue({
+      id: 'banner-1',
+      isActive: false
+    });
+
+    const formData = new FormData();
+    formData.set('imageUrl', '/uploads/banners/hero-new.png');
+    formData.set('targetType', 'url');
+    formData.set('targetId', '');
+    formData.set('targetUrl', 'https://example.com');
+    formData.set('sortOrder', '9');
+
+    const { updateBannerFromForm } = await import('@/features/admin/banner-actions');
+    await updateBannerFromForm('banner-1', formData);
+
+    expect(bannerUpdate).toHaveBeenCalledWith({
+      where: { id: 'banner-1' },
+      data: {
+        imageUrl: '/uploads/banners/hero-new.png',
+        targetType: 'url',
+        targetId: null,
+        targetUrl: 'https://example.com',
+        sortOrder: 9,
+        isActive: false
+      }
+    });
+  });
 });
