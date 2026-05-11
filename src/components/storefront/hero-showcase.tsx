@@ -76,6 +76,9 @@ export function HeroShowcase({
       <BannerCarousel
         banners={banners}
         emptyLabel={copy.emptyBannerLabel ?? ''}
+        copy={copy}
+        primaryHref={`/${locale}/products`}
+        secondaryHref={`/${locale}/contact`}
       />
     </section>
   );
