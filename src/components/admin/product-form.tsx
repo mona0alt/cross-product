@@ -85,8 +85,8 @@ export function ProductForm({
     slug: 'Slug',
     category: '分类',
     priceUsd: '价格 USD',
-    coverImageUrl: '封面图 URL',
-    galleryImageUrls: '更多图片 URL',
+    coverImageUrl: '封面主图',
+    galleryImageUrls: '更多图片',
     recommended: '推荐商品',
     saveDraft: '保存草稿',
     preview: '提交审核前预览',
@@ -225,15 +225,16 @@ export function ProductForm({
             label={labels.coverImageUrl}
             uploadLabel={uploadLabel}
             defaultValue={product?.coverImageUrl}
-            placeholder="https://..."
             scope="product"
+            showPreview
+            previewAlt={product?.nameZh ?? '商品封面'}
+            clearLabel="移除封面主图"
           />
           <AdminImageUploadInput
             name="galleryImageUrls"
             label={labels.galleryImageUrls}
             uploadLabel={uploadLabel}
             defaultValue={galleryUrls}
-            placeholder="每行一条 URL"
             scope="product"
             multiline
           />

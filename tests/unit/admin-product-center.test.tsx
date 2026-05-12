@@ -5,7 +5,11 @@ import { describe, expect, it, vi } from 'vitest';
 import {
   ProductCenter,
   getProductActionMenuState,
-  getProductFilterUpdate
+  getProductFilterUpdate,
+  getProductGalleryHiddenValue,
+  getProductGalleryPreviewSrc,
+  getProductEditorSubmitState,
+  getProductRowAfterFormSave
 } from '@/components/admin/product-center';
 
 vi.mock('next/navigation', async () => {
@@ -324,6 +328,49 @@ describe('ProductCenter', () => {
     ).toBeNull();
   });
 
+  it('keeps gallery local previews separate from submitted image URLs', () => {
+    expect(
+      getProductGalleryPreviewSrc({
+        url: '/uploads/products/one.png',
+        previewUrl: 'blob:http://localhost/gallery-preview'
+      })
+    ).toBe('blob:http://localhost/gallery-preview');
+
+    expect(
+      getProductGalleryHiddenValue([
+        { url: '/uploads/products/one.png' },
+        { url: '', previewUrl: 'blob:http://localhost/pending' },
+        { url: '/uploads/products/two.png' }
+      ])
+    ).toBe('/uploads/products/one.png\n/uploads/products/two.png');
+  });
+
+  it('disables product saving while gallery image upload is still pending', () => {
+    expect(getProductEditorSubmitState({ isUploadPending: true })).toEqual({
+      disabled: true,
+      label: '图片上传中...'
+    });
+
+    expect(getProductEditorSubmitState({ isUploadPending: false })).toEqual({
+      disabled: false,
+      label: '保存更改'
+    });
+  });
+
+  it('keeps the saved gallery URLs in the local product row before router refresh returns', () => {
+    const formData = new FormData();
+    formData.set('coverImageUrl', '/uploads/products/cover-new.png');
+    formData.set('galleryImageUrls', '/uploads/products/new-one.png\n/uploads/products/new-two.png');
+
+    expect(getProductRowAfterFormSave(products[0], formData)).toMatchObject({
+      coverImageUrl: '/uploads/products/cover-new.png',
+      images: [
+        { imageUrl: '/uploads/products/new-one.png', sortOrder: 0 },
+        { imageUrl: '/uploads/products/new-two.png', sortOrder: 1 }
+      ]
+    });
+  });
+
   it('keeps the product table fixed-size and paginates overflowing rows', () => {
     const html = renderToStaticMarkup(
       <ProductCenter
@@ -365,9 +412,8 @@ describe('ProductCenter', () => {
     expect(html).toContain('移除封面主图');
     expect(html).toContain('图库图片');
     expect(html).toContain('商品图片管理');
-    expect(html).toContain('新增图片 URL');
-    expect(html).toContain('添加图片');
     expect(html).toContain('aria-label="删除商品图片 1"');
+    expect(html).toContain('本地图片 1');
     expect(html).toContain('上传封面');
     expect(html).toContain('上传图库');
     expect(html).toContain('保存更改');

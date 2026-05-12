@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 
 import { db } from '@/lib/db';
+import { requireLocalImagePath } from '@/features/catalog/local-image-paths';
 
 type CategoryInput = {
   parentId?: string | null;
@@ -25,7 +26,10 @@ export async function createCategory(input: CategoryInput) {
     data: {
       sortOrder: 0,
       isActive: true,
-      ...input
+      ...input,
+      iconImageUrl: input.iconImageUrl
+        ? requireLocalImagePath(input.iconImageUrl, 'iconImageUrl')
+        : input.iconImageUrl
     }
   });
 }
@@ -33,7 +37,13 @@ export async function createCategory(input: CategoryInput) {
 export async function updateCategory(id: string, input: Partial<CategoryInput>) {
   return db.category.update({
     where: { id },
-    data: input
+    data:
+      input.iconImageUrl === undefined || input.iconImageUrl === null
+        ? input
+        : {
+            ...input,
+            iconImageUrl: requireLocalImagePath(input.iconImageUrl, 'iconImageUrl')
+          }
   });
 }
 
@@ -74,6 +84,16 @@ function getNullableFormString(formData: FormData, key: string) {
   return value || null;
 }
 
+function getNullableLocalImagePath(formData: FormData, key: string) {
+  const value = getNullableFormString(formData, key);
+
+  if (!value) {
+    return null;
+  }
+
+  return requireLocalImagePath(value, key);
+}
+
 function getFormNumber(formData: FormData, key: string, fallback = 0) {
   const value = getFormString(formData, key);
   const parsed = Number(value);
@@ -86,7 +106,7 @@ function getCategoryFormPayload(formData: FormData): CategoryInput {
     parentId: getNullableFormString(formData, 'parentId'),
     slug: getRequiredFormString(formData, 'slug'),
     sortOrder: getFormNumber(formData, 'sortOrder'),
-    iconImageUrl: getNullableFormString(formData, 'iconImageUrl'),
+    iconImageUrl: getNullableLocalImagePath(formData, 'iconImageUrl'),
     isActive: formData.get('isActive') === 'on',
     nameZh: getRequiredFormString(formData, 'nameZh'),
     nameEn: getRequiredFormString(formData, 'nameEn'),

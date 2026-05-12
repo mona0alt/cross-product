@@ -53,11 +53,17 @@ export function HomepageProductMatrix({
                 index === 0 ? 'sm:col-span-2 lg:col-span-2 lg:row-span-2' : ''
               }`}
             >
-              <img
-                src={product.coverImageUrl}
-                alt={product.name}
-                className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-              />
+              {product.coverImageUrl ? (
+                <img
+                  src={product.coverImageUrl}
+                  alt={product.name}
+                  className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-xs font-semibold uppercase tracking-wide text-[var(--mk-text-muted)]">
+                  本地图片待上传
+                </div>
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-[#061b38]/84 via-[#0f63ce]/14 to-transparent" />
               <div className="absolute bottom-4 left-4 right-4 text-white">
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#bfe1ff]">

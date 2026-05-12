@@ -3,6 +3,7 @@ import React from 'react';
 import { AdminSectionHeader } from '@/components/admin/admin-section-header';
 import { CategoryForm, type CategoryRecord } from '@/components/admin/category-form';
 import { getAdminCategoryTree } from '@/features/catalog/queries';
+import { getLocalImagePath } from '@/features/catalog/local-image-paths';
 
 function flattenCategories(
   nodes: Awaited<ReturnType<typeof getAdminCategoryTree>>,
@@ -27,7 +28,7 @@ function flattenCategoryRecords(
       parentId: node.parentId,
       slug: node.slug,
       sortOrder: node.sortOrder,
-      iconImageUrl: node.iconImageUrl,
+      iconImageUrl: getLocalImagePath(node.iconImageUrl),
       isActive: node.isActive,
       nameZh: node.nameZh,
       nameEn: node.nameEn,

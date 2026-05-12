@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 
 import { db } from '@/lib/db';
 import { getPublishBlockers } from '@/features/catalog/publishable';
+import { requireLocalImagePath } from '@/features/catalog/local-image-paths';
 
 type ProductDraftInput = {
   categoryId: string;
@@ -76,7 +77,8 @@ function getGalleryUrls(formData: FormData) {
   return getFormString(formData, 'galleryImageUrls')
     .split(/\r?\n/)
     .map((line) => line.trim())
-    .filter(Boolean);
+    .filter(Boolean)
+    .map((url) => requireLocalImagePath(url, 'galleryImageUrls'));
 }
 
 function getProductFormPayload(formData: FormData) {
@@ -85,7 +87,10 @@ function getProductFormPayload(formData: FormData) {
     productCode: getRequiredFormString(formData, 'productCode'),
     slug: getRequiredFormString(formData, 'slug'),
     priceUsd: getFormNumber(formData, 'priceUsd'),
-    coverImageUrl: getRequiredFormString(formData, 'coverImageUrl'),
+    coverImageUrl: requireLocalImagePath(
+      getRequiredFormString(formData, 'coverImageUrl'),
+      'coverImageUrl'
+    ),
     status: getFormStatus(formData),
     isRecommended: formData.get('isRecommended') === 'on',
     sortOrder: getFormNumber(formData, 'sortOrder'),
@@ -135,6 +140,7 @@ export async function createProductDraft(input: ProductDraftInput) {
     data: {
       ...getEmptyLocalizedFields(),
       ...input,
+      coverImageUrl: requireLocalImagePath(input.coverImageUrl, 'coverImageUrl'),
       status: 'draft'
     }
   });
@@ -165,7 +171,12 @@ export async function createProductFromForm(formData: FormData) {
 export async function updateProduct(id: string, input: ProductUpdateInput) {
   return db.product.update({
     where: { id },
-    data: input
+    data: input.coverImageUrl
+      ? {
+          ...input,
+          coverImageUrl: requireLocalImagePath(input.coverImageUrl, 'coverImageUrl')
+        }
+      : input
   });
 }
 

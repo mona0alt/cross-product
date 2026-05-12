@@ -1,6 +1,7 @@
 import React from 'react';
 import { createCategoryFromForm, updateCategoryFromForm } from '@/features/admin/category-actions';
 import { AdminButton } from './admin-button';
+import { AdminImageUploadInput } from './admin-image-upload-input';
 import { AdminTableShell } from './admin-table-shell';
 
 export type CategoryOption = {
@@ -161,14 +162,18 @@ function CategoryFields({
           type="number"
         />
       </Field>
-      <Field label="图标 URL">
-        <input
+      <div className="md:col-span-2">
+        <AdminImageUploadInput
           name="iconImageUrl"
+          label="类目主图"
+          uploadLabel="上传主图"
           defaultValue={category?.iconImageUrl ?? ''}
-          className={inputClass}
-          placeholder="/show/robot_humanoid.png"
+          scope="category"
+          showPreview
+          previewAlt={category?.nameZh ?? '类目主图'}
+          clearLabel="移除类目主图"
         />
-      </Field>
+      </div>
       <Field label="中文名称">
         <input name="nameZh" defaultValue={category?.nameZh} className={inputClass} />
       </Field>

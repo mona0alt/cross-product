@@ -25,19 +25,19 @@ function ArrowRight({ className }: { className?: string }) {
 const catalogs = [
   {
     id: 'windowRobots',
-    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&h=300&fit=crop'
+    image: '/show/local-unsplash/photo-1581091226825-a6a2a5aee158.jpg'
   },
   {
     id: 'drones',
-    image: 'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400&h=300&fit=crop'
+    image: '/show/local-unsplash/photo-1473968512647-3e447244af8f.jpg'
   },
   {
     id: 'humanoidRobots',
-    image: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=300&fit=crop'
+    image: '/show/local-unsplash/photo-1485827404703-89b55fcc595e.jpg'
   },
   {
     id: 'vacuumRobots',
-    image: 'https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?w=400&h=300&fit=crop'
+    image: '/show/local-unsplash/photo-1518640467707-6811f4a6ab73.jpg'
   }
 ] as const;
 

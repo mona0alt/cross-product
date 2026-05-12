@@ -37,11 +37,17 @@ export function ProductCard({
     <article className="group flex w-[200px] flex-col sm:w-[220px]">
       {/* Image */}
       <div className="relative overflow-hidden rounded-md border border-[var(--mk-border)] bg-white">
-        <img
-          src={product.coverImageUrl}
-          alt={product.name}
-          className="h-[200px] w-full object-cover transition duration-300 group-hover:scale-105 sm:h-[220px]"
-        />
+        {product.coverImageUrl ? (
+          <img
+            src={product.coverImageUrl}
+            alt={product.name}
+            className="h-[200px] w-full object-cover transition duration-300 group-hover:scale-105 sm:h-[220px]"
+          />
+        ) : (
+          <div className="flex h-[200px] w-full items-center justify-center bg-[var(--mk-bg-muted)] text-xs font-semibold uppercase tracking-wide text-[var(--mk-text-muted)] sm:h-[220px]">
+            本地图片待上传
+          </div>
+        )}
         {discountBadgeLabel ? (
           <span className="absolute left-2 top-2 rounded-sm bg-[var(--mk-highlight)] px-2 py-1 text-xs font-bold text-white">
             {discountBadgeLabel}

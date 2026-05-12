@@ -1,9 +1,47 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
-import Image from 'next/image';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  ADMIN_IMAGE_ACCEPT,
+  ADMIN_IMAGE_UPLOAD_HINT,
+  getAdminUploadErrorMessage,
+  validateAdminUploadFile,
+  type AdminUploadStatusTone
+} from '@/features/admin/upload-rules';
 
 type UploadScope = 'product' | 'banner' | 'category';
+type UploadStatus = {
+  tone: AdminUploadStatusTone;
+  message: string;
+};
+
+export function getAdminUploadedValue({
+  currentValue,
+  uploadedUrl,
+  multiline
+}: {
+  currentValue: string;
+  uploadedUrl: string;
+  multiline: boolean;
+}) {
+  if (!multiline) {
+    return uploadedUrl;
+  }
+
+  const trimmedValue = currentValue.trim();
+
+  return trimmedValue ? `${trimmedValue}\n${uploadedUrl}` : uploadedUrl;
+}
+
+export function getAdminImagePreviewSrc({
+  committedValue,
+  localPreviewUrl
+}: {
+  committedValue: string;
+  localPreviewUrl?: string | null;
+}) {
+  return localPreviewUrl || committedValue.trim();
+}
 
 export function AdminImageUploadInput({
   name,
@@ -15,7 +53,8 @@ export function AdminImageUploadInput({
   multiline = false,
   showPreview = false,
   previewAlt,
-  clearLabel = '移除图片'
+  clearLabel = '移除图片',
+  allowManualEntry = scope === 'banner'
 }: {
   name: string;
   label: string;
@@ -27,18 +66,71 @@ export function AdminImageUploadInput({
   showPreview?: boolean;
   previewAlt?: string;
   clearLabel?: string;
+  allowManualEntry?: boolean;
 }) {
   const [value, setValue] = useState(defaultValue ?? '');
-  const [status, setStatus] = useState('');
+  const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
+  const [status, setStatus] = useState<UploadStatus | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const localPreviewUrlRef = useRef<string | null>(null);
+  const previewSrc = getAdminImagePreviewSrc({
+    committedValue: value,
+    localPreviewUrl
+  });
   const inputClass =
     'w-full rounded-lg border border-admin-border bg-admin-surface px-4 py-2.5 text-sm text-admin-text-primary outline-none transition-all duration-200 placeholder:text-admin-text-muted focus:border-admin-accent/30 focus:ring-1 focus:ring-admin-accent/20';
 
+  const clearLocalPreviewUrl = () => {
+    if (localPreviewUrlRef.current) {
+      URL.revokeObjectURL(localPreviewUrlRef.current);
+      localPreviewUrlRef.current = null;
+    }
+    setLocalPreviewUrl(null);
+  };
+
+  useEffect(() => {
+    setValue(defaultValue ?? '');
+    clearLocalPreviewUrl();
+  }, [defaultValue]);
+
+  useEffect(
+    () => () => {
+      if (localPreviewUrlRef.current) {
+        URL.revokeObjectURL(localPreviewUrlRef.current);
+      }
+    },
+    []
+  );
+
+  function showLocalPreview(file: File) {
+    if (!showPreview || typeof URL.createObjectURL !== 'function') {
+      return;
+    }
+
+    if (localPreviewUrlRef.current) {
+      URL.revokeObjectURL(localPreviewUrlRef.current);
+    }
+
+    const nextPreviewUrl = URL.createObjectURL(file);
+    localPreviewUrlRef.current = nextPreviewUrl;
+    setLocalPreviewUrl(nextPreviewUrl);
+  }
+
   async function upload(file: File) {
+    const validationError = validateAdminUploadFile(file);
+    if (validationError) {
+      setStatus({
+        tone: 'error',
+        message: getAdminUploadErrorMessage(validationError)
+      });
+      clearLocalPreviewUrl();
+      return;
+    }
+
     const formData = new FormData();
     formData.set('file', file);
     formData.set('scope', scope);
-    setStatus('Uploading...');
+    setStatus({ tone: 'info', message: '正在上传图片...' });
 
     const response = await fetch('/api/admin/uploads/product-images', {
       method: 'POST',
@@ -51,18 +143,25 @@ export function AdminImageUploadInput({
     };
 
     if (!response.ok || !payload.url) {
-      setStatus(payload.error ?? 'UPLOAD_FAILED');
+      setStatus({
+        tone: 'error',
+        message: getAdminUploadErrorMessage(payload.error ?? 'UPLOAD_FAILED')
+      });
+      clearLocalPreviewUrl();
       return;
     }
 
-    setValue((current) => {
-      if (!multiline) {
-        return payload.url ?? current;
-      }
-
-      return current ? `${current.trim()}\n${payload.url}` : payload.url ?? current;
+    setValue((current) =>
+      getAdminUploadedValue({
+        currentValue: current,
+        uploadedUrl: payload.url ?? current,
+        multiline
+      })
+    );
+    setStatus({
+      tone: 'success',
+      message: scope === 'banner' ? '图片已上传，地址已写入输入框。' : '图片已上传。'
     });
-    setStatus(payload.url);
   }
 
   return (
@@ -82,17 +181,18 @@ export function AdminImageUploadInput({
       <input
         ref={fileRef}
         type="file"
-        accept="image/png,image/jpeg,image/webp,image/gif"
+        accept={ADMIN_IMAGE_ACCEPT}
         className="sr-only"
         onChange={(event) => {
           const file = event.target.files?.[0];
           if (file) {
+            showLocalPreview(file);
             void upload(file);
           }
           event.target.value = '';
         }}
       />
-      {multiline ? (
+      {allowManualEntry && multiline ? (
         <textarea
           name={name}
           value={value}
@@ -100,7 +200,7 @@ export function AdminImageUploadInput({
           className={`${inputClass} min-h-[100px] resize-y`}
           placeholder={placeholder}
         />
-      ) : (
+      ) : allowManualEntry ? (
         <input
           name={name}
           value={value}
@@ -108,19 +208,21 @@ export function AdminImageUploadInput({
           className={inputClass}
           placeholder={placeholder}
         />
+      ) : (
+        <input name={name} type="hidden" value={value} readOnly />
       )}
+      <p className="text-xs text-admin-text-muted">{ADMIN_IMAGE_UPLOAD_HINT}</p>
       {showPreview ? (
         <div className="overflow-hidden rounded-xl border border-admin-border bg-admin-elevated">
-          {value ? (
+          {previewSrc ? (
             <div className="grid gap-3 p-3 sm:grid-cols-[112px_minmax(0,1fr)]">
               <div className="relative aspect-square overflow-hidden rounded-lg border border-admin-border bg-white">
-                <Image
-                  src={value}
+                {/* eslint-disable-next-line @next/next/no-img-element -- Admin upload previews must support local blob URLs before the file is served publicly. */}
+                <img
+                  data-admin-upload-preview="true"
+                  src={previewSrc}
                   alt={previewAlt ?? label}
-                  fill
-                  sizes="112px"
-                  className="object-cover"
-                  unoptimized
+                  className="h-full w-full object-cover"
                 />
               </div>
               <div className="flex min-w-0 flex-col justify-between gap-3">
@@ -128,13 +230,16 @@ export function AdminImageUploadInput({
                   <p className="text-xs font-semibold uppercase text-admin-text-muted">
                     当前图片
                   </p>
-                  <p className="mt-1 break-all text-sm text-admin-text-secondary">
-                    {value}
+                  <p className="mt-1 text-sm text-admin-text-secondary">
+                    本地图片已配置
                   </p>
                 </div>
                 <button
                   type="button"
-                  onClick={() => setValue('')}
+                  onClick={() => {
+                    setValue('');
+                    clearLocalPreviewUrl();
+                  }}
                   className="self-start rounded-lg border border-rose-200 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:border-rose-300 hover:bg-rose-50"
                 >
                   {clearLabel}
@@ -149,7 +254,19 @@ export function AdminImageUploadInput({
         </div>
       ) : null}
       {status ? (
-        <p className="text-xs text-admin-text-muted">{status}</p>
+        <p
+          role={status.tone === 'error' ? 'alert' : 'status'}
+          aria-live="polite"
+          className={
+            status.tone === 'error'
+              ? 'rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700'
+              : status.tone === 'success'
+              ? 'rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700'
+              : 'rounded-lg border border-admin-border bg-admin-elevated px-3 py-2 text-xs font-medium text-admin-text-secondary'
+          }
+        >
+          {status.message}
+        </p>
       ) : null}
     </div>
   );

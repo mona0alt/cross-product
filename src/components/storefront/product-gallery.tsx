@@ -11,7 +11,8 @@ export function ProductGallery({
   images: string[];
   label: string;
 }) {
-  const [active, setActive] = useState(images[0]);
+  const visibleImages = images.filter(Boolean);
+  const [active, setActive] = useState(visibleImages[0] ?? '');
 
   return (
     <div className="storefront-surface rounded-[var(--store-radius-lg)] p-4">
@@ -20,15 +21,21 @@ export function ProductGallery({
           <div>
             <p className="storefront-eyebrow">{label}</p>
             <p className="text-sm font-semibold text-[var(--store-text)]">
-              {`1 / ${images.length}`}
+              {visibleImages.length > 0 ? `1 / ${visibleImages.length}` : '0 / 0'}
             </p>
           </div>
         </div>
         <div className="overflow-hidden rounded-[1.5rem] bg-[var(--store-surface-muted)]">
-          <img src={active} alt="" className="h-[520px] w-full object-cover" />
+          {active ? (
+            <img src={active} alt="" className="h-[520px] w-full object-cover" />
+          ) : (
+            <div className="flex h-[520px] w-full items-center justify-center text-sm font-semibold text-[var(--store-text-muted)]">
+              本地图片待上传
+            </div>
+          )}
         </div>
         <div className="grid grid-cols-4 gap-3">
-          {images.map((image) => (
+          {visibleImages.map((image) => (
             <button
               key={image}
               type="button"

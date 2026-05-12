@@ -9,6 +9,7 @@ import {
   getAdminCategoryTree,
   getAdminProductList
 } from '@/features/catalog/queries';
+import { getLocalImagePath } from '@/features/catalog/local-image-paths';
 import type { AdminCategoryTreeNode } from '@/features/catalog/types';
 
 function flattenCategories(nodes: AdminCategoryTreeNode[]): AdminCategoryTreeNode[] {
@@ -38,13 +39,18 @@ function mapProducts(
     categoryName: product.category.nameZh,
     status: product.status,
     priceUsd: Number(product.priceUsd),
-    coverImageUrl: product.coverImageUrl,
+    coverImageUrl: getLocalImagePath(product.coverImageUrl) ?? '',
     isRecommended: product.isRecommended,
     sortOrder: product.sortOrder,
-    images: product.images.map((image) => ({
-      imageUrl: image.imageUrl,
-      sortOrder: image.sortOrder
-    }))
+    images: product.images
+      .map((image) => ({
+        imageUrl: getLocalImagePath(image.imageUrl),
+        sortOrder: image.sortOrder
+      }))
+      .filter(
+        (image): image is { imageUrl: string; sortOrder: number } =>
+          Boolean(image.imageUrl)
+      )
   }));
 }
 
@@ -69,7 +75,7 @@ function mapCategories(
     parentId: category.parentId,
     slug: category.slug,
     sortOrder: category.sortOrder,
-    iconImageUrl: category.iconImageUrl,
+    iconImageUrl: getLocalImagePath(category.iconImageUrl),
     nameZh: category.nameZh,
     nameEn: category.nameEn,
     nameEs: category.nameEs,

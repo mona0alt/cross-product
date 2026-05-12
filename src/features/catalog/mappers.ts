@@ -4,6 +4,7 @@ import type {
   StorefrontCategory,
   StorefrontProductCard
 } from '@/features/catalog/types';
+import { getLocalImagePath } from '@/features/catalog/local-image-paths';
 
 function getLocalizedPair<
   TValue extends LocalizedCategoryFields | LocalizedProductFields,
@@ -22,34 +23,6 @@ function getLocalizedPair<
   }
 }
 
-function normalizeStorefrontImageUrl(imageUrl: string | null) {
-  if (!imageUrl) {
-    return imageUrl;
-  }
-
-  if (!imageUrl.startsWith('http')) {
-    return imageUrl;
-  }
-
-  try {
-    const url = new URL(imageUrl);
-
-    if (url.hostname !== 'images.unsplash.com') {
-      return imageUrl;
-    }
-
-    const width = Number(url.searchParams.get('w') ?? 0);
-    if (!width || width < 800) {
-      url.searchParams.set('w', '800');
-    }
-    url.searchParams.delete('h');
-
-    return url.toString();
-  } catch {
-    return imageUrl;
-  }
-}
-
 export function mapLocalizedCategory<
   TValue extends {
     id: string;
@@ -60,7 +33,7 @@ export function mapLocalizedCategory<
   return {
     id: value.id,
     slug: value.slug,
-    iconImageUrl: normalizeStorefrontImageUrl(value.iconImageUrl),
+    iconImageUrl: getLocalImagePath(value.iconImageUrl),
     name: getLocalizedPair(value, locale, 'name'),
     description: getLocalizedPair(value, locale, 'description') ?? null
   };
@@ -85,13 +58,14 @@ export function mapLocalizedProduct<
 >(value: TValue, locale: CatalogLocale): StorefrontProductCard {
   const images = [...(value.images ?? [])]
     .sort((left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0))
-    .map((image) => image.imageUrl);
+    .map((image) => getLocalImagePath(image.imageUrl))
+    .filter((imageUrl): imageUrl is string => Boolean(imageUrl));
 
   return {
     id: value.id,
     slug: value.slug,
     productCode: value.productCode,
-    coverImageUrl: value.coverImageUrl,
+    coverImageUrl: getLocalImagePath(value.coverImageUrl) ?? '',
     priceUsd: Number(value.priceUsd),
     isRecommended: value.isRecommended,
     name: getLocalizedPair(value, locale, 'name'),

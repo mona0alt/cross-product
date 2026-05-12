@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { AdminSectionHeader } from '@/components/admin/admin-section-header';
 import { ProductForm } from '@/components/admin/product-form';
 import { getAdminCategoryTree } from '@/features/catalog/queries';
+import { getLocalImagePath } from '@/features/catalog/local-image-paths';
 import { getAdminDictionary } from '@/lib/admin-i18n';
 import { db } from '@/lib/db';
 
@@ -54,7 +55,17 @@ export default async function AdminEditProductPage({
         categories={flattenCategories(categories)}
         product={{
           ...product,
-          priceUsd: product.priceUsd.toString()
+          priceUsd: product.priceUsd.toString(),
+          coverImageUrl: getLocalImagePath(product.coverImageUrl) ?? '',
+          images: product.images
+            .map((image) => ({
+              ...image,
+              imageUrl: getLocalImagePath(image.imageUrl)
+            }))
+            .filter(
+              (image): image is typeof product.images[number] & { imageUrl: string } =>
+                Boolean(image.imageUrl)
+            )
         }}
         copy={Admin.products}
         uploadLabel={Admin.common.upload}

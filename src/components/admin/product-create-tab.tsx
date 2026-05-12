@@ -16,9 +16,9 @@ const inputBase =
   'w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10';
 
 const mockImages = [
-  'https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?w=200&h=200&fit=crop',
-  'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=200&h=200&fit=crop',
-  'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=200&h=200&fit=crop',
+  '/show/local-unsplash/photo-1565814329452-e1efa11c5b89.jpg',
+  '/show/local-unsplash/photo-1513506003901-1e6a229e2d15.jpg',
+  '/show/robot_industrial_arm.png',
 ];
 
 export function ProductCreateTab() {

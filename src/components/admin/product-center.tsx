@@ -34,6 +34,13 @@ import {
   updateCategoryFormAction
 } from '@/features/admin/category-actions';
 import { AdminImageUploadInput } from '@/components/admin/admin-image-upload-input';
+import {
+  ADMIN_IMAGE_ACCEPT,
+  ADMIN_IMAGE_UPLOAD_HINT,
+  getAdminUploadErrorMessage,
+  validateAdminUploadFile,
+  type AdminUploadStatusTone
+} from '@/features/admin/upload-rules';
 
 export type ProductCenterCategory = {
   id: string;
@@ -137,6 +144,79 @@ export function getProductActionMenuState({
   return null;
 }
 
+export type ProductGalleryImageItem = {
+  url: string;
+  previewUrl?: string | null;
+};
+type ProductGalleryStatus = {
+  tone: AdminUploadStatusTone;
+  message: string;
+};
+
+export function getProductGalleryPreviewSrc(item: ProductGalleryImageItem) {
+  return item.previewUrl || item.url.trim();
+}
+
+export function getProductGalleryHiddenValue(items: ProductGalleryImageItem[]) {
+  return items
+    .map((item) => item.url.trim())
+    .filter(Boolean)
+    .slice(0, 10)
+    .join('\n');
+}
+
+function getProductGalleryItems(urls: string[]): ProductGalleryImageItem[] {
+  return urls.map((url) => ({ url }));
+}
+
+function getFormStringValue(formData: FormData, key: string) {
+  const value = formData.get(key);
+
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function getGalleryUrlsFromFormData(formData: FormData) {
+  return getFormStringValue(formData, 'galleryImageUrls')
+    .split(/\r?\n/)
+    .map((url) => url.trim())
+    .filter((url) => url.startsWith('/') && !url.startsWith('//'))
+    .slice(0, 10);
+}
+
+export function getProductRowAfterFormSave(
+  product: ProductCenterRow,
+  formData: FormData
+): ProductCenterRow {
+  const coverImageUrl =
+    getFormStringValue(formData, 'coverImageUrl') || product.coverImageUrl;
+  const galleryUrls = getGalleryUrlsFromFormData(formData);
+
+  return {
+    ...product,
+    coverImageUrl,
+    images: galleryUrls.map((imageUrl, sortOrder) => ({
+      imageUrl,
+      sortOrder
+    }))
+  };
+}
+
+export function getProductEditorSubmitState({
+  isUploadPending
+}: {
+  isUploadPending: boolean;
+}) {
+  return isUploadPending
+    ? {
+        disabled: true,
+        label: '图片上传中...'
+      }
+    : {
+        disabled: false,
+        label: '保存更改'
+      };
+}
+
 export function ProductCenter({
   categories,
   products,
@@ -166,7 +246,8 @@ export function ProductCenter({
   defaultSelectedProductIds?: string[];
   defaultOpenActionMenuProductId?: string;
 }) {
-  const firstProductId = products[0]?.id ?? null;
+  const [productRows, setProductRows] = useState(products);
+  const firstProductId = productRows[0]?.id ?? null;
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
     defaultSelectedProductId ?? firstProductId
   );
@@ -196,10 +277,15 @@ export function ProductCenter({
     string | null
   >(defaultOpenActionMenuProductId ?? null);
   const [notice, setNotice] = useState('');
+
+  useEffect(() => {
+    setProductRows(products);
+  }, [products]);
+
   const selectedProduct =
     selectedProductId === null
       ? null
-      : products.find((product) => product.id === selectedProductId) ?? null;
+      : productRows.find((product) => product.id === selectedProductId) ?? null;
   const selectedCategory =
     selectedCategoryId === null
       ? null
@@ -210,8 +296,8 @@ export function ProductCenter({
       : categories.find((category) => category.id === activeCategoryId) ?? null;
   const categoryProducts =
     activeCategoryId === null
-      ? products
-      : products.filter((product) => product.categoryId === activeCategoryId);
+      ? productRows
+      : productRows.filter((product) => product.categoryId === activeCategoryId);
   const normalizedSearchTerm = searchTerm.trim().toLowerCase();
   const filteredProducts = categoryProducts.filter((product) => {
     const matchesStatus =
@@ -712,6 +798,15 @@ export function ProductCenter({
         mode={editorMode}
         isOpen={isEditorOpen}
         onClose={() => setIsEditorOpen(false)}
+        onProductSaved={(productId, formData) => {
+          setProductRows((currentRows) =>
+            currentRows.map((currentProduct) =>
+              currentProduct.id === productId
+                ? getProductRowAfterFormSave(currentProduct, formData)
+                : currentProduct
+            )
+          );
+        }}
         onSaved={(message) => setNotice(message)}
       />
       <CategoryEditorDrawer
@@ -951,7 +1046,6 @@ function CategoryEditorDrawer({
                 label="类目主图"
                 uploadLabel="上传主图"
                 defaultValue={category?.iconImageUrl ?? ''}
-                placeholder="/show/robot_humanoid.png"
                 scope="category"
                 showPreview
                 previewAlt={category?.nameZh ?? '类目主图'}
@@ -1045,6 +1139,7 @@ function ProductEditorDrawer({
   mode,
   isOpen,
   onClose,
+  onProductSaved,
   onSaved
 }: {
   categories: ProductCenterCategory[];
@@ -1052,6 +1147,7 @@ function ProductEditorDrawer({
   mode: 'create' | 'edit';
   isOpen: boolean;
   onClose: () => void;
+  onProductSaved: (productId: string, formData: FormData) => void;
   onSaved: (message: string) => void;
 }) {
   if (!isOpen) {
@@ -1064,6 +1160,7 @@ function ProductEditorDrawer({
       product={mode === 'create' ? null : product}
       mode={mode}
       onClose={onClose}
+      onProductSaved={onProductSaved}
       onSaved={onSaved}
     />
   );
@@ -1074,16 +1171,19 @@ function ProductEditorDrawerContent({
   product,
   mode,
   onClose,
+  onProductSaved,
   onSaved
 }: {
   categories: ProductCenterCategory[];
   product: ProductCenterRow | null;
   mode: 'create' | 'edit';
   onClose: () => void;
+  onProductSaved: (productId: string, formData: FormData) => void;
   onSaved: (message: string) => void;
 }) {
   const router = useRouter();
   const [formError, setFormError] = useState('');
+  const [isGalleryUploadPending, setIsGalleryUploadPending] = useState(false);
   const isCreate = mode === 'create';
   const formAction =
     !isCreate && product
@@ -1093,6 +1193,9 @@ function ProductEditorDrawerContent({
     try {
       setFormError('');
       await formAction(formData);
+      if (!isCreate && product) {
+        onProductSaved(product.id, formData);
+      }
       onSaved(isCreate ? '商品已新增。' : '商品已保存。');
       router.refresh();
       onClose();
@@ -1145,14 +1248,21 @@ function ProductEditorDrawerContent({
                 label="封面主图"
                 uploadLabel="上传封面"
                 defaultValue={product?.coverImageUrl ?? ''}
-                placeholder="https://..."
                 scope="product"
                 showPreview
                 previewAlt={product?.nameZh ?? '商品封面主图'}
                 clearLabel="移除封面主图"
               />
-              <ProductGalleryImageManager defaultUrls={galleryUrls} />
+              <ProductGalleryImageManager
+                defaultUrls={galleryUrls}
+                onUploadPendingChange={setIsGalleryUploadPending}
+              />
             </div>
+            {isGalleryUploadPending ? (
+              <p role="status" className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-800">
+                图片仍在上传，完成后才能保存商品。
+              </p>
+            ) : null}
           </section>
 
           <section className="space-y-4">
@@ -1259,75 +1369,159 @@ function ProductEditorDrawerContent({
           >
             取消
           </button>
-          <ProductEditorSubmitButton />
+          <ProductEditorSubmitButton isUploadPending={isGalleryUploadPending} />
         </footer>
       </form>
     </aside>
   );
 }
 
-function ProductGalleryImageManager({ defaultUrls }: { defaultUrls: string[] }) {
-  const [urls, setUrls] = useState(defaultUrls);
-  const [draftUrl, setDraftUrl] = useState('');
-  const [status, setStatus] = useState('');
+function ProductGalleryImageManager({
+  defaultUrls,
+  onUploadPendingChange
+}: {
+  defaultUrls: string[];
+  onUploadPendingChange?: (isPending: boolean) => void;
+}) {
+  const defaultUrlsKey = defaultUrls.join('\n');
+  const [items, setItems] = useState<ProductGalleryImageItem[]>(
+    getProductGalleryItems(defaultUrls)
+  );
+  const [status, setStatus] = useState<ProductGalleryStatus | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const normalizedUrls = urls.map((url) => url.trim()).filter(Boolean).slice(0, 10);
-  const canAddMore = normalizedUrls.length < 10;
+  const localPreviewUrlsRef = useRef<string[]>([]);
+  const visibleItems = items
+    .filter((item) => Boolean(getProductGalleryPreviewSrc(item)))
+    .slice(0, 10);
+  const canAddMore = visibleItems.length < 10;
 
-  const addUrl = (url: string) => {
-    const nextUrl = url.trim();
-    if (!nextUrl || !canAddMore) {
+  const revokePreviewUrl = (previewUrl: string | null | undefined) => {
+    if (!previewUrl) {
       return;
     }
 
-    setUrls((current) => [...current.map((item) => item.trim()).filter(Boolean), nextUrl].slice(0, 10));
-    setDraftUrl('');
-  };
-
-  const updateUrl = (index: number, value: string) => {
-    setUrls((current) =>
-      current.map((url, currentIndex) => (currentIndex === index ? value : url))
+    URL.revokeObjectURL(previewUrl);
+    localPreviewUrlsRef.current = localPreviewUrlsRef.current.filter(
+      (currentUrl) => currentUrl !== previewUrl
     );
   };
 
+  const revokeAllPreviewUrls = () => {
+    for (const previewUrl of localPreviewUrlsRef.current) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    localPreviewUrlsRef.current = [];
+  };
+
+  useEffect(() => {
+    revokeAllPreviewUrls();
+    setItems(
+      getProductGalleryItems(
+        defaultUrlsKey ? defaultUrlsKey.split('\n') : []
+      )
+    );
+  }, [defaultUrlsKey]);
+
+  useEffect(
+    () => () => {
+      revokeAllPreviewUrls();
+    },
+    []
+  );
+
   const removeUrl = (index: number) => {
-    setUrls((current) => current.filter((_, currentIndex) => currentIndex !== index));
+    setItems((current) => {
+      const item = visibleItems[index];
+
+      if (item?.previewUrl) {
+        revokePreviewUrl(item.previewUrl);
+      }
+
+      return current.filter((currentItem) => currentItem !== item);
+    });
   };
 
   const uploadGalleryImage = async (file: File) => {
     if (!canAddMore) {
-      setStatus('图库最多支持 10 张图片。');
+      setStatus({
+        tone: 'error',
+        message: '图库最多支持 10 张图片。请先删除一张再上传。'
+      });
       return;
+    }
+
+    const validationError = validateAdminUploadFile(file);
+    if (validationError) {
+      setStatus({
+        tone: 'error',
+        message: getAdminUploadErrorMessage(validationError)
+      });
+      return;
+    }
+
+    const previewUrl =
+      typeof URL.createObjectURL === 'function' ? URL.createObjectURL(file) : null;
+
+    if (previewUrl) {
+      localPreviewUrlsRef.current.push(previewUrl);
+      setItems((current) => [...current, { url: '', previewUrl }].slice(0, 10));
     }
 
     const formData = new FormData();
     formData.set('file', file);
     formData.set('scope', 'product');
-    setStatus('Uploading...');
+    setStatus({ tone: 'info', message: '正在上传图库图片...' });
+    onUploadPendingChange?.(true);
 
-    const response = await fetch('/api/admin/uploads/product-images', {
-      method: 'POST',
-      body: formData
-    });
-    const payload = (await response.json().catch(() => ({}))) as {
-      url?: string;
-      error?: string;
-    };
+    try {
+      const response = await fetch('/api/admin/uploads/product-images', {
+        method: 'POST',
+        body: formData
+      });
+      const payload = (await response.json().catch(() => ({}))) as {
+        url?: string;
+        error?: string;
+      };
 
-    if (!response.ok || !payload.url) {
-      setStatus(payload.error ?? 'UPLOAD_FAILED');
-      return;
+      if (!response.ok || !payload.url) {
+        setStatus({
+          tone: 'error',
+          message: getAdminUploadErrorMessage(payload.error ?? 'UPLOAD_FAILED')
+        });
+        if (previewUrl) {
+          revokePreviewUrl(previewUrl);
+          setItems((current) =>
+            current.filter((item) => item.previewUrl !== previewUrl)
+          );
+        }
+        return;
+      }
+
+      setItems((current) => {
+        if (!previewUrl) {
+          return [...current, { url: payload.url ?? '' }].slice(0, 10);
+        }
+
+        return current.map((item) =>
+          item.previewUrl === previewUrl
+            ? { ...item, url: payload.url ?? item.url }
+            : item
+        );
+      });
+      setStatus({ tone: 'success', message: '图库图片已上传。' });
+    } finally {
+      onUploadPendingChange?.(false);
     }
-
-    setUrls((current) =>
-      [...current.map((item) => item.trim()).filter(Boolean), payload.url ?? ''].filter(Boolean).slice(0, 10)
-    );
-    setStatus(payload.url);
   };
 
   return (
     <div className="space-y-3">
-      <input name="galleryImageUrls" type="hidden" value={normalizedUrls.join('\n')} readOnly />
+      <input
+        name="galleryImageUrls"
+        type="hidden"
+        value={getProductGalleryHiddenValue(items)}
+        readOnly
+      />
       <div className="flex items-center justify-between gap-3">
         <div>
           <h5 className="text-sm font-semibold text-admin-text-primary">商品图片管理</h5>
@@ -1345,7 +1539,7 @@ function ProductGalleryImageManager({ defaultUrls }: { defaultUrls: string[] }) 
       <input
         ref={fileRef}
         type="file"
-        accept="image/png,image/jpeg,image/webp,image/gif"
+        accept={ADMIN_IMAGE_ACCEPT}
         className="sr-only"
         onChange={(event) => {
           const file = event.target.files?.[0];
@@ -1355,22 +1549,22 @@ function ProductGalleryImageManager({ defaultUrls }: { defaultUrls: string[] }) 
           event.target.value = '';
         }}
       />
+      <p className="text-xs text-admin-text-muted">{ADMIN_IMAGE_UPLOAD_HINT}</p>
 
-      {normalizedUrls.length > 0 ? (
+      {visibleItems.length > 0 ? (
         <div className="grid gap-3 sm:grid-cols-2">
-          {normalizedUrls.map((url, index) => (
+          {visibleItems.map((item, index) => (
             <div
-              key={`${url}-${index}`}
+              key={`${getProductGalleryPreviewSrc(item)}-${index}`}
               className="overflow-hidden rounded-xl border border-admin-border bg-white"
             >
               <div className="relative aspect-[4/3] bg-admin-elevated">
-                <NextImage
-                  src={url}
+                {/* eslint-disable-next-line @next/next/no-img-element -- Admin upload previews must support local blob URLs before the file is served publicly. */}
+                <img
+                  data-product-gallery-preview="true"
+                  src={getProductGalleryPreviewSrc(item)}
                   alt={`商品图片 ${index + 1}`}
-                  fill
-                  sizes="240px"
-                  className="object-cover"
-                  unoptimized
+                  className="h-full w-full object-cover"
                 />
                 <span className="absolute left-2 top-2 rounded bg-slate-950/75 px-2 py-1 text-[10px] font-bold text-white">
                   #{index + 1}
@@ -1385,12 +1579,9 @@ function ProductGalleryImageManager({ defaultUrls }: { defaultUrls: string[] }) 
                 </button>
               </div>
               <div className="p-2">
-                <input
-                  aria-label={`商品图片 ${index + 1} URL`}
-                  value={url}
-                  onChange={(event) => updateUrl(index, event.target.value)}
-                  className="w-full rounded-lg border border-admin-border bg-admin-surface px-3 py-2 text-xs text-admin-text-secondary outline-none transition focus:border-admin-accent focus:ring-2 focus:ring-admin-accent/15"
-                />
+                <p className="truncate text-xs font-medium text-admin-text-muted">
+                  本地图片 {index + 1}
+                </p>
               </div>
             </div>
           ))}
@@ -1401,39 +1592,41 @@ function ProductGalleryImageManager({ defaultUrls }: { defaultUrls: string[] }) 
           暂无图库图片
         </div>
       )}
-
-      <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
-        <input
-          value={draftUrl}
-          onChange={(event) => setDraftUrl(event.target.value)}
-          placeholder="新增图片 URL"
-          className="h-10 rounded-lg border border-admin-border bg-white px-3 text-sm text-admin-text-primary outline-none transition focus:border-admin-accent focus:ring-2 focus:ring-admin-accent/15"
-        />
-        <button
-          type="button"
-          onClick={() => addUrl(draftUrl)}
-          disabled={!draftUrl.trim() || !canAddMore}
-          className="inline-flex h-10 items-center justify-center rounded-lg border border-admin-border bg-white px-4 text-sm font-semibold text-admin-text-secondary transition hover:border-admin-border-strong hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-50"
+      {status ? (
+        <p
+          role={status.tone === 'error' ? 'alert' : 'status'}
+          aria-live="polite"
+          className={
+            status.tone === 'error'
+              ? 'rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700'
+              : status.tone === 'success'
+              ? 'rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700'
+              : 'rounded-lg border border-admin-border bg-admin-elevated px-3 py-2 text-xs font-medium text-admin-text-secondary'
+          }
         >
-          添加图片
-        </button>
-      </div>
-      {status ? <p className="text-xs text-admin-text-muted">{status}</p> : null}
+          {status.message}
+        </p>
+      ) : null}
     </div>
   );
 }
 
-function ProductEditorSubmitButton() {
+function ProductEditorSubmitButton({
+  isUploadPending = false
+}: {
+  isUploadPending?: boolean;
+}) {
   const { pending } = useFormStatus();
+  const submitState = getProductEditorSubmitState({ isUploadPending });
 
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || submitState.disabled}
       className="inline-flex items-center gap-2 rounded-lg bg-admin-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-admin-accent-hover disabled:cursor-wait disabled:opacity-70"
     >
       <Check className="h-4 w-4" />
-      {pending ? '保存中...' : '保存更改'}
+      {pending ? '保存中...' : submitState.label}
     </button>
   );
 }

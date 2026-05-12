@@ -49,6 +49,31 @@ vi.mock('next/cache', () => ({
   revalidatePath
 }));
 
+function createValidProductFormData() {
+  const formData = new FormData();
+  formData.set('categoryId', 'cat-1');
+  formData.set('productCode', 'P-3001');
+  formData.set('slug', 'cleaning-robot');
+  formData.set('priceUsd', '199.99');
+  formData.set('coverImageUrl', '/uploads/products/cover.png');
+  formData.set('status', 'draft');
+  formData.set('sortOrder', '7');
+  formData.set('nameZh', '清洁机器人');
+  formData.set('nameEn', 'Cleaning Robot');
+  formData.set('nameEs', 'Robot de limpieza');
+  formData.set('namePt', 'Robo de limpeza');
+  formData.set('introZh', '简介');
+  formData.set('introEn', 'Intro');
+  formData.set('introEs', 'Intro ES');
+  formData.set('introPt', 'Intro PT');
+  formData.set('detailZh', '详情');
+  formData.set('detailEn', 'Detail');
+  formData.set('detailEs', 'Detalle');
+  formData.set('detailPt', 'Detalhe');
+
+  return formData;
+}
+
 describe('admin actions', () => {
   beforeEach(() => {
     productCreate.mockReset();
@@ -159,6 +184,19 @@ describe('admin actions', () => {
     });
     expect(result.nameEn).toBe('Cleaning Robot');
     expect(revalidatePath).toHaveBeenCalledWith('/admin/products');
+  });
+
+  it('rejects remote product image paths from product forms', async () => {
+    const formData = createValidProductFormData();
+    formData.set('coverImageUrl', 'https://images.example.com/cover.png');
+    formData.set('galleryImageUrls', '/uploads/products/a.png');
+
+    const { createProductFromForm } = await import('@/features/admin/product-actions');
+
+    await expect(createProductFromForm(formData)).rejects.toThrow(
+      'INVALID_LOCAL_coverImageUrl'
+    );
+    expect(productCreate).not.toHaveBeenCalled();
   });
 
   it('updates products from form data, including category changes, and refreshes admin products', async () => {
@@ -309,6 +347,30 @@ describe('admin actions', () => {
     expect(result.id).toBe('cat-humanoid');
     expect(revalidatePath).toHaveBeenCalledWith('/admin/products');
     expect(revalidatePath).toHaveBeenCalledWith('/admin/categories');
+  });
+
+  it('rejects remote category image paths from category forms', async () => {
+    const formData = new FormData();
+    formData.set('parentId', '');
+    formData.set('slug', 'humanoid-robots');
+    formData.set('sortOrder', '1');
+    formData.set('iconImageUrl', 'https://images.example.com/category.png');
+    formData.set('isActive', 'on');
+    formData.set('nameZh', '人形机器人');
+    formData.set('nameEn', 'Humanoid Robots');
+    formData.set('nameEs', 'Robots humanoides');
+    formData.set('namePt', 'Robos humanoides');
+    formData.set('descriptionZh', '面向服务、研究与教育的人形机器人平台。');
+    formData.set('descriptionEn', 'Humanoid robot platforms.');
+    formData.set('descriptionEs', 'Robots humanoides.');
+    formData.set('descriptionPt', 'Robos humanoides.');
+
+    const { createCategoryFromForm } = await import('@/features/admin/category-actions');
+
+    await expect(createCategoryFromForm(formData)).rejects.toThrow(
+      'INVALID_LOCAL_iconImageUrl'
+    );
+    expect(categoryCreate).not.toHaveBeenCalled();
   });
 
   it('updates categories from form data and clears optional fields', async () => {
