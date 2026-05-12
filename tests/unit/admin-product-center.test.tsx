@@ -26,6 +26,7 @@ const categories = [
     slug: 'humanoid-robots',
     nameZh: '人形机器人',
     nameEn: 'Humanoid Robots',
+    iconImageUrl: '/show/robot_humanoid.png',
     isActive: true,
     productCount: 1
   },
@@ -140,14 +141,20 @@ describe('ProductCenter', () => {
     expect(html).not.toContain('智能穿戴设备');
     expect(html).not.toContain('影音娱乐');
     expect(html).not.toContain('管理产品');
+    expect(html).not.toContain('分类与商品概览');
     expect(html).not.toContain('点击编辑进入真实商品编辑页');
-    expect(html).toContain('min-h-[calc(100vh-104px)]');
-    expect(html).toContain('flex min-h-[520px] flex-1');
+    expect(html).toContain('h-[calc(100vh-104px)]');
+    expect(html).toContain('grid min-h-0 flex-1');
+    expect(html).toContain('flex min-h-0 flex-1 flex-col overflow-hidden');
+    expect(html).toContain('aria-label="商品列表滚动区域"');
+    expect(html).toContain('sticky top-0 z-10');
+    expect(html).toContain('[scrollbar-gutter:stable]');
     expect(html).toContain('min-w-[1040px]');
     expect(html).toContain('Alpha Humanoid 服务机器人');
     expect(html).toContain('Aerial X1 航拍无人机');
     expect(html).toContain('P-3001');
     expect(html).toContain('published');
+    expect(html).toContain('aria-label="商品管理操作"');
     expect(html).toContain('新增商品');
     expect(html).toContain('导出 CSV');
     expect(html).toContain('待审核队列');
@@ -183,9 +190,35 @@ describe('ProductCenter', () => {
       />
     );
 
-    expect(html).toContain('当前筛选 1 个商品。');
+    expect(html).not.toContain('当前筛选 1 个商品。');
     expect(html).toContain('待审核巡检无人机');
     expect(html).not.toContain('Alpha Humanoid 服务机器人');
+  });
+
+  it('uses the same fixed product-list layout for all and recommended filters', () => {
+    const allProductsHtml = renderToStaticMarkup(
+      <ProductCenter categories={categories} products={products} />
+    );
+    const recommendedProductsHtml = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        defaultStatusFilter="recommended"
+      />
+    );
+    const layoutClasses = [
+      'h-[calc(100vh-104px)]',
+      'grid min-h-0 flex-1',
+      'flex min-h-0 flex-1 flex-col overflow-hidden',
+      'aria-label="商品列表滚动区域"',
+      'sticky top-0 z-10',
+      '[scrollbar-gutter:stable]'
+    ];
+
+    for (const className of layoutClasses) {
+      expect(allProductsHtml).toContain(className);
+      expect(recommendedProductsHtml).toContain(className);
+    }
   });
 
   it('renders an empty state without falling back to mock data', () => {
@@ -208,7 +241,7 @@ describe('ProductCenter', () => {
       />
     );
 
-    expect(html).toContain('当前显示人形机器人下的 1 个商品。');
+    expect(html).not.toContain('当前显示人形机器人下的 1 个商品。');
     expect(html).not.toContain('管理产品');
     expect(html).toContain('Alpha Humanoid 服务机器人');
     expect(html).not.toContain('Aerial X1 航拍无人机');
@@ -300,7 +333,10 @@ describe('ProductCenter', () => {
       />
     );
 
-    expect(html).toContain('flex min-h-[520px] flex-1');
+    expect(html).toContain('flex min-h-0 flex-1 flex-col overflow-hidden');
+    expect(html).toContain('aria-label="商品列表滚动区域"');
+    expect(html).toContain('sticky top-0 z-10');
+    expect(html).toContain('[scrollbar-gutter:stable]');
     expect(html).toContain('Alpha Humanoid 服务机器人');
     expect(html).not.toContain('Aerial X1 航拍无人机');
     expect(html).toContain('第 1 / 3 页');
@@ -325,6 +361,13 @@ describe('ProductCenter', () => {
     expect(html).toContain('编辑商品');
     expect(html).toContain('Alpha Humanoid 服务机器人');
     expect(html).toContain('产品媒体');
+    expect(html).toContain('封面主图');
+    expect(html).toContain('移除封面主图');
+    expect(html).toContain('图库图片');
+    expect(html).toContain('商品图片管理');
+    expect(html).toContain('新增图片 URL');
+    expect(html).toContain('添加图片');
+    expect(html).toContain('aria-label="删除商品图片 1"');
     expect(html).toContain('上传封面');
     expect(html).toContain('上传图库');
     expect(html).toContain('保存更改');
@@ -345,6 +388,8 @@ describe('ProductCenter', () => {
     expect(html).toContain('新增商品');
     expect(html).toContain('选择类别');
     expect(html).toContain('产品媒体');
+    expect(html).toContain('暂无图库图片');
+    expect(html).toContain('商品图片管理');
     expect(html).toContain('保存更改');
     expect(html).not.toContain('/admin/products/new');
   });
@@ -362,6 +407,8 @@ describe('ProductCenter', () => {
     expect(html).toContain('role="dialog"');
     expect(html).toContain('新建类目');
     expect(html).toContain('父级类目');
+    expect(html).toContain('类目主图');
+    expect(html).toContain('上传主图');
     expect(html).toContain('中文名称');
     expect(html).toContain('保存类目');
     expect(html).not.toContain('href="/admin/categories"');
@@ -381,6 +428,8 @@ describe('ProductCenter', () => {
     expect(html).toContain('编辑类目');
     expect(html).toContain('humanoid-robots');
     expect(html).toContain('人形机器人');
+    expect(html).toContain('/show/robot_humanoid.png');
+    expect(html).toContain('移除类目主图');
     expect(html).toContain('保存类目');
   });
 });

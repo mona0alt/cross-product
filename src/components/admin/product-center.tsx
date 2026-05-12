@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -14,6 +14,7 @@ import {
   Edit3,
   Eye,
   FolderTree,
+  ImagePlus,
   MoreHorizontal,
   Package,
   Search,
@@ -236,12 +237,6 @@ export function ProductCenter({
 
     return matchesStatus && matchesSearch;
   });
-  const overviewDescription =
-    activeCategory && statusFilter === 'all' && !normalizedSearchTerm
-      ? `当前显示${activeCategory.nameZh}下的 ${filteredProducts.length} 个商品。`
-      : statusFilter !== 'all' || normalizedSearchTerm
-      ? `当前筛选 ${filteredProducts.length} 个商品。`
-      : `当前共有 ${categories.length} 个分类，${products.length} 个商品。`;
   const [currentProductPage, setCurrentProductPage] = useState(1);
   const safePageSize = Math.max(1, productPageSize);
   const totalProductPages = Math.max(
@@ -417,9 +412,9 @@ export function ProductCenter({
   };
 
   return (
-    <section className="relative flex min-h-[calc(100vh-104px)] flex-col overflow-hidden rounded-xl border border-admin-border bg-admin-bg shadow-sm">
-      <header className="flex shrink-0 flex-col gap-4 border-b border-admin-border bg-white px-4 py-4 lg:flex-row lg:items-center lg:justify-between lg:px-5">
-        <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-center">
+    <section className="relative flex h-[calc(100vh-104px)] flex-col overflow-hidden rounded-xl border border-admin-border bg-admin-bg shadow-sm">
+      <header className="flex shrink-0 flex-col gap-4 border-b border-admin-border bg-white px-4 py-4 xl:flex-row xl:items-center xl:justify-between lg:px-5">
+        <div className="flex min-w-0 flex-1 flex-col gap-3 lg:flex-row lg:items-center">
           <div className="flex items-center gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-admin-accent">
               <Package className="h-4 w-4" />
@@ -443,9 +438,60 @@ export function ProductCenter({
             />
           </label>
         </div>
+        <div
+          role="group"
+          aria-label="商品管理操作"
+          className="flex shrink-0 flex-wrap items-center gap-2 xl:max-w-[680px] xl:justify-end 2xl:max-w-none"
+        >
+          <div
+            role="group"
+            aria-label="商品筛选"
+            className="inline-flex h-10 items-center gap-1 rounded-lg border border-admin-border bg-admin-elevated p-1"
+          >
+            <button
+              type="button"
+              onClick={() => updateStatusFilter('all')}
+              className={filterButtonClass(
+                statusFilter === 'all' && activeCategoryId === null
+              )}
+            >
+              全部商品
+            </button>
+            <button
+              type="button"
+              onClick={() => updateStatusFilter('pending')}
+              className={filterButtonClass(statusFilter === 'pending')}
+            >
+              待审核队列
+            </button>
+            <button
+              type="button"
+              onClick={() => updateStatusFilter('recommended')}
+              className={filterButtonClass(statusFilter === 'recommended')}
+            >
+              推荐商品
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={exportFilteredProducts}
+            className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border border-admin-border bg-white px-4 text-sm font-semibold text-admin-text-secondary transition hover:border-admin-border-strong hover:bg-admin-elevated focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+          >
+            <Download className="h-4 w-4" />
+            导出 CSV
+          </button>
+          <button
+            type="button"
+            onClick={openCreateEditor}
+            className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-admin-accent px-4 text-sm font-semibold text-white transition hover:bg-admin-accent-hover focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+          >
+            <CirclePlus className="h-4 w-4" />
+            新增商品
+          </button>
+        </div>
       </header>
 
-      <div className="grid min-h-[620px] flex-1 gap-5 bg-admin-bg p-4 lg:grid-cols-[minmax(280px,360px)_minmax(0,1fr)] lg:p-5">
+      <div className="grid min-h-0 flex-1 gap-5 bg-admin-bg p-4 lg:grid-cols-[minmax(280px,360px)_minmax(0,1fr)] lg:p-5">
         <aside className="min-h-0 overflow-y-auto rounded-xl border border-admin-border bg-white p-5 shadow-sm">
           <div className="mb-5 flex items-center justify-between gap-3">
             <h3 className="text-xl font-bold text-admin-text-primary">产品类目</h3>
@@ -480,64 +526,14 @@ export function ProductCenter({
           )}
         </aside>
 
-        <main className="flex min-h-0 flex-col gap-5">
-          <section className="shrink-0 rounded-xl border border-admin-border bg-white p-5 shadow-sm">
-            <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
-              <div>
-                <h3 className="text-2xl font-bold text-admin-text-primary">分类与商品概览</h3>
-                <p className="mt-1 text-sm text-admin-text-secondary">
-                  {overviewDescription}
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => updateStatusFilter('all')}
-                  className={filterButtonClass(
-                    statusFilter === 'all' && activeCategoryId === null
-                  )}
-                >
-                  全部商品
-                </button>
-                <button
-                  type="button"
-                  onClick={() => updateStatusFilter('pending')}
-                  className={filterButtonClass(statusFilter === 'pending')}
-                >
-                  待审核队列
-                </button>
-                <button
-                  type="button"
-                  onClick={() => updateStatusFilter('recommended')}
-                  className={filterButtonClass(statusFilter === 'recommended')}
-                >
-                  推荐商品
-                </button>
-                <button
-                  type="button"
-                  onClick={exportFilteredProducts}
-                  className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border border-admin-border bg-white px-4 text-sm font-semibold text-admin-text-secondary transition hover:border-admin-border-strong"
-                >
-                  <Download className="h-4 w-4" />
-                  导出 CSV
-                </button>
-                <button
-                  type="button"
-                  onClick={openCreateEditor}
-                  className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-admin-accent px-4 text-sm font-semibold text-white transition hover:bg-admin-accent-hover"
-                >
-                  <CirclePlus className="h-4 w-4" />
-                  新增商品
-                </button>
-              </div>
-            </div>
+        <main className="flex min-h-0 flex-col gap-3">
             {notice ? (
-              <p className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">
+              <p className="shrink-0 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">
                 {notice}
               </p>
             ) : null}
             {selectedProductIds.length > 0 ? (
-              <div className="mt-4 flex flex-wrap items-center gap-2 rounded-lg border border-admin-border bg-admin-elevated px-3 py-2 text-sm text-admin-text-secondary">
+              <div className="flex shrink-0 flex-wrap items-center gap-2 rounded-lg border border-admin-border bg-white px-3 py-2 text-sm text-admin-text-secondary shadow-sm">
                 <span className="font-semibold">
                   已选择 {selectedProductIds.length} 个商品
                 </span>
@@ -566,12 +562,14 @@ export function ProductCenter({
                 </button>
               </div>
             ) : null}
-          </section>
 
-          <section className="flex min-h-[520px] flex-1 flex-col overflow-hidden rounded-xl border border-admin-border bg-white shadow-sm">
+          <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-admin-border bg-white shadow-sm">
             {filteredProducts.length > 0 ? (
-              <div className="min-h-0 flex-1 overflow-auto">
-                <table className="w-full min-w-[1040px] border-collapse text-left">
+              <div
+                aria-label="商品列表滚动区域"
+                className="min-h-0 flex-1 overflow-auto [scrollbar-gutter:stable]"
+              >
+                <table className="w-full min-w-[1040px] border-separate border-spacing-0 text-left">
                   <thead className="bg-admin-elevated text-admin-text-muted">
                     <tr>
                       <ColumnHeader>
@@ -815,7 +813,20 @@ function CategoryItem({
         className="flex min-w-0 flex-1 items-center justify-between gap-3 text-left"
       >
         <span className="flex min-w-0 items-center gap-3">
-          <FolderTree className="h-5 w-5 shrink-0" />
+          {category.iconImageUrl ? (
+            <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-lg border border-admin-border bg-white">
+              <NextImage
+                src={category.iconImageUrl}
+                alt={category.nameZh}
+                fill
+                sizes="36px"
+                className="object-cover"
+                unoptimized
+              />
+            </span>
+          ) : (
+            <FolderTree className="h-5 w-5 shrink-0" />
+          )}
           <span className="min-w-0">
             <span className="block truncate text-sm font-bold">{category.nameZh}</span>
             <span className="block truncate text-xs text-admin-text-muted">
@@ -934,14 +945,19 @@ function CategoryEditorDrawer({
                 type="number"
               />
             </Field>
-            <Field label="图标 URL">
-              <input
+            <div className="md:col-span-2">
+              <AdminImageUploadInput
                 name="iconImageUrl"
+                label="类目主图"
+                uploadLabel="上传主图"
                 defaultValue={category?.iconImageUrl ?? ''}
-                className={drawerInputClass}
                 placeholder="/show/robot_humanoid.png"
+                scope="category"
+                showPreview
+                previewAlt={category?.nameZh ?? '类目主图'}
+                clearLabel="移除类目主图"
               />
-            </Field>
+            </div>
             <Field label="中文名称">
               <input name="nameZh" defaultValue={category?.nameZh ?? ''} className={drawerInputClass} />
             </Field>
@@ -1045,7 +1061,7 @@ function ProductEditorDrawer({
   return (
     <ProductEditorDrawerContent
       categories={categories}
-      product={product}
+      product={mode === 'create' ? null : product}
       mode={mode}
       onClose={onClose}
       onSaved={onSaved}
@@ -1086,8 +1102,7 @@ function ProductEditorDrawerContent({
   };
   const galleryUrls = [...(product?.images ?? [])]
     .sort((left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0))
-    .map((image) => image.imageUrl)
-    .join('\n');
+    .map((image) => image.imageUrl);
 
   return (
     <aside
@@ -1121,25 +1136,22 @@ function ProductEditorDrawerContent({
             <div className="mb-3 flex items-center justify-between">
               <h4 className="text-xs font-bold uppercase text-admin-text-muted">产品媒体</h4>
               <span className="text-xs text-admin-text-muted">
-                {(product?.images.length ?? 0)}/10
+                {galleryUrls.length}/10
               </span>
             </div>
-            <div className="grid grid-cols-3 gap-3">
-              {product?.coverImageUrl ? (
-                <div className="relative aspect-square overflow-hidden rounded-lg border border-admin-border bg-slate-100">
-                  <NextImage
-                    src={product.coverImageUrl}
-                    alt={product.nameZh}
-                    fill
-                    sizes="160px"
-                    className="object-cover"
-                    unoptimized
-                  />
-                  <span className="absolute left-1.5 top-1.5 rounded bg-admin-accent px-1.5 py-0.5 text-[10px] font-bold text-white">
-                    主图
-                  </span>
-                </div>
-              ) : null}
+            <div className="space-y-4 rounded-xl border border-admin-border bg-admin-surface p-4">
+              <AdminImageUploadInput
+                name="coverImageUrl"
+                label="封面主图"
+                uploadLabel="上传封面"
+                defaultValue={product?.coverImageUrl ?? ''}
+                placeholder="https://..."
+                scope="product"
+                showPreview
+                previewAlt={product?.nameZh ?? '商品封面主图'}
+                clearLabel="移除封面主图"
+              />
+              <ProductGalleryImageManager defaultUrls={galleryUrls} />
             </div>
           </section>
 
@@ -1189,27 +1201,6 @@ function ProductEditorDrawerContent({
                   <option value="archived">archived</option>
                 </select>
               </Field>
-              <div className="md:col-span-2">
-                <AdminImageUploadInput
-                  name="coverImageUrl"
-                  label="封面图 URL"
-                  uploadLabel="上传封面"
-                  defaultValue={product?.coverImageUrl ?? ''}
-                  placeholder="https://..."
-                  scope="product"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <AdminImageUploadInput
-                  name="galleryImageUrls"
-                  label="图库图片 URL"
-                  uploadLabel="上传图库"
-                  defaultValue={galleryUrls}
-                  placeholder="每行一条 URL"
-                  scope="product"
-                  multiline
-                />
-              </div>
               <label className="flex items-center gap-2 rounded-lg border border-admin-border bg-admin-surface px-4 py-2.5 text-sm text-admin-text-secondary md:col-span-2">
                 <input
                   name="isRecommended"
@@ -1275,6 +1266,163 @@ function ProductEditorDrawerContent({
   );
 }
 
+function ProductGalleryImageManager({ defaultUrls }: { defaultUrls: string[] }) {
+  const [urls, setUrls] = useState(defaultUrls);
+  const [draftUrl, setDraftUrl] = useState('');
+  const [status, setStatus] = useState('');
+  const fileRef = useRef<HTMLInputElement>(null);
+  const normalizedUrls = urls.map((url) => url.trim()).filter(Boolean).slice(0, 10);
+  const canAddMore = normalizedUrls.length < 10;
+
+  const addUrl = (url: string) => {
+    const nextUrl = url.trim();
+    if (!nextUrl || !canAddMore) {
+      return;
+    }
+
+    setUrls((current) => [...current.map((item) => item.trim()).filter(Boolean), nextUrl].slice(0, 10));
+    setDraftUrl('');
+  };
+
+  const updateUrl = (index: number, value: string) => {
+    setUrls((current) =>
+      current.map((url, currentIndex) => (currentIndex === index ? value : url))
+    );
+  };
+
+  const removeUrl = (index: number) => {
+    setUrls((current) => current.filter((_, currentIndex) => currentIndex !== index));
+  };
+
+  const uploadGalleryImage = async (file: File) => {
+    if (!canAddMore) {
+      setStatus('图库最多支持 10 张图片。');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.set('file', file);
+    formData.set('scope', 'product');
+    setStatus('Uploading...');
+
+    const response = await fetch('/api/admin/uploads/product-images', {
+      method: 'POST',
+      body: formData
+    });
+    const payload = (await response.json().catch(() => ({}))) as {
+      url?: string;
+      error?: string;
+    };
+
+    if (!response.ok || !payload.url) {
+      setStatus(payload.error ?? 'UPLOAD_FAILED');
+      return;
+    }
+
+    setUrls((current) =>
+      [...current.map((item) => item.trim()).filter(Boolean), payload.url ?? ''].filter(Boolean).slice(0, 10)
+    );
+    setStatus(payload.url);
+  };
+
+  return (
+    <div className="space-y-3">
+      <input name="galleryImageUrls" type="hidden" value={normalizedUrls.join('\n')} readOnly />
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h5 className="text-sm font-semibold text-admin-text-primary">商品图片管理</h5>
+          <p className="text-xs text-admin-text-muted">图库图片</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          disabled={!canAddMore}
+          className="rounded-lg border border-admin-border bg-white px-3 py-1.5 text-xs font-semibold text-admin-text-secondary transition hover:border-admin-border-strong hover:text-admin-text-primary disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          上传图库
+        </button>
+      </div>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/png,image/jpeg,image/webp,image/gif"
+        className="sr-only"
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (file) {
+            void uploadGalleryImage(file);
+          }
+          event.target.value = '';
+        }}
+      />
+
+      {normalizedUrls.length > 0 ? (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {normalizedUrls.map((url, index) => (
+            <div
+              key={`${url}-${index}`}
+              className="overflow-hidden rounded-xl border border-admin-border bg-white"
+            >
+              <div className="relative aspect-[4/3] bg-admin-elevated">
+                <NextImage
+                  src={url}
+                  alt={`商品图片 ${index + 1}`}
+                  fill
+                  sizes="240px"
+                  className="object-cover"
+                  unoptimized
+                />
+                <span className="absolute left-2 top-2 rounded bg-slate-950/75 px-2 py-1 text-[10px] font-bold text-white">
+                  #{index + 1}
+                </span>
+                <button
+                  type="button"
+                  aria-label={`删除商品图片 ${index + 1}`}
+                  onClick={() => removeUrl(index)}
+                  className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white/95 text-rose-700 shadow-sm transition hover:bg-rose-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="p-2">
+                <input
+                  aria-label={`商品图片 ${index + 1} URL`}
+                  value={url}
+                  onChange={(event) => updateUrl(index, event.target.value)}
+                  className="w-full rounded-lg border border-admin-border bg-admin-surface px-3 py-2 text-xs text-admin-text-secondary outline-none transition focus:border-admin-accent focus:ring-2 focus:ring-admin-accent/15"
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="flex min-h-[132px] flex-col items-center justify-center rounded-xl border border-dashed border-admin-border bg-white px-4 py-6 text-center text-sm text-admin-text-muted">
+          <ImagePlus className="mb-2 h-5 w-5" />
+          暂无图库图片
+        </div>
+      )}
+
+      <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto]">
+        <input
+          value={draftUrl}
+          onChange={(event) => setDraftUrl(event.target.value)}
+          placeholder="新增图片 URL"
+          className="h-10 rounded-lg border border-admin-border bg-white px-3 text-sm text-admin-text-primary outline-none transition focus:border-admin-accent focus:ring-2 focus:ring-admin-accent/15"
+        />
+        <button
+          type="button"
+          onClick={() => addUrl(draftUrl)}
+          disabled={!draftUrl.trim() || !canAddMore}
+          className="inline-flex h-10 items-center justify-center rounded-lg border border-admin-border bg-white px-4 text-sm font-semibold text-admin-text-secondary transition hover:border-admin-border-strong hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          添加图片
+        </button>
+      </div>
+      {status ? <p className="text-xs text-admin-text-muted">{status}</p> : null}
+    </div>
+  );
+}
+
 function ProductEditorSubmitButton() {
   const { pending } = useFormStatus();
 
@@ -1323,7 +1471,7 @@ function ColumnHeader({
 }) {
   return (
     <th
-      className={`px-4 py-3 text-xs font-bold uppercase text-admin-text-muted ${
+      className={`sticky top-0 z-10 bg-admin-elevated px-4 py-3 text-xs font-bold uppercase text-admin-text-muted ${
         align === 'right' ? 'text-right' : 'text-left'
       } ${className}`}
     >
@@ -1364,10 +1512,10 @@ function ProductStatus({ status }: { status: string }) {
 }
 
 function filterButtonClass(isActive: boolean) {
-  return `inline-flex h-10 items-center rounded-lg border px-3 text-sm font-semibold transition ${
+  return `inline-flex h-8 items-center rounded-md border px-3 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-admin-accent/20 ${
     isActive
-      ? 'border-admin-accent bg-emerald-50 text-admin-accent'
-      : 'border-admin-border bg-white text-admin-text-secondary hover:border-admin-border-strong'
+      ? 'border-admin-accent/30 bg-white text-admin-accent shadow-sm'
+      : 'border-transparent text-admin-text-secondary hover:bg-white hover:text-admin-text-primary'
   }`;
 }
 

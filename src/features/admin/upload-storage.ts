@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-export type AdminUploadScope = 'product' | 'banner';
+export type AdminUploadScope = 'product' | 'banner' | 'category';
 
 export const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 
@@ -35,7 +35,11 @@ export function validateAdminImageFile(file: File): UploadValidationError | null
 }
 
 export function normalizeAdminUploadScope(value: FormDataEntryValue | null): AdminUploadScope {
-  return value === 'banner' ? 'banner' : 'product';
+  if (value === 'banner' || value === 'category') {
+    return value;
+  }
+
+  return 'product';
 }
 
 export async function saveAdminImageUpload(
@@ -46,7 +50,8 @@ export async function saveAdminImageUpload(
   const now = new Date();
   const year = String(now.getFullYear());
   const month = String(now.getMonth() + 1).padStart(2, '0');
-  const segment = scope === 'banner' ? 'banners' : 'products';
+  const segment =
+    scope === 'banner' ? 'banners' : scope === 'category' ? 'categories' : 'products';
   const filename = `${randomUUID()}.${extension}`;
   const relativeUrl = `/uploads/${segment}/${year}/${month}/${filename}`;
   const directory = join(process.cwd(), 'public', 'uploads', segment, year, month);

@@ -88,4 +88,29 @@ describe('admin upload route', () => {
     createdFiles.push(filePath);
     await expect(stat(filePath)).resolves.toMatchObject({ isFile: expect.any(Function) });
   });
+
+  it('stores category images under the category upload segment', async () => {
+    requireAdminSession.mockResolvedValue({ id: 'admin-1', username: 'admin' });
+
+    const { POST } = await import('@/app/api/admin/uploads/product-images/route');
+    const response = await POST(
+      new Request('http://localhost/api/admin/uploads/product-images', {
+        method: 'POST',
+        body: formWithFile(
+          new File([new Uint8Array([137, 80, 78, 71])], 'category.png', {
+            type: 'image/png'
+          }),
+          'category'
+        )
+      })
+    );
+
+    expect(response.status).toBe(200);
+    const payload = (await response.json()) as { url: string };
+    expect(payload.url).toMatch(/^\/uploads\/categories\/\d{4}\/\d{2}\/.+\.png$/);
+
+    const filePath = join(process.cwd(), 'public', payload.url);
+    createdFiles.push(filePath);
+    await expect(stat(filePath)).resolves.toMatchObject({ isFile: expect.any(Function) });
+  });
 });

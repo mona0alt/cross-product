@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
+import Image from 'next/image';
 
-type UploadScope = 'product' | 'banner';
+type UploadScope = 'product' | 'banner' | 'category';
 
 export function AdminImageUploadInput({
   name,
@@ -11,7 +12,10 @@ export function AdminImageUploadInput({
   defaultValue,
   placeholder,
   scope,
-  multiline = false
+  multiline = false,
+  showPreview = false,
+  previewAlt,
+  clearLabel = '移除图片'
 }: {
   name: string;
   label: string;
@@ -20,6 +24,9 @@ export function AdminImageUploadInput({
   placeholder?: string;
   scope: UploadScope;
   multiline?: boolean;
+  showPreview?: boolean;
+  previewAlt?: string;
+  clearLabel?: string;
 }) {
   const [value, setValue] = useState(defaultValue ?? '');
   const [status, setStatus] = useState('');
@@ -102,6 +109,45 @@ export function AdminImageUploadInput({
           placeholder={placeholder}
         />
       )}
+      {showPreview ? (
+        <div className="overflow-hidden rounded-xl border border-admin-border bg-admin-elevated">
+          {value ? (
+            <div className="grid gap-3 p-3 sm:grid-cols-[112px_minmax(0,1fr)]">
+              <div className="relative aspect-square overflow-hidden rounded-lg border border-admin-border bg-white">
+                <Image
+                  src={value}
+                  alt={previewAlt ?? label}
+                  fill
+                  sizes="112px"
+                  className="object-cover"
+                  unoptimized
+                />
+              </div>
+              <div className="flex min-w-0 flex-col justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold uppercase text-admin-text-muted">
+                    当前图片
+                  </p>
+                  <p className="mt-1 break-all text-sm text-admin-text-secondary">
+                    {value}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setValue('')}
+                  className="self-start rounded-lg border border-rose-200 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:border-rose-300 hover:bg-rose-50"
+                >
+                  {clearLabel}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex min-h-[112px] items-center justify-center px-4 py-6 text-sm text-admin-text-muted">
+              暂未配置图片
+            </div>
+          )}
+        </div>
+      ) : null}
       {status ? (
         <p className="text-xs text-admin-text-muted">{status}</p>
       ) : null}
