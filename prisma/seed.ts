@@ -206,7 +206,7 @@ async function main() {
         ]
       },
       {
-        slug: 'vacuum-robots',
+        slug: 'robot-vacuums',
         iconImageUrl:
           'https://images.unsplash.com/photo-1518640467707-6811f4a6ab73?w=800&fit=crop',
         names: {
@@ -280,33 +280,13 @@ async function main() {
       });
       categories.set(group.slug, parent.id);
 
-      for (const child of group.children) {
-        const created = await tx.category.create({
-          data: {
-            parentId: parent.id,
-            slug: child.slug,
-            iconImageUrl: child.iconImageUrl,
-            isActive: true,
-            sortOrder: 0,
-            nameZh: child.names.zh,
-            nameEn: child.names.en,
-            nameEs: child.names.es,
-            namePt: child.names.pt,
-            descriptionZh: child.descriptions.zh,
-            descriptionEn: child.descriptions.en,
-            descriptionEs: child.descriptions.es,
-            descriptionPt: child.descriptions.pt
-          }
-        });
-        categories.set(child.slug, created.id);
-      }
     }
 
     const products = [
       {
         slug: 'sky-cleaner-pro',
         productCode: 'P-1001',
-        categorySlug: 'residential-window-robots',
+        categorySlug: 'window-cleaning-robots',
         priceUsd: new Prisma.Decimal('599.00'),
         coverImageUrl:
           'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&fit=crop',
@@ -335,7 +315,7 @@ async function main() {
       {
         slug: 'clear-glass-max',
         productCode: 'P-1002',
-        categorySlug: 'commercial-window-robots',
+        categorySlug: 'window-cleaning-robots',
         priceUsd: new Prisma.Decimal('1299.00'),
         coverImageUrl:
           'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=800&fit=crop',
@@ -364,7 +344,7 @@ async function main() {
       {
         slug: 'aerial-x1',
         productCode: 'P-2001',
-        categorySlug: 'consumer-drones',
+        categorySlug: 'drones',
         priceUsd: new Prisma.Decimal('799.00'),
         coverImageUrl:
           'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=800&fit=crop',
@@ -393,7 +373,7 @@ async function main() {
       {
         slug: 'survey-drone-t20',
         productCode: 'P-2002',
-        categorySlug: 'industrial-drones',
+        categorySlug: 'drones',
         priceUsd: new Prisma.Decimal('3999.00'),
         coverImageUrl:
           'https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=800&fit=crop',
@@ -422,7 +402,7 @@ async function main() {
       {
         slug: 'alpha-humanoid',
         productCode: 'P-3001',
-        categorySlug: 'service-humanoids',
+        categorySlug: 'humanoid-robots',
         priceUsd: new Prisma.Decimal('29999.00'),
         coverImageUrl:
           'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&fit=crop',
@@ -451,7 +431,7 @@ async function main() {
       {
         slug: 'edu-bot-mini',
         productCode: 'P-3002',
-        categorySlug: 'research-humanoids',
+        categorySlug: 'humanoid-robots',
         priceUsd: new Prisma.Decimal('4999.00'),
         coverImageUrl:
           'https://images.unsplash.com/photo-1531746790731-6c087fecd65a?w=800&fit=crop',
@@ -509,7 +489,7 @@ async function main() {
       {
         slug: 'wash-vac-pro',
         productCode: 'P-4002',
-        categorySlug: 'robot-mops',
+        categorySlug: 'robot-vacuums',
         priceUsd: new Prisma.Decimal('699.00'),
         coverImageUrl: '/show/robot_floor_cleaner.png',
         isRecommended: false,
@@ -537,7 +517,7 @@ async function main() {
       {
         slug: 'window-bot-lite',
         productCode: 'P-1003',
-        categorySlug: 'residential-window-robots',
+        categorySlug: 'window-cleaning-robots',
         priceUsd: new Prisma.Decimal('299.00'),
         coverImageUrl: '/show/robot_window_cleaner.png',
         isRecommended: false,
@@ -641,7 +621,7 @@ async function main() {
         {
           imageUrl: '/show/robot_floor_cleaner.png',
           targetType: 'category',
-          targetId: categories.get('vacuum-robots'),
+          targetId: categories.get('robot-vacuums'),
           targetUrl: null,
           sortOrder: 4,
           isActive: true

@@ -216,7 +216,8 @@ export async function getAdminProductList(filters: AdminProductFilters) {
         : {})
     },
     include: {
-      category: true
+      category: true,
+      images: true
     },
     orderBy: [
       {
@@ -240,13 +241,19 @@ export async function getAdminCategoryTree(): Promise<AdminCategoryTreeNode[]> {
   for (const category of categories) {
     const node: AdminCategoryTreeNode = {
       id: category.id,
+      parentId: category.parentId,
       slug: category.slug,
       sortOrder: category.sortOrder,
+      iconImageUrl: category.iconImageUrl,
       isActive: category.isActive,
       nameZh: category.nameZh,
       nameEn: category.nameEn,
       nameEs: category.nameEs,
       namePt: category.namePt,
+      descriptionZh: category.descriptionZh,
+      descriptionEn: category.descriptionEn,
+      descriptionEs: category.descriptionEs,
+      descriptionPt: category.descriptionPt,
       children: []
     };
 

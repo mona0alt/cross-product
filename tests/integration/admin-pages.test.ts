@@ -82,52 +82,93 @@ describe('admin pages', () => {
     getAdminProductList.mockResolvedValue([
       {
         id: 'product-1',
+        slug: 'alpha-humanoid',
         productCode: 'P-1001',
-        nameZh: '星河 Pro 手机',
+        categoryId: 'cat-humanoid',
+        nameZh: 'Alpha Humanoid 服务机器人',
+        nameEn: 'Alpha Humanoid',
+        nameEs: 'Alpha Humanoid',
+        namePt: 'Alpha Humanoid',
+        introZh: '类人智能，服务未来。',
+        introEn: 'Human-like intelligence.',
+        introEs: 'Inteligencia humanoide.',
+        introPt: 'Inteligencia humanoide.',
+        detailZh: '全尺寸双足人形机器人。',
+        detailEn: 'Full-size humanoid robot.',
+        detailEs: 'Robot humanoide.',
+        detailPt: 'Robo humanoide.',
+        priceUsd: { toString: () => '12999' },
+        coverImageUrl: '/show/robot_humanoid.png',
         status: 'published',
         isRecommended: true,
+        sortOrder: 1,
+        images: [],
         category: {
-          nameZh: '电子数码'
+          nameZh: '人形机器人'
         }
       }
     ]);
     getAdminCategoryTree.mockResolvedValue([
       {
-        id: 'cat-wearables',
-        slug: 'wearables',
+        id: 'cat-humanoid',
+        slug: 'humanoid-robots',
         sortOrder: 1,
         isActive: true,
-        nameZh: '智能穿戴设备',
-        nameEn: 'Wearables',
-        nameEs: 'Wearables',
-        namePt: 'Wearables',
+        nameZh: '人形机器人',
+        nameEn: 'Humanoid Robots',
+        nameEs: 'Robots humanoides',
+        namePt: 'Robos humanoides',
         children: []
       },
       {
-        id: 'cat-audio',
-        slug: 'audio',
+        id: 'cat-drones',
+        slug: 'drones',
         sortOrder: 2,
         isActive: true,
-        nameZh: '影音娱乐',
-        nameEn: 'Audio',
-        nameEs: 'Audio',
-        namePt: 'Audio',
+        nameZh: '无人机',
+        nameEn: 'Drones',
+        nameEs: 'Drones',
+        namePt: 'Drones',
+        children: []
+      },
+      {
+        id: 'cat-deleted',
+        slug: 'deleted-category',
+        sortOrder: 3,
+        isActive: false,
+        nameZh: '已删除类目',
+        nameEn: 'Deleted Category',
+        nameEs: 'Categoria eliminada',
+        namePt: 'Categoria excluida',
         children: []
       }
     ]);
 
     const ProductsPage =
       (await import('@/app/admin/(protected)/products/page')).default;
-    const html = renderToStaticMarkup(ProductsPage());
+    const html = renderToStaticMarkup(await ProductsPage());
 
+    expect(getAdminProductList).toHaveBeenCalledWith({});
+    expect(getAdminCategoryTree).toHaveBeenCalled();
     expect(html).toContain('商品管理');
     expect(html).toContain('产品类目');
-    expect(html).toContain('智能穿戴设备 详情');
-    expect(html).toContain('管理产品');
+    expect(html).toContain('人形机器人');
+    expect(html).toContain('无人机');
+    expect(html).not.toContain('已删除类目');
+    expect(html).toContain('Alpha Humanoid 服务机器人');
+    expect(html).toContain('aria-label="编辑 Alpha Humanoid 服务机器人"');
+    expect(html).toContain('aria-label="删除类目 人形机器人"');
+    expect(html).not.toContain('/admin/products/product-1');
+    expect(html).not.toContain('/admin/products/new');
+    expect(html).not.toContain('智能穿戴设备');
+    expect(html).not.toContain('管理产品');
+    expect(html).not.toContain('点击编辑进入真实商品编辑页');
     expect(html).toContain('新增商品');
     expect(html).toContain('编辑商品');
+    expect(html).toContain('导出 CSV');
+    expect(html).toContain('待审核队列');
+    expect(html).toContain('归档商品');
     expect(html).not.toContain('集中管理前台商品目录');
-    expect(html).not.toContain('导出 CSV');
   });
 
   it('renders the manual product creation page with review framing', async () => {
@@ -299,8 +340,12 @@ describe('admin pages', () => {
     expect(analyticsHtml).not.toContain('用户转化漏斗 (Sankey 分析)');
     expect(analyticsHtml).not.toContain('本周热门类目更偏便携型设备');
     expect(categoriesHtml).toContain('系统设置');
-    expect(categoriesHtml).toContain('数据库配置');
-    expect(categoriesHtml).toContain('分类结构与映射');
+    expect(categoriesHtml).toContain('分类管理');
+    expect(categoriesHtml).toContain('新建分类');
+    expect(categoriesHtml).toContain('智能穿戴设备');
+    expect(categoriesHtml).toContain('Slug');
+    expect(categoriesHtml).toContain('启用分类');
+    expect(categoriesHtml).not.toContain('数据库配置');
     expect(bannersHtml).toContain('首页展示素材');
     expect(bannersHtml).toContain('Banner 列表');
   });

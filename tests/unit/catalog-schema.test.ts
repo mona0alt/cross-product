@@ -65,6 +65,17 @@ describe('catalog schema contract', () => {
     expect(seed).not.toContain('subject');
   });
 
+  it('seeds the canonical robot storefront categories', () => {
+    expect(seed).toContain("slug: 'humanoid-robots'");
+    expect(seed).toContain("slug: 'drones'");
+    expect(seed).toContain("slug: 'robot-vacuums'");
+    expect(seed).toContain("slug: 'window-cleaning-robots'");
+    expect(seed).toContain("zh: '人形机器人'");
+    expect(seed).toContain("zh: '无人机'");
+    expect(seed).toContain("zh: '扫地机器人'");
+    expect(seed).toContain("zh: '擦窗机器人'");
+  });
+
   it('uses a standard Prisma client singleton', () => {
     const db = readFileSync('src/lib/db.ts', 'utf8');
 

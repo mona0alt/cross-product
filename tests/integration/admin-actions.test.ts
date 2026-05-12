@@ -2,22 +2,26 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const productCreate = vi.fn();
 const productUpdate = vi.fn();
+const productUpdateMany = vi.fn();
 const productFindUnique = vi.fn();
 const productImageDeleteMany = vi.fn();
 const productImageCreateMany = vi.fn();
 const categoryFindUnique = vi.fn();
 const categoryCreate = vi.fn();
 const categoryUpdate = vi.fn();
+const categoryDelete = vi.fn();
 const bannerCreate = vi.fn();
 const bannerUpdate = vi.fn();
 const messageUpdate = vi.fn();
 const transaction = vi.fn();
+const revalidatePath = vi.fn();
 
 vi.mock('@/lib/db', () => ({
   db: {
     product: {
       create: productCreate,
       update: productUpdate,
+      updateMany: productUpdateMany,
       findUnique: productFindUnique
     },
     productImage: {
@@ -27,7 +31,8 @@ vi.mock('@/lib/db', () => ({
     category: {
       findUnique: categoryFindUnique,
       create: categoryCreate,
-      update: categoryUpdate
+      update: categoryUpdate,
+      delete: categoryDelete
     },
     banner: {
       create: bannerCreate,
@@ -40,20 +45,27 @@ vi.mock('@/lib/db', () => ({
   }
 }));
 
+vi.mock('next/cache', () => ({
+  revalidatePath
+}));
+
 describe('admin actions', () => {
   beforeEach(() => {
     productCreate.mockReset();
     productUpdate.mockReset();
+    productUpdateMany.mockReset();
     productFindUnique.mockReset();
     productImageDeleteMany.mockReset();
     productImageCreateMany.mockReset();
     categoryFindUnique.mockReset();
     categoryCreate.mockReset();
     categoryUpdate.mockReset();
+    categoryDelete.mockReset();
     bannerCreate.mockReset();
     bannerUpdate.mockReset();
     messageUpdate.mockReset();
     transaction.mockReset();
+    revalidatePath.mockReset();
     transaction.mockImplementation(async (callback) =>
       callback({
         product: {
@@ -146,16 +158,17 @@ describe('admin actions', () => {
       })
     });
     expect(result.nameEn).toBe('Cleaning Robot');
+    expect(revalidatePath).toHaveBeenCalledWith('/admin/products');
   });
 
-  it('updates products from form data and replaces gallery images in order', async () => {
+  it('updates products from form data, including category changes, and refreshes admin products', async () => {
     productUpdate.mockResolvedValue({
       id: 'product-1',
       status: 'published'
     });
 
     const formData = new FormData();
-    formData.set('categoryId', 'cat-1');
+    formData.set('categoryId', 'cat-drones');
     formData.set('productCode', 'P-3001');
     formData.set('slug', 'cleaning-robot');
     formData.set('priceUsd', '249');
@@ -183,6 +196,7 @@ describe('admin actions', () => {
     expect(productUpdate).toHaveBeenCalledWith({
       where: { id: 'product-1' },
       data: expect.objectContaining({
+        categoryId: 'cat-drones',
         priceUsd: 249,
         status: 'published',
         isRecommended: false,
@@ -208,6 +222,159 @@ describe('admin actions', () => {
         }
       ]
     });
+    expect(revalidatePath).toHaveBeenCalledWith('/admin/products');
+  });
+
+  it('archives products from the product center without hard deleting them', async () => {
+    productUpdate.mockResolvedValue({
+      id: 'product-1',
+      status: 'archived'
+    });
+
+    const { archiveProductFromListAction } = await import('@/features/admin/product-actions');
+    await archiveProductFromListAction('product-1');
+
+    expect(productUpdate).toHaveBeenCalledWith({
+      where: { id: 'product-1' },
+      data: { status: 'archived' }
+    });
+    expect(revalidatePath).toHaveBeenCalledWith('/admin/products');
+  });
+
+  it('batch updates product recommendations and archive status', async () => {
+    productUpdateMany.mockResolvedValue({ count: 2 });
+
+    const { bulkUpdateProductsFromListAction } = await import('@/features/admin/product-actions');
+    await bulkUpdateProductsFromListAction(['product-1', 'product-2'], 'recommend');
+    await bulkUpdateProductsFromListAction(['product-1', 'product-2'], 'unrecommend');
+    await bulkUpdateProductsFromListAction(['product-1', 'product-2'], 'archive');
+
+    expect(productUpdateMany).toHaveBeenNthCalledWith(1, {
+      where: { id: { in: ['product-1', 'product-2'] } },
+      data: { isRecommended: true }
+    });
+    expect(productUpdateMany).toHaveBeenNthCalledWith(2, {
+      where: { id: { in: ['product-1', 'product-2'] } },
+      data: { isRecommended: false }
+    });
+    expect(productUpdateMany).toHaveBeenNthCalledWith(3, {
+      where: { id: { in: ['product-1', 'product-2'] } },
+      data: { status: 'archived' }
+    });
+    expect(revalidatePath).toHaveBeenCalledWith('/admin/products');
+  });
+
+  it('creates categories from form data with localized fields', async () => {
+    categoryCreate.mockResolvedValue({
+      id: 'cat-humanoid',
+      slug: 'humanoid-robots',
+      nameZh: '人形机器人'
+    });
+
+    const formData = new FormData();
+    formData.set('parentId', '');
+    formData.set('slug', 'humanoid-robots');
+    formData.set('sortOrder', '1');
+    formData.set('iconImageUrl', '/show/robot_humanoid.png');
+    formData.set('isActive', 'on');
+    formData.set('nameZh', '人形机器人');
+    formData.set('nameEn', 'Humanoid Robots');
+    formData.set('nameEs', 'Robots humanoides');
+    formData.set('namePt', 'Robos humanoides');
+    formData.set('descriptionZh', '面向服务、研究与教育的人形机器人平台。');
+    formData.set('descriptionEn', 'Humanoid robot platforms.');
+    formData.set('descriptionEs', 'Robots humanoides.');
+    formData.set('descriptionPt', 'Robos humanoides.');
+
+    const { createCategoryFromForm } = await import('@/features/admin/category-actions');
+    const result = await createCategoryFromForm(formData);
+
+    expect(categoryCreate).toHaveBeenCalledWith({
+      data: {
+        parentId: null,
+        slug: 'humanoid-robots',
+        sortOrder: 1,
+        iconImageUrl: '/show/robot_humanoid.png',
+        isActive: true,
+        nameZh: '人形机器人',
+        nameEn: 'Humanoid Robots',
+        nameEs: 'Robots humanoides',
+        namePt: 'Robos humanoides',
+        descriptionZh: '面向服务、研究与教育的人形机器人平台。',
+        descriptionEn: 'Humanoid robot platforms.',
+        descriptionEs: 'Robots humanoides.',
+        descriptionPt: 'Robos humanoides.'
+      }
+    });
+    expect(result.id).toBe('cat-humanoid');
+    expect(revalidatePath).toHaveBeenCalledWith('/admin/products');
+    expect(revalidatePath).toHaveBeenCalledWith('/admin/categories');
+  });
+
+  it('updates categories from form data and clears optional fields', async () => {
+    categoryUpdate.mockResolvedValue({
+      id: 'cat-drones',
+      slug: 'drones',
+      isActive: false
+    });
+
+    const formData = new FormData();
+    formData.set('parentId', '');
+    formData.set('slug', 'drones');
+    formData.set('sortOrder', '2');
+    formData.set('iconImageUrl', '');
+    formData.set('nameZh', '无人机');
+    formData.set('nameEn', 'Drones');
+    formData.set('nameEs', 'Drones');
+    formData.set('namePt', 'Drones');
+    formData.set('descriptionZh', '');
+    formData.set('descriptionEn', '');
+    formData.set('descriptionEs', '');
+    formData.set('descriptionPt', '');
+
+    const { updateCategoryFromForm } = await import('@/features/admin/category-actions');
+    const result = await updateCategoryFromForm('cat-drones', formData);
+
+    expect(categoryUpdate).toHaveBeenCalledWith({
+      where: { id: 'cat-drones' },
+      data: {
+        parentId: null,
+        slug: 'drones',
+        sortOrder: 2,
+        iconImageUrl: null,
+        isActive: false,
+        nameZh: '无人机',
+        nameEn: 'Drones',
+        nameEs: 'Drones',
+        namePt: 'Drones',
+        descriptionZh: null,
+        descriptionEn: null,
+        descriptionEs: null,
+        descriptionPt: null
+      }
+    });
+    expect(result.isActive).toBe(false);
+    expect(revalidatePath).toHaveBeenCalledWith('/admin/products');
+    expect(revalidatePath).toHaveBeenCalledWith('/admin/categories');
+  });
+
+  it('soft deletes categories from form actions by disabling them', async () => {
+    categoryUpdate.mockResolvedValue({
+      id: 'cat-drones',
+      slug: 'drones',
+      isActive: false
+    });
+
+    const { deleteCategoryFormAction } = await import('@/features/admin/category-actions');
+    await deleteCategoryFormAction('cat-drones');
+
+    expect(categoryDelete).not.toHaveBeenCalled();
+    expect(categoryUpdate).toHaveBeenCalledWith({
+      where: { id: 'cat-drones' },
+      data: { isActive: false }
+    });
+    expect(revalidatePath).toHaveBeenCalledWith('/admin/products');
+    expect(revalidatePath).toHaveBeenCalledWith('/admin/categories');
   });
 
   it('blocks publishing when required fields are incomplete', async () => {

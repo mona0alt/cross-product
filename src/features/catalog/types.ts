@@ -90,13 +90,19 @@ export type AdminProductFilters = {
 
 export type AdminCategoryTreeNode = {
   id: string;
+  parentId: string | null;
   slug: string;
   sortOrder: number;
+  iconImageUrl: string | null;
   isActive: boolean;
   nameZh: string;
   nameEn: string;
   nameEs: string;
   namePt: string;
+  descriptionZh: string | null;
+  descriptionEn: string | null;
+  descriptionEs: string | null;
+  descriptionPt: string | null;
   children: AdminCategoryTreeNode[];
 };
 

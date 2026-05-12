@@ -1,5 +1,7 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
+
 import { db } from '@/lib/db';
 import { getPublishBlockers } from '@/features/catalog/publishable';
 
@@ -35,6 +37,7 @@ type ProductUpdateInput = Partial<{
 }>;
 
 type ProductFormStatus = 'draft' | 'pending' | 'published' | 'archived';
+type ProductBulkOperation = 'recommend' | 'unrecommend' | 'archive';
 
 function getFormString(formData: FormData, key: string) {
   const value = formData.get(key);
@@ -141,7 +144,7 @@ export async function createProductFromForm(formData: FormData) {
   const payload = getProductFormPayload(formData);
   const galleryUrls = getGalleryUrls(formData);
 
-  return db.product.create({
+  const product = await db.product.create({
     data: {
       ...payload,
       images: {
@@ -153,6 +156,10 @@ export async function createProductFromForm(formData: FormData) {
       }
     }
   });
+
+  revalidatePath('/admin/products');
+
+  return product;
 }
 
 export async function updateProduct(id: string, input: ProductUpdateInput) {
@@ -166,7 +173,7 @@ export async function updateProductFromForm(id: string, formData: FormData) {
   const payload = getProductFormPayload(formData);
   const galleryUrls = getGalleryUrls(formData);
 
-  return db.$transaction(async (tx) => {
+  const product = await db.$transaction(async (tx) => {
     const product = await tx.product.update({
       where: { id },
       data: payload
@@ -185,6 +192,53 @@ export async function updateProductFromForm(id: string, formData: FormData) {
 
     return product;
   });
+
+  revalidatePath('/admin/products');
+
+  return product;
+}
+
+export async function createProductFormAction(formData: FormData) {
+  await createProductFromForm(formData);
+}
+
+export async function updateProductFormAction(id: string, formData: FormData) {
+  await updateProductFromForm(id, formData);
+}
+
+export async function archiveProductFromListAction(id: string) {
+  await updateProduct(id, { status: 'archived' });
+
+  revalidatePath('/admin/products');
+}
+
+export async function bulkUpdateProductsFromListAction(
+  ids: string[],
+  operation: ProductBulkOperation
+) {
+  const productIds = ids.map((id) => id.trim()).filter(Boolean);
+
+  if (productIds.length === 0) {
+    return;
+  }
+
+  const data =
+    operation === 'recommend'
+      ? { isRecommended: true }
+      : operation === 'unrecommend'
+      ? { isRecommended: false }
+      : { status: 'archived' as const };
+
+  await db.product.updateMany({
+    where: {
+      id: {
+        in: productIds
+      }
+    },
+    data
+  });
+
+  revalidatePath('/admin/products');
 }
 
 export async function publishProduct(id: string) {

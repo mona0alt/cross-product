@@ -1,60 +1,293 @@
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { ProductCenter } from '@/components/admin/product-center';
-import { mockBackoffice } from '@/features/admin/mock-backoffice';
+
+vi.mock('next/navigation', async () => {
+  const actual =
+    await vi.importActual<typeof import('next/navigation')>('next/navigation');
+
+  return {
+    ...actual,
+    useRouter: () => ({
+      refresh: vi.fn()
+    })
+  };
+});
+
+const categories = [
+  {
+    id: 'cat-humanoid',
+    slug: 'humanoid-robots',
+    nameZh: '人形机器人',
+    nameEn: 'Humanoid Robots',
+    isActive: true,
+    productCount: 1
+  },
+  {
+    id: 'cat-drones',
+    slug: 'drones',
+    nameZh: '无人机',
+    nameEn: 'Drones',
+    isActive: true,
+    productCount: 1
+  }
+];
+
+const products = [
+  {
+    id: 'product-1',
+    slug: 'alpha-humanoid',
+    productCode: 'P-3001',
+    categoryId: 'cat-humanoid',
+    nameZh: 'Alpha Humanoid 服务机器人',
+    nameEn: 'Alpha Humanoid',
+    nameEs: 'Alpha Humanoid',
+    namePt: 'Alpha Humanoid',
+    introZh: '类人智能，服务未来。',
+    introEn: 'Human-like intelligence.',
+    introEs: 'Inteligencia humanoide.',
+    introPt: 'Inteligencia humanoide.',
+    detailZh: '全尺寸双足人形机器人。',
+    detailEn: 'Full-size humanoid robot.',
+    detailEs: 'Robot humanoide.',
+    detailPt: 'Robo humanoide.',
+    categoryName: '人形机器人',
+    status: 'published',
+    priceUsd: 12999,
+    coverImageUrl: '/show/robot_humanoid.png',
+    isRecommended: true,
+    sortOrder: 1,
+    images: [{ imageUrl: '/show/robot_humanoid.png', sortOrder: 0 }]
+  },
+  {
+    id: 'product-2',
+    slug: 'aerial-x1',
+    productCode: 'P-2001',
+    categoryId: 'cat-drones',
+    nameZh: 'Aerial X1 航拍无人机',
+    nameEn: 'Aerial X1',
+    nameEs: 'Aerial X1',
+    namePt: 'Aerial X1',
+    introZh: '4K航拍，轻巧随行。',
+    introEn: '4K aerial filming.',
+    introEs: 'Filmacion aerea 4K.',
+    introPt: 'Filmagem aerea 4K.',
+    detailZh: '消费级航拍无人机。',
+    detailEn: 'Consumer aerial drone.',
+    detailEs: 'Drone de consumo.',
+    detailPt: 'Drone de consumo.',
+    categoryName: '无人机',
+    status: 'draft',
+    priceUsd: 899,
+    coverImageUrl: '/show/robot_drone.png',
+    isRecommended: false,
+    sortOrder: 2,
+    images: []
+  }
+];
+
+const productsWithPending = [
+  ...products,
+  {
+    ...products[1],
+    id: 'product-4',
+    slug: 'pending-drone',
+    productCode: 'P-2004',
+    nameZh: '待审核巡检无人机',
+    nameEn: 'Pending Drone',
+    status: 'pending'
+  }
+];
+
+const paginatedProducts = [
+  ...products,
+  {
+    ...products[0],
+    id: 'product-3',
+    slug: 'beta-humanoid',
+    productCode: 'P-3002',
+    nameZh: 'Beta Humanoid 迎宾机器人',
+    nameEn: 'Beta Humanoid',
+    isRecommended: false,
+    sortOrder: 3
+  }
+];
 
 describe('ProductCenter', () => {
-  it('renders the reference product management workbench by default', () => {
+  it('renders the database-backed product management workbench by default', () => {
     const html = renderToStaticMarkup(
-      <ProductCenter data={mockBackoffice.products} />
+      <ProductCenter
+        categories={categories}
+        products={products}
+        defaultSelectedProductIds={['product-1']}
+      />
     );
 
     expect(html).toContain('商品管理');
     expect(html).toContain('产品类目');
     expect(html).toContain('添加类目');
-    expect(html).toContain('智能穿戴设备 详情');
-    expect(html).toContain('类目封面图');
-    expect(html).toContain('管理产品');
-    expect(html).toContain('编辑商品');
-    expect(html).toContain('产品媒体');
-    expect(html).toContain('保存更改');
+    expect(html).not.toContain('href="/admin/categories"');
+    expect(html).toContain('人形机器人');
+    expect(html).toContain('Humanoid Robots');
+    expect(html).toContain('无人机');
+    expect(html).toContain('1 个商品');
+    expect(html).not.toContain('智能穿戴设备');
+    expect(html).not.toContain('影音娱乐');
+    expect(html).not.toContain('管理产品');
+    expect(html).not.toContain('点击编辑进入真实商品编辑页');
+    expect(html).toContain('min-h-[calc(100vh-104px)]');
+    expect(html).toContain('flex min-h-[520px] flex-1');
+    expect(html).toContain('Alpha Humanoid 服务机器人');
+    expect(html).toContain('Aerial X1 航拍无人机');
+    expect(html).toContain('P-3001');
+    expect(html).toContain('published');
     expect(html).toContain('新增商品');
-    expect(html).toContain('EN');
-    expect(html).toContain('ES');
-    expect(html).toContain('PT');
-    expect(html).toContain('role="dialog"');
-    expect(html).toContain('aria-modal="true"');
-    expect(html).toContain('fixed inset-y-0 right-0 z-50');
-    expect(html).toContain('Portable Cleaning Robot X2');
-    expect(html).not.toContain('导出 CSV');
-    expect(html).not.toContain('待审核队列');
+    expect(html).toContain('导出 CSV');
+    expect(html).toContain('待审核队列');
+    expect(html).toContain('批量推荐');
+    expect(html).toContain('取消推荐');
+    expect(html).toContain('批量归档');
+    expect(html).toContain('归档商品');
+    expect(html).toContain('预览');
+    expect(html).toContain('aria-label="删除类目 人形机器人"');
+    expect(html).not.toContain('aria-label="删除类目 人形机器人" disabled');
+    expect(html).not.toContain('href="/admin/products/new"');
+    expect(html).not.toContain('href="/admin/products/product-1"');
   });
 
-  it('uses the selected product in the edit drawer when default id is provided', () => {
+  it('can render the pending review queue as a product status filter', () => {
     const html = renderToStaticMarkup(
       <ProductCenter
-        data={mockBackoffice.products}
-        defaultSelectedProductId="product-1"
+        categories={categories}
+        products={productsWithPending}
+        defaultStatusFilter="pending"
       />
     );
 
-    expect(html).toContain('Portable Cleaning Robot X2');
-    expect(html).toContain('封面图数量不足');
-    expect(html).toContain('基础信息');
-    expect(html).toContain('产品描述');
+    expect(html).toContain('当前筛选 1 个商品。');
+    expect(html).toContain('待审核巡检无人机');
+    expect(html).not.toContain('Alpha Humanoid 服务机器人');
   });
 
-  it('uses the create entry as an inline drawer action instead of navigation', () => {
+  it('renders an empty state without falling back to mock data', () => {
     const html = renderToStaticMarkup(
-      <ProductCenter data={mockBackoffice.products} />
+      <ProductCenter categories={[]} products={[]} />
     );
 
-    expect(html).not.toContain('/admin/products/new');
-    expect(html).toContain('type="button"');
+    expect(html).toContain('暂无分类');
+    expect(html).toContain('暂无商品');
+    expect(html).not.toContain('Portable Cleaning Robot X2');
+    expect(html).not.toContain('智能穿戴设备');
+  });
+
+  it('filters the product table by the selected category', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        defaultActiveCategoryId="cat-humanoid"
+      />
+    );
+
+    expect(html).toContain('当前显示人形机器人下的 1 个商品。');
+    expect(html).not.toContain('管理产品');
+    expect(html).toContain('Alpha Humanoid 服务机器人');
+    expect(html).not.toContain('Aerial X1 航拍无人机');
+    expect(html).toContain('aria-pressed="true"');
+  });
+
+  it('keeps the product table fixed-size and paginates overflowing rows', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={paginatedProducts}
+        productPageSize={1}
+      />
+    );
+
+    expect(html).toContain('flex min-h-[520px] flex-1');
+    expect(html).toContain('Alpha Humanoid 服务机器人');
+    expect(html).not.toContain('Aerial X1 航拍无人机');
+    expect(html).toContain('第 1 / 3 页');
+    expect(html).toContain('共 3 个商品');
+    expect(html).toContain('aria-label="上一页"');
+    expect(html).toContain('aria-label="下一页"');
+  });
+
+  it('renders the edit drawer for the selected product when requested', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        defaultSelectedProductId="product-1"
+        defaultEditorOpen
+      />
+    );
+
+    expect(html).toContain('role="dialog"');
+    expect(html).toContain('aria-modal="true"');
+    expect(html).toContain('fixed inset-y-0 right-0 z-50');
+    expect(html).toContain('编辑商品');
+    expect(html).toContain('Alpha Humanoid 服务机器人');
+    expect(html).toContain('产品媒体');
+    expect(html).toContain('上传封面');
+    expect(html).toContain('上传图库');
+    expect(html).toContain('保存更改');
+    expect(html).toContain('disabled:cursor-wait');
+    expect(html).not.toContain('/admin/products/product-1');
+  });
+
+  it('renders the create drawer when requested', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        defaultEditorOpen
+        defaultEditorMode="create"
+      />
+    );
+
     expect(html).toContain('新增商品');
-    expect(html).not.toContain('手动新增商品');
-    expect(html).not.toContain('待审核队列');
+    expect(html).toContain('选择类别');
+    expect(html).toContain('产品媒体');
+    expect(html).toContain('保存更改');
+    expect(html).not.toContain('/admin/products/new');
+  });
+
+  it('renders the category create drawer on the product page when requested', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        defaultCategoryEditorOpen
+        defaultCategoryEditorMode="create"
+      />
+    );
+
+    expect(html).toContain('role="dialog"');
+    expect(html).toContain('新建类目');
+    expect(html).toContain('父级类目');
+    expect(html).toContain('中文名称');
+    expect(html).toContain('保存类目');
+    expect(html).not.toContain('href="/admin/categories"');
+  });
+
+  it('renders the category edit drawer for the selected category when requested', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        defaultSelectedCategoryId="cat-humanoid"
+        defaultCategoryEditorOpen
+        defaultCategoryEditorMode="edit"
+      />
+    );
+
+    expect(html).toContain('编辑类目');
+    expect(html).toContain('humanoid-robots');
+    expect(html).toContain('人形机器人');
+    expect(html).toContain('保存类目');
   });
 });
