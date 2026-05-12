@@ -5,9 +5,138 @@ import type {
   CatalogLocale,
   HomepagePayload,
   ProductListFilters,
-  ProductListPayload
+  ProductListPayload,
+  StorefrontCategory,
+  StorefrontCategoryGroup
 } from '@/features/catalog/types';
 import { mapLocalizedCategory, mapLocalizedProduct } from '@/features/catalog/mappers';
+import { getLocalImagePath } from '@/features/catalog/local-image-paths';
+
+type StorefrontCategoryRecord = {
+  id: string;
+  parentId: string | null;
+  slug: string;
+  sortOrder: number;
+  isActive: boolean;
+  iconImageUrl: string | null;
+  nameZh: string;
+  nameEn: string;
+  nameEs: string;
+  namePt: string;
+  descriptionZh: string | null;
+  descriptionEn: string | null;
+  descriptionEs: string | null;
+  descriptionPt: string | null;
+};
+
+type StorefrontCategoryGroupNode = StorefrontCategory & {
+  parentId: string | null;
+  children: StorefrontCategory[];
+};
+
+function buildStorefrontCategoryGroupsFromRecords(
+  categories: StorefrontCategoryRecord[],
+  locale: CatalogLocale
+): StorefrontCategoryGroup[] {
+  const activeCategories = categories.filter((category) => category.isActive);
+  const nodes = new Map<string, StorefrontCategoryGroupNode>(
+    activeCategories.map((category) => [
+      category.id,
+      {
+        ...mapLocalizedCategory(category, locale),
+        parentId: category.parentId,
+        children: []
+      }
+    ])
+  );
+  const roots: StorefrontCategoryGroupNode[] = [];
+
+  for (const category of activeCategories) {
+    const node = nodes.get(category.id);
+
+    if (!node) {
+      continue;
+    }
+
+    const parentNode = category.parentId ? nodes.get(category.parentId) : null;
+
+    if (parentNode) {
+      parentNode.children.push({
+        id: node.id,
+        slug: node.slug,
+        iconImageUrl: node.iconImageUrl,
+        name: node.name,
+        description: node.description
+      });
+      continue;
+    }
+
+    roots.push(node);
+  }
+
+  return roots.map((root) => ({
+    id: root.id,
+    slug: root.slug,
+    iconImageUrl: root.iconImageUrl,
+    name: root.name,
+    description: root.description,
+    children: root.children
+  }));
+}
+
+function getBannerCategoryImageUrl(
+  categories: StorefrontCategoryRecord[],
+  targetCategoryId: string | null
+) {
+  if (!targetCategoryId) {
+    return null;
+  }
+
+  const categoryById = new Map(categories.map((category) => [category.id, category]));
+  const childrenByParentId = new Map<string | null, StorefrontCategoryRecord[]>();
+
+  for (const category of categories) {
+    const siblings = childrenByParentId.get(category.parentId) ?? [];
+    siblings.push(category);
+    childrenByParentId.set(category.parentId, siblings);
+  }
+
+  const targetCategory = categoryById.get(targetCategoryId);
+
+  if (!targetCategory) {
+    return null;
+  }
+
+  const directImageUrl = getLocalImagePath(targetCategory.iconImageUrl);
+
+  if (directImageUrl) {
+    return directImageUrl;
+  }
+
+  const resolveDescendantImage = (parentId: string): string | null => {
+    const children = childrenByParentId.get(parentId) ?? [];
+
+    for (const child of children) {
+      if (child.isActive) {
+        const childImageUrl = getLocalImagePath(child.iconImageUrl);
+
+        if (childImageUrl) {
+          return childImageUrl;
+        }
+      }
+
+      const descendantImageUrl = resolveDescendantImage(child.id);
+
+      if (descendantImageUrl) {
+        return descendantImageUrl;
+      }
+    }
+
+    return null;
+  };
+
+  return resolveDescendantImage(targetCategory.id);
+}
 
 export async function getHomepagePayload(
   locale: CatalogLocale
@@ -22,13 +151,14 @@ export async function getHomepagePayload(
       }
     }),
     db.category.findMany({
-      where: {
-        parentId: null,
-        isActive: true
-      },
-      orderBy: {
-        sortOrder: 'asc'
-      }
+      orderBy: [
+        {
+          sortOrder: 'asc'
+        },
+        {
+          createdAt: 'asc'
+        }
+      ]
     }),
     db.product.findMany({
       where: {
@@ -49,19 +179,31 @@ export async function getHomepagePayload(
       ]
     })
   ]);
+  const categoryGroups = buildStorefrontCategoryGroupsFromRecords(
+    categories,
+    locale
+  );
 
   return {
     banners: banners.map((banner) => ({
       id: banner.id,
-      imageUrl: banner.imageUrl,
+      imageUrl:
+        banner.targetType === 'category'
+          ? getBannerCategoryImageUrl(categories, banner.targetId) ??
+            banner.imageUrl
+          : banner.imageUrl,
       targetType: banner.targetType,
       targetId: banner.targetId,
       targetUrl: banner.targetUrl,
       sortOrder: banner.sortOrder
     })),
-    featuredCategories: categories.map((category) =>
-      mapLocalizedCategory(category, locale)
-    ),
+    featuredCategories: categoryGroups.map((category) => ({
+      id: category.id,
+      slug: category.slug,
+      iconImageUrl: category.iconImageUrl,
+      name: category.name,
+      description: category.description
+    })),
     recommendedProducts: products.map((product) =>
       mapLocalizedProduct(product, locale)
     )
@@ -121,61 +263,40 @@ export async function getProductListPayload(
       ]
     }),
     db.category.findMany({
-      where: {
-        parentId: null,
-        isActive: true
-      },
-      include: {
-        children: {
-          where: {
-            isActive: true
-          },
-          orderBy: {
-            sortOrder: 'asc'
-          }
+      orderBy: [
+        {
+          sortOrder: 'asc'
+        },
+        {
+          createdAt: 'asc'
         }
-      },
-      orderBy: {
-        sortOrder: 'asc'
-      }
+      ]
     })
   ]);
 
   return {
     filters,
-    categoryGroups: categoryGroups.map((group) => ({
-      ...mapLocalizedCategory(group, locale),
-      children: group.children.map((child) => mapLocalizedCategory(child, locale))
-    })),
+    categoryGroups: buildStorefrontCategoryGroupsFromRecords(
+      categoryGroups,
+      locale
+    ),
     products: products.map((product) => mapLocalizedProduct(product, locale))
   };
 }
 
 export async function getStorefrontCategoryGroups(locale: CatalogLocale) {
   const groups = await db.category.findMany({
-    where: {
-      parentId: null,
-      isActive: true
-    },
-    include: {
-      children: {
-        where: {
-          isActive: true
-        },
-        orderBy: {
-          sortOrder: 'asc'
-        }
+    orderBy: [
+      {
+        sortOrder: 'asc'
+      },
+      {
+        createdAt: 'asc'
       }
-    },
-    orderBy: {
-      sortOrder: 'asc'
-    }
+    ]
   });
 
-  return groups.map((group) => ({
-    ...mapLocalizedCategory(group, locale),
-    children: group.children.map((child) => mapLocalizedCategory(child, locale))
-  }));
+  return buildStorefrontCategoryGroupsFromRecords(groups, locale);
 }
 
 export async function getProductDetailBySlug(

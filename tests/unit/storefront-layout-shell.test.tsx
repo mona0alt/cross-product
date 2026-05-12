@@ -196,6 +196,178 @@ describe('storefront layout shell', () => {
     expect(html).toContain('Robots for classrooms');
   });
 
+  it('keeps a hover dropdown for top-level categories without child items', () => {
+    const html = renderToStaticMarkup(
+      <StorefrontHeader
+        locale="en"
+        whatsAppNumber="+1 555 123 4567"
+        categoryGroups={[
+          {
+            id: 'group-1',
+            slug: 'industrial-drones',
+            iconImageUrl: '/uploads/categories/drone.webp',
+            name: 'Industrial Drones',
+            description: 'Industrial drone systems',
+            children: []
+          }
+        ]}
+        copy={{
+          brand: 'Cross',
+          nav: {
+            home: 'Home',
+            products: 'Products',
+            contact: 'Contact',
+            subscribe: 'Subscribe'
+          },
+          searchPlaceholder: 'Search products',
+          portal: 'Portal',
+          whatsApp: 'WhatsApp',
+          languageLabel: 'Language',
+          topLinks: {
+            blog: 'Blog',
+            studio: 'Studio MK',
+            professionals: 'MK Pros'
+          },
+          phoneSales: 'Phone sales',
+          utilityBar: {
+            support: 'Support',
+            service: 'Customer Service'
+          },
+          quickActions: {
+            trackOrder: 'Track order',
+            stores: 'Stores',
+            helpCenter: 'Help Center',
+            account: 'My account'
+          },
+          featuredNav: {
+            inspiration: 'Inspiration',
+            outlet: 'Outlet'
+          },
+          categoryPromo: {
+            viewAll: 'View all',
+            offerTitle: 'Offers',
+            offerLink: 'Last chance',
+            featuredTitle: 'Featured',
+            featuredDescription: 'Discover best sellers'
+          }
+        }}
+      />
+    );
+
+    expect(html).toContain('data-testid="desktop-mega-menu"');
+    expect(html).toContain('/en/categories/industrial-drones');
+    expect(html).toContain('/uploads/categories/drone.webp');
+    expect(html).toContain('Industrial Drones');
+    expect(html).toContain('Industrial drone systems');
+  });
+
+  it('renders every configured backend category in the desktop navigation', () => {
+    const html = renderToStaticMarkup(
+      <StorefrontHeader
+        locale="en"
+        whatsAppNumber="+1 555 123 4567"
+        categoryGroups={[
+          {
+            id: 'group-1',
+            slug: 'window-cleaning-robots',
+            iconImageUrl: null,
+            name: 'Window Cleaning Robots',
+            description: 'Windows',
+            children: []
+          },
+          {
+            id: 'group-2',
+            slug: 'drones',
+            iconImageUrl: null,
+            name: 'Drones',
+            description: 'Drones',
+            children: []
+          },
+          {
+            id: 'group-3',
+            slug: 'humanoid-robots',
+            iconImageUrl: null,
+            name: 'Humanoid Robots',
+            description: 'Humanoids',
+            children: []
+          },
+          {
+            id: 'group-4',
+            slug: 'robot-vacuums',
+            iconImageUrl: null,
+            name: 'Vacuum Robots',
+            description: 'Vacuum',
+            children: []
+          },
+          {
+            id: 'group-5',
+            slug: 'robot-dogs',
+            iconImageUrl: null,
+            name: 'Robot Dogs',
+            description: 'Robot dogs',
+            children: []
+          },
+          {
+            id: 'group-6',
+            slug: 'industrial-arms',
+            iconImageUrl: null,
+            name: 'Industrial Arms',
+            description: 'Industrial arms',
+            children: []
+          }
+        ]}
+        copy={{
+          brand: 'Cross',
+          nav: {
+            home: 'Home',
+            products: 'Products',
+            contact: 'Contact',
+            subscribe: 'Subscribe'
+          },
+          searchPlaceholder: 'Search products',
+          portal: 'Portal',
+          whatsApp: 'WhatsApp',
+          languageLabel: 'Language',
+          topLinks: {
+            blog: 'Blog',
+            studio: 'Studio MK',
+            professionals: 'MK Pros'
+          },
+          phoneSales: 'Phone sales',
+          utilityBar: {
+            support: 'Support',
+            service: 'Customer Service'
+          },
+          quickActions: {
+            trackOrder: 'Track order',
+            stores: 'Stores',
+            helpCenter: 'Help Center',
+            account: 'My account'
+          },
+          featuredNav: {
+            inspiration: 'Inspiration',
+            outlet: 'Outlet'
+          },
+          categoryPromo: {
+            viewAll: 'View all',
+            offerTitle: 'Offers',
+            offerLink: 'Last chance',
+            featuredTitle: 'Featured',
+            featuredDescription: 'Discover best sellers'
+          }
+        }}
+      />
+    );
+
+    expect(html).toContain('Window Cleaning Robots');
+    expect(html).toContain('Drones');
+    expect(html).toContain('Humanoid Robots');
+    expect(html).toContain('Vacuum Robots');
+    expect(html).toContain('Robot Dogs');
+    expect(html).toContain('Industrial Arms');
+    expect(html).toContain('/en/products?category=industrial-arms');
+  });
+
   it('renders the dark enterprise footer sections', () => {
     const html = renderToStaticMarkup(
       <StorefrontFooter

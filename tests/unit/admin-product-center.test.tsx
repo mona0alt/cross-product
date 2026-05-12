@@ -3,8 +3,11 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 
 import {
+  NOTICE_AUTO_DISMISS_MS,
   ProductCenter,
   getProductActionMenuState,
+  scheduleNoticeDismiss,
+  saveCategoryEditorForm,
   getProductFilterUpdate,
   getProductGalleryHiddenValue,
   getProductGalleryPreviewSrc,
@@ -124,6 +127,18 @@ const paginatedProducts = [
   }
 ];
 
+const productsWithArchivedCategory = [
+  {
+    ...products[0],
+    id: 'product-archived-category',
+    slug: 'archived-category-product',
+    categoryId: 'cat-archived',
+    categoryName: '已停用分类',
+    nameZh: 'Archived Category 商品',
+    nameEn: 'Archived Category Product'
+  }
+];
+
 describe('ProductCenter', () => {
   it('renders the database-backed product management workbench by default', () => {
     const html = renderToStaticMarkup(
@@ -183,6 +198,18 @@ describe('ProductCenter', () => {
     expect(html).not.toContain('aria-label="删除类目 人形机器人" disabled');
     expect(html).not.toContain('href="/admin/products/new"');
     expect(html).not.toContain('href="/admin/products/product-1"');
+  });
+
+  it('sorts the product table by product name alphabetically', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter categories={categories} products={products} />
+    );
+    const aerialIndex = html.indexOf('Aerial X1 航拍无人机');
+    const alphaIndex = html.indexOf('Alpha Humanoid 服务机器人');
+
+    expect(aerialIndex).toBeGreaterThan(-1);
+    expect(alphaIndex).toBeGreaterThan(-1);
+    expect(aerialIndex).toBeLessThan(alphaIndex);
   });
 
   it('can render the pending review queue as a product status filter', () => {
@@ -357,6 +384,46 @@ describe('ProductCenter', () => {
     });
   });
 
+  it('closes and refreshes the category drawer after a successful save', async () => {
+    const formAction = vi.fn().mockResolvedValue(undefined);
+    const onClose = vi.fn();
+    const onSaved = vi.fn();
+    const refresh = vi.fn();
+    const formData = new FormData();
+
+    formData.set('nameZh', '人形机器人');
+
+    await saveCategoryEditorForm({
+      formAction,
+      formData,
+      router: { refresh },
+      onClose,
+      onSaved,
+      isCreate: false
+    });
+
+    expect(formAction).toHaveBeenCalledWith(formData);
+    expect(onSaved).toHaveBeenCalledWith('类目已保存。');
+    expect(refresh).toHaveBeenCalledTimes(1);
+    expect(onClose).toHaveBeenCalledTimes(1);
+  });
+
+  it('auto-dismisses the top notice after the configured timeout', () => {
+    vi.useFakeTimers();
+
+    const dismiss = vi.fn();
+    const cleanup = scheduleNoticeDismiss(dismiss);
+
+    vi.advanceTimersByTime(NOTICE_AUTO_DISMISS_MS - 1);
+    expect(dismiss).not.toHaveBeenCalled();
+
+    vi.advanceTimersByTime(1);
+    expect(dismiss).toHaveBeenCalledTimes(1);
+
+    cleanup();
+    vi.useRealTimers();
+  });
+
   it('keeps the saved gallery URLs in the local product row before router refresh returns', () => {
     const formData = new FormData();
     formData.set('coverImageUrl', '/uploads/products/cover-new.png');
@@ -384,8 +451,8 @@ describe('ProductCenter', () => {
     expect(html).toContain('aria-label="商品列表滚动区域"');
     expect(html).toContain('sticky top-0 z-10');
     expect(html).toContain('[scrollbar-gutter:stable]');
-    expect(html).toContain('Alpha Humanoid 服务机器人');
-    expect(html).not.toContain('Aerial X1 航拍无人机');
+    expect(html).toContain('Aerial X1 航拍无人机');
+    expect(html).not.toContain('Alpha Humanoid 服务机器人');
     expect(html).toContain('第 1 / 3 页');
     expect(html).toContain('共 3 个商品');
     expect(html).toContain('aria-label="上一页"');
@@ -419,6 +486,19 @@ describe('ProductCenter', () => {
     expect(html).toContain('保存更改');
     expect(html).toContain('disabled:cursor-wait');
     expect(html).not.toContain('/admin/products/product-1');
+  });
+
+  it('keeps the current category selectable when editing a product under an inactive category', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={productsWithArchivedCategory}
+        defaultSelectedProductId="product-archived-category"
+        defaultEditorOpen
+      />
+    );
+
+    expect(html).toContain('<option value="cat-archived" selected="">已停用分类</option>');
   });
 
   it('renders the create drawer when requested', () => {

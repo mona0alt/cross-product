@@ -217,6 +217,69 @@ export function getProductEditorSubmitState({
       };
 }
 
+export async function saveCategoryEditorForm({
+  formAction,
+  formData,
+  router,
+  onClose,
+  onSaved,
+  isCreate
+}: {
+  formAction: (formData: FormData) => Promise<unknown>;
+  formData: FormData;
+  router: {
+    refresh: () => void;
+  };
+  onClose: () => void;
+  onSaved: (message: string) => void;
+  isCreate: boolean;
+}) {
+  await formAction(formData);
+  onSaved(isCreate ? '类目已新增。' : '类目已保存。');
+  router.refresh();
+  onClose();
+}
+
+export const NOTICE_AUTO_DISMISS_MS = 4000;
+
+export function scheduleNoticeDismiss(
+  onDismiss: () => void,
+  timeoutMs = NOTICE_AUTO_DISMISS_MS
+) {
+  const timeoutId = setTimeout(onDismiss, timeoutMs);
+
+  return () => clearTimeout(timeoutId);
+}
+
+const productNameCollator = new Intl.Collator('en', {
+  numeric: true,
+  sensitivity: 'base'
+});
+
+function getProductNameSortValue(product: ProductCenterRow) {
+  return (
+    product.nameEn.trim() ||
+    product.nameZh.trim() ||
+    product.slug.trim() ||
+    product.productCode.trim()
+  );
+}
+
+export function sortProductRowsByName(products: ProductCenterRow[]) {
+  return [...products].sort((left, right) => {
+    const byName = productNameCollator.compare(
+      getProductNameSortValue(left),
+      getProductNameSortValue(right)
+    );
+
+    if (byName !== 0) {
+      return byName;
+    }
+
+    return productNameCollator.compare(left.productCode, right.productCode);
+  });
+}
+
 export function ProductCenter({
   categories,
   products,
@@ -246,7 +309,7 @@ export function ProductCenter({
   defaultSelectedProductIds?: string[];
   defaultOpenActionMenuProductId?: string;
 }) {
-  const [productRows, setProductRows] = useState(products);
+  const [productRows, setProductRows] = useState(() => sortProductRowsByName(products));
   const firstProductId = productRows[0]?.id ?? null;
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
     defaultSelectedProductId ?? firstProductId
@@ -279,8 +342,16 @@ export function ProductCenter({
   const [notice, setNotice] = useState('');
 
   useEffect(() => {
-    setProductRows(products);
+    setProductRows(sortProductRowsByName(products));
   }, [products]);
+
+  useEffect(() => {
+    if (!notice) {
+      return;
+    }
+
+    return scheduleNoticeDismiss(() => setNotice(''));
+  }, [notice]);
 
   const selectedProduct =
     selectedProductId === null
@@ -800,10 +871,12 @@ export function ProductCenter({
         onClose={() => setIsEditorOpen(false)}
         onProductSaved={(productId, formData) => {
           setProductRows((currentRows) =>
-            currentRows.map((currentProduct) =>
-              currentProduct.id === productId
-                ? getProductRowAfterFormSave(currentProduct, formData)
-                : currentProduct
+            sortProductRowsByName(
+              currentRows.map((currentProduct) =>
+                currentProduct.id === productId
+                  ? getProductRowAfterFormSave(currentProduct, formData)
+                  : currentProduct
+              )
             )
           );
         }}
@@ -815,6 +888,7 @@ export function ProductCenter({
         mode={categoryEditorMode}
         isOpen={isCategoryEditorOpen}
         onClose={() => setIsCategoryEditorOpen(false)}
+        onSaved={(message) => setNotice(message)}
       />
     </section>
   );
@@ -962,14 +1036,19 @@ function CategoryEditorDrawer({
   category,
   mode,
   isOpen,
-  onClose
+  onClose,
+  onSaved
 }: {
   categories: ProductCenterCategory[];
   category: ProductCenterCategory | null;
   mode: 'create' | 'edit';
   isOpen: boolean;
   onClose: () => void;
+  onSaved: (message: string) => void;
 }) {
+  const router = useRouter();
+  const [formError, setFormError] = useState('');
+
   if (!isOpen) {
     return null;
   }
@@ -979,6 +1058,21 @@ function CategoryEditorDrawer({
     !isCreate && category
       ? updateCategoryFormAction.bind(null, category.id)
       : createCategoryFormAction;
+  const handleFormAction = async (formData: FormData) => {
+    try {
+      setFormError('');
+      await saveCategoryEditorForm({
+        formAction,
+        formData,
+        router,
+        onClose,
+        onSaved,
+        isCreate
+      });
+    } catch (error) {
+      setFormError(error instanceof Error ? error.message : '保存失败，请检查表单。');
+    }
+  };
   const parentOptions = categories.filter((item) => item.id !== category?.id);
 
   return (
@@ -1007,7 +1101,7 @@ function CategoryEditorDrawer({
         </button>
       </div>
 
-      <form action={formAction} className="flex min-h-0 flex-1 flex-col">
+      <form action={handleFormAction} className="flex min-h-0 flex-1 flex-col">
         <div className="flex-1 space-y-5 overflow-y-auto p-5">
           <div className="grid gap-3 md:grid-cols-2">
             <Field label="父级类目">
@@ -1113,6 +1207,9 @@ function CategoryEditorDrawer({
         </div>
 
         <footer className="flex items-center justify-end gap-3 border-t border-admin-border bg-admin-elevated px-5 py-4">
+          {formError ? (
+            <p className="mr-auto text-sm font-medium text-rose-600">{formError}</p>
+          ) : null}
           <button
             type="button"
             onClick={onClose}
@@ -1206,6 +1303,18 @@ function ProductEditorDrawerContent({
   const galleryUrls = [...(product?.images ?? [])]
     .sort((left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0))
     .map((image) => image.imageUrl);
+  const categoryOptions =
+    product &&
+    product.categoryId &&
+    !categories.some((category) => category.id === product.categoryId)
+      ? [
+          {
+            id: product.categoryId,
+            nameZh: product.categoryName
+          },
+          ...categories
+        ]
+      : categories;
 
   return (
     <aside
@@ -1281,7 +1390,7 @@ function ProductEditorDrawerContent({
                   className={drawerInputClass}
                 >
                   <option value="">选择类别</option>
-                  {categories.map((category) => (
+                  {categoryOptions.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.nameZh}
                     </option>

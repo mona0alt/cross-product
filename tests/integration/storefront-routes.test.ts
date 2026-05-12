@@ -23,7 +23,7 @@ describe('storefront routes', () => {
       banners: [
         {
           id: 'banner-1',
-          imageUrl: '/banner.jpg',
+          imageUrl: '/legacy-banner.jpg',
           targetType: 'product',
           targetId: 'product-1',
           targetUrl: null,
@@ -37,6 +37,13 @@ describe('storefront routes', () => {
           iconImageUrl: '/electronics.svg',
           name: 'Electronics',
           description: 'Devices'
+        },
+        {
+          id: 'cat-2',
+          slug: 'drones',
+          iconImageUrl: '/drones.svg',
+          name: 'Drones',
+          description: 'Flying robots'
         }
       ],
       recommendedProducts: [
@@ -68,6 +75,9 @@ describe('storefront routes', () => {
 
     expect(html).toContain('Star River Pro Phone');
     expect(html).toContain('Electronics');
+    expect(html).toContain('/electronics.svg');
+    expect(html).toContain('href="/en/products?category=electronics"');
+    expect(html).not.toContain('/legacy-banner.jpg');
     expect(html).toContain('Product Series');
     expect(html).toContain('More Product Images');
     expect(html).toContain('Social Media #FBGM');

@@ -39,4 +39,35 @@ describe('BannerCarousel', () => {
     expect(html).not.toContain('Browse Products');
     expect(html).not.toContain('Contact Us');
   });
+
+  it('wraps the active banner with a link when a target url is provided', () => {
+    const html = renderToStaticMarkup(
+      <BannerCarousel
+        banners={[
+          {
+            id: 'banner-1',
+            imageUrl: '/uploads/categories/drone.webp',
+            targetType: 'category',
+            targetId: 'cat-1',
+            targetUrl: '/en/products?category=industrial-drones',
+            sortOrder: 1
+          }
+        ]}
+        emptyLabel="No banners"
+        copy={{
+          eyebrow: 'AI ROBOTICS SHOWCASE',
+          title: 'Premium robotics for modern work',
+          description: 'Explore intelligent robots for global partners.',
+          primaryCta: 'Browse Products',
+          secondaryCta: 'Contact Us'
+        }}
+        primaryHref="/en/products"
+        secondaryHref="/en/contact"
+      />
+    );
+
+    expect(html).toContain('href="/en/products?category=industrial-drones"');
+    expect(html).toContain('data-testid="banner-link"');
+    expect(html).toContain('/uploads/categories/drone.webp');
+  });
 });

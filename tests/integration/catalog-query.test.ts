@@ -47,6 +47,7 @@ describe('catalog queries', () => {
         parentId: null,
         slug: 'electronics',
         sortOrder: 1,
+        isActive: true,
         iconImageUrl: '/electronics.svg',
         nameZh: '电子数码',
         nameEn: 'Electronics',
@@ -109,6 +110,139 @@ describe('catalog queries', () => {
       slug: 'star-river-pro-phone',
       name: 'Star River Pro Phone',
       priceUsd: 699
+    });
+  });
+
+  it('promotes active child categories of inactive parents into storefront navigation groups', async () => {
+    categoryFindMany.mockResolvedValue([
+      {
+        id: 'root-window',
+        parentId: null,
+        slug: 'window-cleaning-robots',
+        sortOrder: 1,
+        isActive: false,
+        iconImageUrl: null,
+        nameZh: '擦窗机器人',
+        nameEn: 'Window Cleaning Robots',
+        nameEs: 'Robots Limpiacristales',
+        namePt: 'Robôs de Limpeza de Vidros',
+        descriptionZh: '擦窗',
+        descriptionEn: 'Window cleaning',
+        descriptionEs: 'Ventanas',
+        descriptionPt: 'Janelas'
+      },
+      {
+        id: 'child-window',
+        parentId: 'root-window',
+        slug: 'residential-window-robots',
+        sortOrder: 1,
+        isActive: true,
+        iconImageUrl: '/uploads/categories/window.webp',
+        nameZh: '家用擦窗机器人',
+        nameEn: 'Residential Window Robots',
+        nameEs: 'Residencial',
+        namePt: 'Residencial',
+        descriptionZh: '家用',
+        descriptionEn: 'Residential',
+        descriptionEs: 'Residencial',
+        descriptionPt: 'Residencial'
+      },
+      {
+        id: 'root-drone',
+        parentId: null,
+        slug: 'industrial-drones',
+        sortOrder: 2,
+        isActive: true,
+        iconImageUrl: '/uploads/categories/drone.webp',
+        nameZh: '工业无人机',
+        nameEn: 'Industrial Drones',
+        nameEs: 'Drones Industriales',
+        namePt: 'Drones Industriais',
+        descriptionZh: '工业',
+        descriptionEn: 'Industrial',
+        descriptionEs: 'Industrial',
+        descriptionPt: 'Industrial'
+      }
+    ]);
+
+    const { getStorefrontCategoryGroups } = await import('@/features/catalog/queries');
+    const groups = await getStorefrontCategoryGroups('en');
+
+    expect(groups).toMatchObject([
+      {
+        slug: 'residential-window-robots',
+        name: 'Residential Window Robots',
+        children: []
+      },
+      {
+        slug: 'industrial-drones',
+        name: 'Industrial Drones',
+        children: []
+      }
+    ]);
+  });
+
+  it('uses configured category images for homepage banners that target a category branch', async () => {
+    bannerFindMany.mockResolvedValue([
+      {
+        id: 'banner-1',
+        imageUrl: '/show/legacy-banner.png',
+        targetType: 'category',
+        targetId: 'root-window',
+        targetUrl: null,
+        sortOrder: 1
+      }
+    ]);
+
+    categoryFindMany.mockResolvedValue([
+      {
+        id: 'root-window',
+        parentId: null,
+        slug: 'window-cleaning-robots',
+        sortOrder: 1,
+        isActive: false,
+        iconImageUrl: null,
+        nameZh: '擦窗机器人',
+        nameEn: 'Window Cleaning Robots',
+        nameEs: 'Robots Limpiacristales',
+        namePt: 'Robôs de Limpeza de Vidros',
+        descriptionZh: '擦窗',
+        descriptionEn: 'Window cleaning',
+        descriptionEs: 'Ventanas',
+        descriptionPt: 'Janelas'
+      },
+      {
+        id: 'child-window',
+        parentId: 'root-window',
+        slug: 'residential-window-robots',
+        sortOrder: 1,
+        isActive: true,
+        iconImageUrl: '/uploads/categories/window.webp',
+        nameZh: '家用擦窗机器人',
+        nameEn: 'Residential Window Robots',
+        nameEs: 'Residencial',
+        namePt: 'Residencial',
+        descriptionZh: '家用',
+        descriptionEn: 'Residential',
+        descriptionEs: 'Residencial',
+        descriptionPt: 'Residencial'
+      }
+    ]);
+
+    productFindMany.mockResolvedValue([]);
+
+    const { getHomepagePayload } = await import('@/features/catalog/queries');
+    const payload = await getHomepagePayload('en');
+
+    expect(payload.banners[0]).toMatchObject({
+      imageUrl: '/uploads/categories/window.webp',
+      targetType: 'category',
+      targetId: 'root-window'
+    });
+    expect(payload.featuredCategories[0]).toMatchObject({
+      slug: 'residential-window-robots',
+      name: 'Residential Window Robots',
+      iconImageUrl: '/uploads/categories/window.webp'
     });
   });
 

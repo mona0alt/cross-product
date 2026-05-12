@@ -5,10 +5,29 @@ import { HomepageCategoryGrid } from '@/components/storefront/homepage-category-
 import { HomepageProductMatrix } from '@/components/storefront/homepage-product-matrix';
 import { SocialShowcase } from '@/components/storefront/social-showcase';
 import { getHomepagePayload } from '@/features/catalog/queries';
+import type { HomepagePayload } from '@/features/catalog/types';
 import { defaultLocale, isLocale, type Locale } from '@/lib/i18n/config';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
 
 export const dynamic = 'force-dynamic';
+
+function getHomepageHeroBanners(
+  payload: HomepagePayload,
+  locale: Locale
+) {
+  const categoryBanners = payload.featuredCategories
+    .filter((category) => Boolean(category.iconImageUrl))
+    .map((category, index) => ({
+      id: `category-${category.id}`,
+      imageUrl: category.iconImageUrl ?? '',
+      targetType: 'category',
+      targetId: category.id,
+      targetUrl: `/${locale}/products?category=${category.slug}`,
+      sortOrder: index + 1
+    }));
+
+  return categoryBanners.length > 0 ? categoryBanners : payload.banners;
+}
 
 export default async function LocalizedHomePage({
   params
@@ -19,12 +38,13 @@ export default async function LocalizedHomePage({
   const locale: Locale = isLocale(localeParam) ? localeParam : defaultLocale;
   const messages = await getDictionary(locale);
   const payload = await getHomepagePayload(locale);
+  const heroBanners = getHomepageHeroBanners(payload, locale);
   const { Storefront } = messages;
 
   return (
     <div>
       <BannerCarousel
-        banners={payload.banners}
+        banners={heroBanners}
         emptyLabel={Storefront.banner.empty}
         copy={Storefront.home}
         primaryHref={`/${locale}/products`}

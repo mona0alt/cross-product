@@ -101,7 +101,7 @@ export function StorefrontHeader({
     highlight?: boolean;
     group?: StorefrontCategoryGroup;
   }> = [
-    ...categoryGroups.slice(0, 5).map((group) => ({
+    ...categoryGroups.map((group) => ({
       key: group.slug,
       label: group.name,
       href: `/${locale}/products?category=${group.slug}`,
@@ -135,8 +135,20 @@ export function StorefrontHeader({
           <nav className="hidden self-stretch flex-1 items-center justify-center gap-5 lg:flex">
             {mainNav.map((item) => {
               const group = item.group;
-              const hasDropdown = group && group.children.length > 0;
-              const featuredChildren = group?.children.slice(0, 6) ?? [];
+              const featuredChildren = group
+                ? group.children.length > 0
+                  ? group.children.slice(0, 6)
+                  : [
+                      {
+                        id: group.id,
+                        slug: group.slug,
+                        iconImageUrl: group.iconImageUrl,
+                        name: group.name,
+                        description: group.description
+                      }
+                    ]
+                : [];
+              const hasDropdown = featuredChildren.length > 0;
 
               return (
                 <div

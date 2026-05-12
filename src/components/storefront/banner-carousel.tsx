@@ -35,11 +35,25 @@ export function BannerCarousel({
     <section className="relative min-h-[calc(100vh-76px)] overflow-hidden bg-[#07111f]">
       <div className="absolute inset-0">
         {activeBanner ? (
-          <img
-            src={activeBanner.imageUrl}
-            alt=""
-            className="h-full w-full object-cover"
-          />
+          activeBanner.targetUrl ? (
+            <a
+              href={activeBanner.targetUrl}
+              data-testid="banner-link"
+              className="block h-full w-full"
+            >
+              <img
+                src={activeBanner.imageUrl}
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            </a>
+          ) : (
+            <img
+              src={activeBanner.imageUrl}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          )
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-[#07111f] px-6 text-center text-base font-semibold text-white/70">
             {emptyLabel}
