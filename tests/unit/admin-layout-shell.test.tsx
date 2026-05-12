@@ -51,6 +51,10 @@ describe('admin shell', () => {
     expect(html).toContain('商品管理');
     expect(html).toContain('轮播图');
     expect(html).toContain('分类管理');
+    expect(html).toContain('aria-haspopup="menu"');
+    expect(html).toContain('aria-label="语言"');
+    expect(html).toContain('rounded-xl border border-admin-border bg-white px-3 py-2');
+    expect(html).not.toContain('<select');
     expect(html).toContain('admin');
     expect(html).toContain('管理员');
   });

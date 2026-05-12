@@ -2,7 +2,11 @@ import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it, vi } from 'vitest';
 
-import { ProductCenter } from '@/components/admin/product-center';
+import {
+  ProductCenter,
+  getProductActionMenuState,
+  getProductFilterUpdate
+} from '@/components/admin/product-center';
 
 vi.mock('next/navigation', async () => {
   const actual =
@@ -139,6 +143,7 @@ describe('ProductCenter', () => {
     expect(html).not.toContain('点击编辑进入真实商品编辑页');
     expect(html).toContain('min-h-[calc(100vh-104px)]');
     expect(html).toContain('flex min-h-[520px] flex-1');
+    expect(html).toContain('min-w-[1040px]');
     expect(html).toContain('Alpha Humanoid 服务机器人');
     expect(html).toContain('Aerial X1 航拍无人机');
     expect(html).toContain('P-3001');
@@ -146,11 +151,23 @@ describe('ProductCenter', () => {
     expect(html).toContain('新增商品');
     expect(html).toContain('导出 CSV');
     expect(html).toContain('待审核队列');
+    expect(html).toContain('aria-label="编辑商品 Alpha Humanoid 服务机器人"');
+    expect(html).not.toContain('aria-label="编辑 Alpha Humanoid 服务机器人"');
+    expect(html).not.toContain('>编辑商品<');
     expect(html).toContain('批量推荐');
     expect(html).toContain('取消推荐');
     expect(html).toContain('批量归档');
-    expect(html).toContain('归档商品');
-    expect(html).toContain('预览');
+    expect(html).toContain('aria-label="商品操作 Alpha Humanoid 服务机器人"');
+    expect(html).toContain('aria-expanded="false"');
+    expect(html).toContain('aria-haspopup="menu"');
+    expect(html).toContain('pr-8');
+    expect(html).not.toContain('<details');
+    expect(html).not.toContain('<summary');
+    expect(html).not.toContain('>更多操作<');
+    expect(html).not.toContain('>归档商品<');
+    expect(html).not.toContain('>预览前台<');
+    expect(html).not.toContain('href="/zh-CN/products/alpha-humanoid"');
+    expect(html).not.toContain('分类和商品均来自后台数据库。');
     expect(html).toContain('aria-label="删除类目 人形机器人"');
     expect(html).not.toContain('aria-label="删除类目 人形机器人" disabled');
     expect(html).not.toContain('href="/admin/products/new"');
@@ -196,6 +213,82 @@ describe('ProductCenter', () => {
     expect(html).toContain('Alpha Humanoid 服务机器人');
     expect(html).not.toContain('Aerial X1 航拍无人机');
     expect(html).toContain('aria-pressed="true"');
+  });
+
+  it('clears the selected category when switching back to all products', () => {
+    expect(
+      getProductFilterUpdate({
+        filter: 'all',
+        activeCategoryId: 'cat-humanoid',
+        selectedProductIds: ['product-1']
+      })
+    ).toEqual({
+      statusFilter: 'all',
+      activeCategoryId: null,
+      selectedProductIds: []
+    });
+
+    expect(
+      getProductFilterUpdate({
+        filter: 'pending',
+        activeCategoryId: 'cat-humanoid',
+        selectedProductIds: ['product-1']
+      })
+    ).toEqual({
+      statusFilter: 'pending',
+      activeCategoryId: 'cat-humanoid',
+      selectedProductIds: ['product-1']
+    });
+  });
+
+  it('renders the open product action popover with dashboard menu styling', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        defaultOpenActionMenuProductId="product-1"
+      />
+    );
+
+    expect(html).toContain('aria-expanded="true"');
+    expect(html).toContain('role="menu"');
+    expect(html).toContain('aria-label="商品操作菜单 Alpha Humanoid 服务机器人"');
+    expect(html).toContain('rounded-xl border border-admin-border bg-white p-1.5 text-left shadow-xl');
+    expect(html).toContain('role="menuitem"');
+    expect(html).toContain('预览前台');
+    expect(html).toContain('归档商品');
+  });
+
+  it('closes the product action popover on outside click or escape', () => {
+    expect(
+      getProductActionMenuState({
+        currentOpenProductId: null,
+        action: 'toggle',
+        productId: 'product-1'
+      })
+    ).toBe('product-1');
+
+    expect(
+      getProductActionMenuState({
+        currentOpenProductId: 'product-1',
+        action: 'toggle',
+        productId: 'product-1'
+      })
+    ).toBeNull();
+
+    expect(
+      getProductActionMenuState({
+        currentOpenProductId: 'product-1',
+        action: 'outside'
+      })
+    ).toBeNull();
+
+    expect(
+      getProductActionMenuState({
+        currentOpenProductId: 'product-1',
+        action: 'escape'
+      })
+    ).toBeNull();
   });
 
   it('keeps the product table fixed-size and paginates overflowing rows', () => {

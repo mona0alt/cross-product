@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -14,6 +14,7 @@ import {
   Edit3,
   Eye,
   FolderTree,
+  MoreHorizontal,
   Package,
   Search,
   Star,
@@ -97,6 +98,44 @@ type ProductStatusFilter =
 
 type ProductBulkOperation = 'recommend' | 'unrecommend' | 'archive';
 
+type ProductActionMenuEvent =
+  | {
+      action: 'toggle';
+      productId: string;
+    }
+  | {
+      action: 'outside' | 'escape';
+    };
+
+export function getProductFilterUpdate({
+  filter,
+  activeCategoryId,
+  selectedProductIds
+}: {
+  filter: ProductStatusFilter;
+  activeCategoryId: string | null;
+  selectedProductIds: string[];
+}) {
+  return {
+    statusFilter: filter,
+    activeCategoryId: filter === 'all' ? null : activeCategoryId,
+    selectedProductIds: filter === 'all' ? [] : selectedProductIds
+  };
+}
+
+export function getProductActionMenuState({
+  currentOpenProductId,
+  ...event
+}: {
+  currentOpenProductId: string | null;
+} & ProductActionMenuEvent) {
+  if (event.action === 'toggle') {
+    return currentOpenProductId === event.productId ? null : event.productId;
+  }
+
+  return null;
+}
+
 export function ProductCenter({
   categories,
   products,
@@ -109,7 +148,8 @@ export function ProductCenter({
   defaultCategoryEditorOpen = false,
   defaultCategoryEditorMode = 'edit',
   defaultStatusFilter = 'all',
-  defaultSelectedProductIds = []
+  defaultSelectedProductIds = [],
+  defaultOpenActionMenuProductId
 }: {
   categories: ProductCenterCategory[];
   products: ProductCenterRow[];
@@ -123,6 +163,7 @@ export function ProductCenter({
   defaultCategoryEditorMode?: 'create' | 'edit';
   defaultStatusFilter?: ProductStatusFilter;
   defaultSelectedProductIds?: string[];
+  defaultOpenActionMenuProductId?: string;
 }) {
   const firstProductId = products[0]?.id ?? null;
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
@@ -150,6 +191,9 @@ export function ProductCenter({
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>(
     defaultSelectedProductIds
   );
+  const [openActionMenuProductId, setOpenActionMenuProductId] = useState<
+    string | null
+  >(defaultOpenActionMenuProductId ?? null);
   const [notice, setNotice] = useState('');
   const selectedProduct =
     selectedProductId === null
@@ -218,15 +262,61 @@ export function ProductCenter({
     paginatedProducts.length > 0 &&
     selectedVisibleProductCount === paginatedProducts.length;
 
+  useEffect(() => {
+    if (openActionMenuProductId === null) {
+      return;
+    }
+
+    const closeOnPointerDown = (event: PointerEvent) => {
+      const target = event.target;
+
+      if (
+        target instanceof Element &&
+        target.closest('[data-product-action-menu]')
+      ) {
+        return;
+      }
+
+      setOpenActionMenuProductId((currentOpenProductId) =>
+        getProductActionMenuState({
+          currentOpenProductId,
+          action: 'outside'
+        })
+      );
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') {
+        return;
+      }
+
+      setOpenActionMenuProductId((currentOpenProductId) =>
+        getProductActionMenuState({
+          currentOpenProductId,
+          action: 'escape'
+        })
+      );
+    };
+
+    document.addEventListener('pointerdown', closeOnPointerDown);
+    document.addEventListener('keydown', closeOnEscape);
+
+    return () => {
+      document.removeEventListener('pointerdown', closeOnPointerDown);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [openActionMenuProductId]);
+
   const openCreateEditor = () => {
     setSelectedProductId(null);
     setEditorMode('create');
+    setOpenActionMenuProductId(null);
     setIsEditorOpen(true);
   };
 
   const openEditEditor = (productId: string) => {
     setSelectedProductId(productId);
     setEditorMode('edit');
+    setOpenActionMenuProductId(null);
     setIsEditorOpen(true);
   };
 
@@ -269,17 +359,28 @@ export function ProductCenter({
         ? '已批量取消推荐。'
         : '已批量归档商品。'
     );
+    setOpenActionMenuProductId(null);
     setSelectedProductIds([]);
   };
 
   const archiveProduct = async (productId: string) => {
+    setOpenActionMenuProductId(null);
     await archiveProductFromListAction(productId);
     setNotice('商品已归档。');
     setSelectedProductIds((current) => current.filter((id) => id !== productId));
   };
 
   const updateStatusFilter = (filter: ProductStatusFilter) => {
-    setStatusFilter(filter);
+    const nextFilterState = getProductFilterUpdate({
+      filter,
+      activeCategoryId,
+      selectedProductIds
+    });
+
+    setStatusFilter(nextFilterState.statusFilter);
+    setActiveCategoryId(nextFilterState.activeCategoryId);
+    setSelectedProductIds(nextFilterState.selectedProductIds);
+    setOpenActionMenuProductId(null);
     setCurrentProductPage(1);
   };
 
@@ -342,10 +443,6 @@ export function ProductCenter({
             />
           </label>
         </div>
-
-        <span className="hidden text-xs font-medium text-admin-text-muted lg:block">
-          分类和商品均来自后台数据库。
-        </span>
       </header>
 
       <div className="grid min-h-[620px] flex-1 gap-5 bg-admin-bg p-4 lg:grid-cols-[minmax(280px,360px)_minmax(0,1fr)] lg:p-5">
@@ -396,7 +493,9 @@ export function ProductCenter({
                 <button
                   type="button"
                   onClick={() => updateStatusFilter('all')}
-                  className={filterButtonClass(statusFilter === 'all')}
+                  className={filterButtonClass(
+                    statusFilter === 'all' && activeCategoryId === null
+                  )}
                 >
                   全部商品
                 </button>
@@ -472,7 +571,7 @@ export function ProductCenter({
           <section className="flex min-h-[520px] flex-1 flex-col overflow-hidden rounded-xl border border-admin-border bg-white shadow-sm">
             {filteredProducts.length > 0 ? (
               <div className="min-h-0 flex-1 overflow-auto">
-                <table className="w-full min-w-[780px] border-collapse text-left">
+                <table className="w-full min-w-[1040px] border-collapse text-left">
                   <thead className="bg-admin-elevated text-admin-text-muted">
                     <tr>
                       <ColumnHeader>
@@ -490,7 +589,9 @@ export function ProductCenter({
                       <ColumnHeader>状态</ColumnHeader>
                       <ColumnHeader>价格</ColumnHeader>
                       <ColumnHeader>推荐</ColumnHeader>
-                      <ColumnHeader align="right">操作</ColumnHeader>
+                      <ColumnHeader align="right" className="w-28 pl-6 pr-8">
+                        操作
+                      </ColumnHeader>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-admin-border">
@@ -509,9 +610,14 @@ export function ProductCenter({
                           <div className="flex items-center gap-3">
                             <ProductThumb product={product} />
                             <div className="min-w-0">
-                              <p className="truncate text-sm font-medium text-admin-text-primary">
+                              <button
+                                type="button"
+                                aria-label={`编辑商品 ${product.nameZh}`}
+                                onClick={() => openEditEditor(product.id)}
+                                className="block max-w-full truncate rounded text-left text-sm font-semibold text-admin-text-primary transition hover:text-admin-accent hover:underline focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+                              >
                                 {product.nameZh}
-                              </p>
+                              </button>
                               <p className="truncate text-xs text-admin-text-muted">
                                 {product.nameEn}
                               </p>
@@ -533,35 +639,22 @@ export function ProductCenter({
                         <td className="px-5 py-3 text-sm text-admin-text-secondary">
                           {product.isRecommended ? '是' : '否'}
                         </td>
-                        <td className="px-5 py-3 text-right">
+                        <td className="py-3 pl-6 pr-8 text-right">
                           <div className="flex justify-end gap-2">
-                            <a
-                              href={`/zh-CN/products/${product.slug}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm font-semibold text-admin-text-secondary transition hover:bg-slate-100"
-                            >
-                              <Eye className="h-4 w-4" />
-                              预览
-                            </a>
-                            <button
-                              type="button"
-                              aria-label={`编辑 ${product.nameZh}`}
-                              onClick={() => openEditEditor(product.id)}
-                              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm font-semibold text-admin-accent transition hover:bg-blue-50"
-                            >
-                              <Edit3 className="h-4 w-4" />
-                              编辑商品
-                            </button>
-                            <button
-                              type="button"
-                              aria-label={`归档商品 ${product.nameZh}`}
-                              onClick={() => void archiveProduct(product.id)}
-                              className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm font-semibold text-rose-700 transition hover:bg-rose-50"
-                            >
-                              <Archive className="h-4 w-4" />
-                              归档商品
-                            </button>
+                            <ProductActionMenu
+                              product={product}
+                              isOpen={openActionMenuProductId === product.id}
+                              onToggle={() =>
+                                setOpenActionMenuProductId((currentOpenProductId) =>
+                                  getProductActionMenuState({
+                                    currentOpenProductId,
+                                    action: 'toggle',
+                                    productId: product.id
+                                  })
+                                )
+                              }
+                              onArchive={() => void archiveProduct(product.id)}
+                            />
                           </div>
                         </td>
                       </tr>
@@ -631,6 +724,66 @@ export function ProductCenter({
         onClose={() => setIsCategoryEditorOpen(false)}
       />
     </section>
+  );
+}
+
+function ProductActionMenu({
+  product,
+  isOpen,
+  onToggle,
+  onArchive
+}: {
+  product: ProductCenterRow;
+  isOpen: boolean;
+  onToggle: () => void;
+  onArchive: () => void;
+}) {
+  return (
+    <div className="relative inline-flex" data-product-action-menu>
+      <button
+        type="button"
+        aria-label={`商品操作 ${product.nameZh}`}
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
+        onClick={onToggle}
+        className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border text-admin-text-secondary transition focus:outline-none focus:ring-2 focus:ring-admin-accent/20 ${
+          isOpen
+            ? 'border-admin-accent/30 bg-emerald-50 text-admin-accent shadow-sm'
+            : 'border-transparent bg-transparent hover:border-admin-border hover:bg-admin-elevated active:bg-slate-100'
+        }`}
+      >
+        <MoreHorizontal className="h-4 w-4" />
+      </button>
+
+      {isOpen ? (
+        <div
+          role="menu"
+          aria-label={`商品操作菜单 ${product.nameZh}`}
+          className="absolute right-0 top-10 z-30 w-44 rounded-xl border border-admin-border bg-white p-1.5 text-left shadow-xl ring-1 ring-black/5"
+        >
+          <a
+            role="menuitem"
+            href={`/zh-CN/products/${product.slug}`}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-admin-text-secondary transition hover:bg-admin-elevated hover:text-admin-text-primary focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+          >
+            <Eye className="h-4 w-4 text-admin-text-muted" />
+            预览前台
+          </a>
+          <button
+            type="button"
+            role="menuitem"
+            aria-label={`归档商品 ${product.nameZh}`}
+            onClick={onArchive}
+            className="mt-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-rose-700 transition hover:bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-200"
+          >
+            <Archive className="h-4 w-4" />
+            归档商品
+          </button>
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -1161,16 +1314,18 @@ function Field({
 
 function ColumnHeader({
   children,
-  align = 'left'
+  align = 'left',
+  className = ''
 }: {
   children: React.ReactNode;
   align?: 'left' | 'right';
+  className?: string;
 }) {
   return (
     <th
       className={`px-4 py-3 text-xs font-bold uppercase text-admin-text-muted ${
         align === 'right' ? 'text-right' : 'text-left'
-      }`}
+      } ${className}`}
     >
       {children}
     </th>

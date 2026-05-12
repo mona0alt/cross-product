@@ -156,7 +156,8 @@ describe('admin pages', () => {
     expect(html).toContain('无人机');
     expect(html).not.toContain('已删除类目');
     expect(html).toContain('Alpha Humanoid 服务机器人');
-    expect(html).toContain('aria-label="编辑 Alpha Humanoid 服务机器人"');
+    expect(html).toContain('aria-label="编辑商品 Alpha Humanoid 服务机器人"');
+    expect(html).not.toContain('aria-label="编辑 Alpha Humanoid 服务机器人"');
     expect(html).toContain('aria-label="删除类目 人形机器人"');
     expect(html).not.toContain('/admin/products/product-1');
     expect(html).not.toContain('/admin/products/new');
@@ -164,10 +165,12 @@ describe('admin pages', () => {
     expect(html).not.toContain('管理产品');
     expect(html).not.toContain('点击编辑进入真实商品编辑页');
     expect(html).toContain('新增商品');
-    expect(html).toContain('编辑商品');
+    expect(html).not.toContain('>编辑商品<');
     expect(html).toContain('导出 CSV');
     expect(html).toContain('待审核队列');
-    expect(html).toContain('归档商品');
+    expect(html).toContain('aria-label="商品操作 Alpha Humanoid 服务机器人"');
+    expect(html).toContain('aria-haspopup="menu"');
+    expect(html).not.toContain('>归档商品<');
     expect(html).not.toContain('集中管理前台商品目录');
   });
 
