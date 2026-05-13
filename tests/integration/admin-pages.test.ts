@@ -29,6 +29,18 @@ vi.mock('next/headers', () => ({
   cookies: cookiesMock
 }));
 
+vi.mock('next/navigation', async () => {
+  const actual =
+    await vi.importActual<typeof import('next/navigation')>('next/navigation');
+
+  return {
+    ...actual,
+    useRouter: () => ({
+      refresh: vi.fn()
+    })
+  };
+});
+
 vi.mock('@/lib/db', () => ({
   db: {
     banner: {
@@ -311,23 +323,23 @@ describe('admin pages', () => {
       (await import('@/app/admin/(protected)/analytics/page')).default;
     const CategoriesPage =
       (await import('@/app/admin/(protected)/categories/page')).default;
-    const BannersPage =
-      (await import('@/app/admin/(protected)/banners/page')).default;
 
     const messagesHtml = renderToStaticMarkup(await MessagesPage());
     const subscribersHtml = renderToStaticMarkup(await SubscribersPage());
     const crawlHtml = renderToStaticMarkup(CrawlTasksPage());
     const analyticsHtml = renderToStaticMarkup(AnalyticsPage());
     const categoriesHtml = renderToStaticMarkup(await CategoriesPage());
-    const bannersHtml = renderToStaticMarkup(await BannersPage());
 
-    expect(messagesHtml).toContain('支持中心');
+    expect(messagesHtml).not.toContain('支持中心');
+    expect(messagesHtml).not.toContain('管理客户查询与留言工单。');
     expect(messagesHtml).toContain('留言清单');
+    expect(messagesHtml).toContain('data-testid="message-list-scroll"');
     expect(messagesHtml).toContain('总留言');
     expect(messagesHtml).toContain('待处理');
     expect(messagesHtml).toContain('张明远');
     expect(subscribersHtml).toContain('邮件');
-    expect(subscribersHtml).toContain('总订阅数');
+    expect(subscribersHtml).not.toContain('总订阅数');
+    expect(subscribersHtml).not.toContain('本周新增');
     expect(subscribersHtml).toContain('自动化发送规则');
     expect(subscribersHtml).toContain('订阅者列表');
     expect(crawlHtml).toContain('系统设置');
@@ -342,14 +354,24 @@ describe('admin pages', () => {
     expect(analyticsHtml).not.toContain('企业级 AI 数据分析概览');
     expect(analyticsHtml).not.toContain('用户转化漏斗 (Sankey 分析)');
     expect(analyticsHtml).not.toContain('本周热门类目更偏便携型设备');
-    expect(categoriesHtml).toContain('系统设置');
-    expect(categoriesHtml).toContain('分类管理');
-    expect(categoriesHtml).toContain('新建分类');
-    expect(categoriesHtml).toContain('智能穿戴设备');
-    expect(categoriesHtml).toContain('Slug');
-    expect(categoriesHtml).toContain('启用分类');
-    expect(categoriesHtml).not.toContain('数据库配置');
-    expect(bannersHtml).toContain('首页展示素材');
-    expect(bannersHtml).toContain('Banner 列表');
+    expect(categoriesHtml).toContain('配置类别');
+    expect(categoriesHtml).toContain('配置项');
+    expect(categoriesHtml).toContain('lg:grid-cols-[280px_minmax(0,1fr)]');
+    expect(categoriesHtml).toContain('min-h-[calc(100vh-104px)]');
+    expect(categoriesHtml).not.toContain('text-3xl font-semibold tracking-tight text-admin-text-primary');
+    expect(categoriesHtml).not.toContain('集中查看后台运行所需的邮箱、数据库、本地存储和大模型配置状态。');
+    expect(categoriesHtml).toContain('邮箱配置');
+    expect(categoriesHtml).toContain('数据库配置');
+    expect(categoriesHtml).toContain('本地存储路径');
+    expect(categoriesHtml).toContain('大模型相关配置');
+    expect(categoriesHtml).toContain('support@fbgm.com');
+    expect(categoriesHtml).not.toContain('SQLite');
+    expect(categoriesHtml).not.toContain('/public/uploads/products');
+    expect(categoriesHtml).not.toContain('OPENAI_API_KEY');
+    expect(categoriesHtml).not.toContain('分类管理');
+    expect(categoriesHtml).not.toContain('新建分类');
+    expect(categoriesHtml).not.toContain('智能穿戴设备');
+    expect(categoriesHtml).not.toContain('启用分类');
+    expect(categoriesHtml).not.toContain('Banner 列表');
   });
 });

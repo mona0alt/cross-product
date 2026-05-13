@@ -12,6 +12,7 @@ import {
   FolderTree,
   Image as ImageIcon,
   MessageSquare,
+  Settings,
   type LucideIcon
 } from 'lucide-react';
 
@@ -29,7 +30,8 @@ const iconMap: Record<string, LucideIcon> = {
   BarChart3,
   FolderTree,
   Image: ImageIcon,
-  MessageSquare
+  MessageSquare,
+  Settings
 };
 
 export function AdminNav({ items }: { items: AdminNavItem[] }) {

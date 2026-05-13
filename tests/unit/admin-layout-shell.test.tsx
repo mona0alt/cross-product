@@ -49,8 +49,11 @@ describe('admin shell', () => {
     expect(html).toContain('/logo.jpg');
     expect(html).toContain('数据分析');
     expect(html).toContain('商品管理');
-    expect(html).toContain('轮播图');
-    expect(html).toContain('分类管理');
+    expect(html).toContain('系统设置');
+    expect(html).not.toContain('轮播图');
+    expect(html).not.toContain('分类管理');
+    expect(html).not.toContain('href="/admin/banners"');
+    expect(html).toContain('href="/admin/categories"');
     expect(html).toContain('aria-haspopup="menu"');
     expect(html).toContain('aria-label="语言"');
     expect(html).toContain('rounded-xl border border-admin-border bg-white px-3 py-2');

@@ -28,11 +28,6 @@ export default async function AdminProtectedLayout({
       icon: 'Package'
     },
     {
-      href: '/admin/banners',
-      label: Admin.nav.banners,
-      icon: 'Image'
-    },
-    {
       href: '/admin/subscribers',
       label: Admin.nav.subscribers,
       icon: 'Mail'
@@ -45,7 +40,7 @@ export default async function AdminProtectedLayout({
     {
       href: '/admin/categories',
       label: Admin.nav.categories,
-      icon: 'FolderTree'
+      icon: 'Settings'
     }
   ];
 

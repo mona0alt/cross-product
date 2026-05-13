@@ -75,6 +75,29 @@ test('admin login and product draft form flow', async ({ page }) => {
   await expect(page.getByRole('button', { name: '保存更改' })).toBeVisible();
 });
 
+test('admin system settings switches detail card by category', async ({ page }) => {
+  await page.goto('/admin/login');
+  await page.getByRole('textbox', { name: /用户名/i }).fill('admin');
+  await page.getByPlaceholder('请输入密码').fill('ChangeMe123!');
+  await page.getByRole('button', { name: '登录' }).click();
+  await expect(page).toHaveURL(/\/admin\/analytics$/);
+
+  await page.goto('/admin/categories');
+  await expect(page.getByRole('heading', { name: '配置类别' })).toBeVisible();
+  await expect(page.getByTestId('system-setting-active-panel')).toContainText('邮箱配置');
+  await expect(page.getByTestId('system-setting-active-panel')).toContainText('support@fbgm.com');
+  await expect(page.getByTestId('system-setting-active-panel')).not.toContainText('数据库类型');
+
+  await page.getByRole('button', { name: /数据库配置/ }).click();
+  await expect(page.getByTestId('system-setting-active-panel')).toContainText('数据库配置');
+  await expect(page.getByTestId('system-setting-active-panel')).toContainText('数据库类型');
+  await expect(page.getByTestId('system-setting-active-panel')).not.toContainText('发件邮箱');
+
+  await page.getByRole('button', { name: /大模型相关配置/ }).click();
+  await expect(page.getByTestId('system-setting-active-panel')).toContainText('大模型相关配置');
+  await expect(page.getByTestId('system-setting-active-panel')).toContainText('OPENAI_API_KEY');
+});
+
 test('product drawer shows gallery image preview after upload', async ({ page }) => {
   await page.route('**/api/admin/uploads/product-images', async (route) => {
     await route.fulfill({

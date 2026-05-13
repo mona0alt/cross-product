@@ -108,6 +108,29 @@ export const mockBackoffice = {
         status: '12 封',
         detail: '查看失败原因并支持一键重发。'
       }
+    ],
+    templates: [
+      {
+        id: 'new-arrival',
+        name: '新品上架通知',
+        subject: '新品上架：{{productName}} 已加入产品目录',
+        body:
+          '你好，{{subscriberName}}：\n\n我们上架了 {{productName}}，适用于 {{categoryName}} 场景。点击查看详情并获取最新资料。\n\nGlobalCore 团队'
+      },
+      {
+        id: 'restock',
+        name: '库存补货提醒',
+        subject: '{{productName}} 已恢复可咨询库存',
+        body:
+          '你好，{{subscriberName}}：\n\n你关注的 {{productName}} 已恢复可咨询库存。我们建议尽快联系销售顾问确认交付周期。\n\nGlobalCore 团队'
+      },
+      {
+        id: 'manual-digest',
+        name: '月度产品简报',
+        subject: '{{month}} 产品更新简报',
+        body:
+          '你好，{{subscriberName}}：\n\n本月我们整理了最新产品、热门类目和采购建议，帮助你快速筛选合适方案。\n\nGlobalCore 团队'
+      }
     ]
   },
   analytics: {

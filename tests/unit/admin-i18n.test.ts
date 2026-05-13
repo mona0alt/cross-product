@@ -32,6 +32,7 @@ describe('admin i18n', () => {
 
     expect(dictionary.locale).toBe('en');
     expect(dictionary.Admin.nav.products).toBe('Products');
+    expect(dictionary.Admin.nav.categories).toBe('Settings');
     expect(dictionary.Admin.common.upload).toBe('Upload image');
   });
 });
