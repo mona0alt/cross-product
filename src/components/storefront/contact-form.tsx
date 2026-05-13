@@ -19,7 +19,7 @@ export function ContactForm({ copy }: { copy: ContactFormCopy }) {
 
   return (
     <form
-      className="rounded-[var(--mk-radius-lg)] border border-[var(--mk-border)] bg-white p-5 shadow-[0_18px_44px_rgba(112,89,81,0.08)] sm:p-6"
+      className="rounded-[var(--mk-radius-md)] border border-[var(--mk-border)] bg-[var(--mk-surface)] p-5 sm:p-6"
       onSubmit={async (event) => {
         event.preventDefault();
         setIsSubmitting(true);
@@ -50,7 +50,7 @@ export function ContactForm({ copy }: { copy: ContactFormCopy }) {
       }}
     >
       <div className="space-y-4">
-        <h2 className="text-2xl font-black tracking-[-0.03em] text-[var(--mk-text)]">
+        <h2 className="text-xl font-bold text-[var(--mk-text)] sm:text-2xl">
           {copy.title}
         </h2>
         <input
@@ -73,7 +73,7 @@ export function ContactForm({ copy }: { copy: ContactFormCopy }) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-4 inline-flex min-h-11 items-center justify-center rounded-[var(--mk-radius-md)] bg-[var(--mk-accent)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--mk-text)] disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-4 inline-flex min-h-11 items-center justify-center rounded-[var(--mk-radius-md)] bg-[var(--mk-accent)] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[var(--mk-text)] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSubmitting ? '...' : copy.submit}
       </button>

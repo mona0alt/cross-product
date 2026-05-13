@@ -61,7 +61,7 @@ export default async function LocaleLayout({
           whatsAppNumber={whatsAppNumber}
           categoryGroups={categoryGroups}
         />
-        <main className="flex-1">{children}</main>
+        <main className="flex flex-1 flex-col bg-[var(--mk-bg)]">{children}</main>
         <StorefrontFloatingWhatsAppButton
           whatsAppLabel={Storefront.whatsApp}
           whatsAppNumber={whatsAppNumber}

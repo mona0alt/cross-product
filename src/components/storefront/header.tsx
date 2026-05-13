@@ -92,6 +92,7 @@ export function StorefrontHeader({
   categoryGroups: StorefrontCategoryGroup[];
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeCategoryKey, setActiveCategoryKey] = useState<string | null>(null);
   const normalizedWhatsAppNumber = whatsAppNumber.replace(/[^\d]/g, '');
 
   const mainNav: Array<{
@@ -113,6 +114,12 @@ export function StorefrontHeader({
     <header
       data-testid="storefront-header-shell"
       className="sticky top-0 z-30 border-b border-white/10 bg-[#07111f] text-white shadow-[0_18px_45px_rgba(0,0,0,0.18)]"
+      onMouseLeave={() => setActiveCategoryKey(null)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setActiveCategoryKey(null);
+        }
+      }}
     >
       <div className="bg-[#07111f]">
         <div className="mk-container flex min-h-[76px] items-center gap-3 py-3 lg:gap-6">
@@ -149,15 +156,26 @@ export function StorefrontHeader({
                     ]
                 : [];
               const hasDropdown = featuredChildren.length > 0;
+              const isDropdownOpen = activeCategoryKey === item.key;
 
               return (
                 <div
                   key={item.key}
                   className="group flex self-stretch items-center"
+                  onMouseEnter={() => {
+                    if (hasDropdown) {
+                      setActiveCategoryKey(item.key);
+                    }
+                  }}
                 >
                   <Link
                     href={item.href}
                     className="inline-flex h-10 items-center gap-1 rounded-full px-3 text-[13px] font-semibold uppercase tracking-[0.04em] text-white/78 transition hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white group-hover:bg-white/10 group-hover:text-white"
+                    onFocus={() => {
+                      if (hasDropdown) {
+                        setActiveCategoryKey(item.key);
+                      }
+                    }}
                   >
                     {item.label}
                     {hasDropdown && <ChevronDownIcon className="h-3.5 w-3.5 transition group-hover:rotate-180" />}
@@ -166,7 +184,9 @@ export function StorefrontHeader({
                   {hasDropdown && (
                     <div
                       data-testid="desktop-mega-menu"
-                      className="pointer-events-none absolute left-1/2 top-full z-40 w-screen -translate-x-1/2 opacity-0 transition duration-200 ease-out group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100"
+                      className={`absolute left-1/2 top-full z-40 w-screen -translate-x-1/2 transition duration-200 ease-out group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100 ${
+                        isDropdownOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
+                      }`}
                     >
                       <div className="h-2 bg-[#07111f]" />
                       <div className="border-y border-white/10 bg-[#07111f] text-white shadow-[0_22px_55px_rgba(0,0,0,0.22)]">

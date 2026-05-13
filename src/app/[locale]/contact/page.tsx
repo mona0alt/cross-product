@@ -17,27 +17,27 @@ export default async function ContactPage({
   const whatsAppHref = `https://wa.me/${whatsAppNumber.replace(/[^\d]/g, '')}`;
 
   return (
-    <div className="bg-[var(--mk-bg)] py-8 sm:py-10">
-      <div className="mx-auto grid max-w-6xl gap-5 px-4 sm:px-6 lg:grid-cols-[0.88fr_1.12fr] lg:px-8">
-        <section className="rounded-[var(--mk-radius-lg)] border border-[var(--mk-border)] bg-white p-6 shadow-[0_18px_44px_rgba(112,89,81,0.08)] sm:p-8">
-          <div className="space-y-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--mk-accent)]">
+    <div className="flex-1 bg-[var(--mk-bg)] py-10 sm:py-12 lg:py-14">
+      <div className="mx-auto grid max-w-5xl gap-4 px-4 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+        <section className="rounded-[var(--mk-radius-md)] border border-[var(--mk-border)] bg-[var(--mk-surface)] p-5 sm:p-6">
+          <div className="space-y-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--mk-accent)]">
               {Storefront.contact.eyebrow}
             </p>
-            <div className="space-y-3">
-              <h1 className="text-3xl font-black leading-tight tracking-[-0.03em] text-[var(--mk-text)] sm:text-4xl">
+            <div className="space-y-2">
+              <h1 className="text-2xl font-bold leading-tight text-[var(--mk-text)] sm:text-3xl">
                 {Storefront.contact.title}
               </h1>
-              <p className="max-w-xl text-sm leading-7 text-[var(--mk-text-muted)]">
+              <p className="max-w-xl text-sm leading-6 text-[var(--mk-text-muted)]">
                 {Storefront.contact.description}
               </p>
             </div>
-            <div className="grid gap-3">
+            <div className="grid gap-2">
               <a
                 href={`mailto:${supportEmail}`}
-                className="rounded-[var(--mk-radius-md)] border border-[var(--mk-border)] bg-[var(--mk-bg-muted)] px-4 py-4 transition hover:border-[var(--mk-accent)]"
+                className="rounded-[var(--mk-radius-md)] border border-[var(--mk-border)] bg-[var(--mk-bg-muted)]/60 px-4 py-3 transition hover:border-[var(--mk-accent)]"
               >
-                <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--mk-text-muted)]">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--mk-text-muted)]">
                   {Storefront.footer.supportTitle}
                 </span>
                 <span className="mt-1 block text-sm font-semibold text-[var(--mk-accent)]">
@@ -48,9 +48,9 @@ export default async function ContactPage({
                 href={whatsAppHref}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-[var(--mk-radius-md)] border border-[var(--mk-border)] bg-white px-4 py-4 transition hover:border-[var(--mk-accent)]"
+                className="rounded-[var(--mk-radius-md)] border border-[var(--mk-border)] bg-[var(--mk-surface)] px-4 py-3 transition hover:border-[var(--mk-accent)]"
               >
-                <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--mk-text-muted)]">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--mk-text-muted)]">
                   {Storefront.footer.phoneSales}
                 </span>
                 <span className="mt-1 block text-sm font-semibold text-[var(--mk-text)]">

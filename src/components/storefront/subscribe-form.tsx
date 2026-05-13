@@ -17,7 +17,7 @@ export function SubscribeForm({ copy }: { copy: SubscribeFormCopy }) {
 
   return (
     <form
-      className="rounded-[var(--mk-radius-lg)] border border-[var(--mk-border)] bg-white p-5 shadow-[0_18px_44px_rgba(112,89,81,0.08)] sm:p-6"
+      className="w-full rounded-[var(--mk-radius-md)] border border-[var(--mk-border)] bg-[var(--mk-surface)] p-6 shadow-[0_18px_50px_rgba(112,89,81,0.08)] sm:p-8"
       onSubmit={async (event) => {
         event.preventDefault();
         setIsSubmitting(true);
@@ -46,12 +46,12 @@ export function SubscribeForm({ copy }: { copy: SubscribeFormCopy }) {
         event.currentTarget.reset();
       }}
     >
-      <div className="space-y-4">
-        <h2 className="text-2xl font-black tracking-[-0.03em] text-[var(--mk-text)]">
+      <div className="space-y-5">
+        <h2 className="text-center text-2xl font-bold text-[var(--mk-text)] sm:text-3xl">
           {copy.title}
         </h2>
         <input
-          className="w-full rounded-[var(--mk-radius-md)] border border-[var(--mk-border)] bg-[var(--mk-bg-muted)] px-4 py-3 text-sm text-[var(--mk-text)] outline-none transition placeholder:text-[var(--mk-text-muted)] focus:border-[var(--mk-accent)] focus:bg-white"
+          className="min-h-12 w-full rounded-[var(--mk-radius-md)] border border-[var(--mk-border)] bg-[var(--mk-bg-muted)] px-4 py-3 text-sm text-[var(--mk-text)] outline-none transition placeholder:text-[var(--mk-text-muted)] focus:border-[var(--mk-accent)] focus:bg-white"
           placeholder={copy.email}
           name="email"
           type="email"
@@ -60,7 +60,7 @@ export function SubscribeForm({ copy }: { copy: SubscribeFormCopy }) {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-4 inline-flex min-h-11 items-center justify-center rounded-[var(--mk-radius-md)] bg-[var(--mk-accent)] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[var(--mk-text)] disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-[var(--mk-radius-md)] bg-[var(--mk-accent)] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[var(--mk-text)] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSubmitting ? '...' : copy.submit}
       </button>

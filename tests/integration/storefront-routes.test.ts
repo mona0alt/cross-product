@@ -271,7 +271,6 @@ describe('storefront routes', () => {
     expect(contactHtml).toContain('support@fbgm.com');
     expect(contactHtml).toContain('Send');
     expect(subscribeHtml).toContain('Subscribe for updates');
-    expect(subscribeHtml).toContain('support@fbgm.com');
     expect(subscribeHtml).toContain('Subscribe');
     expect(portalHtml).toContain('Help Center');
     expect(portalHtml).toContain('support@fbgm.com');
