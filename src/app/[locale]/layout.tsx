@@ -37,6 +37,7 @@ export default async function LocaleLayout({
   const messages = await getDictionary(locale);
   const { Storefront } = messages;
   const whatsAppNumber = process.env.WHATSAPP_NUMBER ?? '15551234567';
+  const contactEmail = Storefront.footer.supportDescription;
   const categoryGroups = await getStorefrontCategoryGroups(locale);
 
   return (
@@ -59,6 +60,7 @@ export default async function LocaleLayout({
             categoryPromo: Storefront.header.categoryPromo
           }}
           whatsAppNumber={whatsAppNumber}
+          contactEmail={contactEmail}
           categoryGroups={categoryGroups}
         />
         <main className="flex flex-1 flex-col bg-[var(--mk-bg)]">{children}</main>

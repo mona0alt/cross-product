@@ -21,6 +21,7 @@ describe('storefront layout shell', () => {
       <StorefrontHeader
         locale="en"
         whatsAppNumber="+1 555 123 4567"
+        contactEmail="support@fbgm.com"
         categoryGroups={[
           {
             id: 'group-1',
@@ -85,7 +86,9 @@ describe('storefront layout shell', () => {
     expect(html).toContain('data-testid="storefront-header-shell"');
     expect(html).toContain('bg-[#07111f]');
     expect(html).not.toContain('bg-[#f0f6fd]');
-    expect(html).toContain('Phone sales +1 555 123 4567');
+    expect(html).toContain('href="mailto:support@fbgm.com"');
+    expect(html).toContain('support@fbgm.com');
+    expect(html).not.toContain('Phone sales +1 555 123 4567');
     expect(html).not.toContain('Blog');
     expect(html).not.toContain('Studio MK');
     expect(html).not.toContain('MK Pros');
@@ -104,6 +107,7 @@ describe('storefront layout shell', () => {
       <StorefrontHeader
         locale="en"
         whatsAppNumber="+1 555 123 4567"
+        contactEmail="support@fbgm.com"
         categoryGroups={[
           {
             id: 'group-1',
@@ -201,6 +205,7 @@ describe('storefront layout shell', () => {
       <StorefrontHeader
         locale="en"
         whatsAppNumber="+1 555 123 4567"
+        contactEmail="support@fbgm.com"
         categoryGroups={[
           {
             id: 'group-1',
@@ -266,6 +271,7 @@ describe('storefront layout shell', () => {
       <StorefrontHeader
         locale="en"
         whatsAppNumber="+1 555 123 4567"
+        contactEmail="support@fbgm.com"
         categoryGroups={[
           {
             id: 'group-1',
@@ -402,7 +408,7 @@ describe('storefront layout shell', () => {
     expect(html).toContain('data-testid="storefront-footer-shell"');
     expect(html).toContain('bg-[#07111f]');
     expect(html).not.toContain('mt-12 border-t border-white/10 bg-[#07111f]');
-    expect(html).toContain('Retail storefront.');
+    expect(html).not.toContain('Retail storefront.');
     expect(html).toContain('Help');
     expect(html).not.toContain('Portal');
     expect(html).toContain('WhatsApp');
