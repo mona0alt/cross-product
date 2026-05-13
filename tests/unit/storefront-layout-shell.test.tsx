@@ -401,13 +401,15 @@ describe('storefront layout shell', () => {
 
     expect(html).toContain('data-testid="storefront-footer-shell"');
     expect(html).toContain('bg-[#07111f]');
+    expect(html).not.toContain('mt-12 border-t border-white/10 bg-[#07111f]');
     expect(html).toContain('Retail storefront.');
     expect(html).toContain('Help');
     expect(html).not.toContain('Portal');
     expect(html).toContain('WhatsApp');
     expect(html).toContain('Contact');
     expect(html).toContain('Phone sales: +1 555 123 4567');
-    expect(html).toContain('Payment methods');
+    expect(html).not.toContain('Cross. All rights reserved.');
+    expect(html).not.toContain('Payment methods');
     expect(html).not.toContain('Medios de pago');
   });
 });

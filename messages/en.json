@@ -44,7 +44,7 @@
       "tagline": "Multilingual robot product showcase and admin portal.",
       "rights": "FBGM. All rights reserved.",
       "supportTitle": "Support",
-      "supportDescription": "Route product consultations, subscription updates, and portal access through one retail shell.",
+      "supportDescription": "support@fbgm.com",
       "contactTitle": "Contact",
       "phoneSales": "Phone sales",
       "businessHours": "Mon - Fri: 09:00 - 18:00",
@@ -139,20 +139,20 @@
     "contact": {
       "eyebrow": "Contact",
       "title": "Contact and message",
-      "description": "Leave sourcing needs, partnership ideas or delivery questions. Database writes will be wired in the next task.",
-      "success": "Demo mode: the contact form was submitted locally."
+      "description": "Send sourcing needs, partnership ideas, or delivery questions and our team will follow up.",
+      "success": "Your message has been submitted. Our team will follow up shortly."
     },
     "subscribe": {
       "eyebrow": "Subscribe",
       "title": "Subscribe for updates",
       "description": "Register an email to receive product updates and launch notices.",
-      "success": "Demo mode: the subscription form was submitted locally."
+      "success": "You are subscribed. We will send the latest product updates."
     },
     "portalPage": {
       "eyebrow": "Portal",
-      "title": "Client portal is coming soon",
-      "description": "Phase one ships a lightweight placeholder. Later tasks will connect the portal and storefront flows.",
-      "back": "Back to storefront"
+      "title": "Help Center",
+      "description": "Find product support, subscription updates, and customer service entry points.",
+      "back": "Back to home"
     }
   },
   "Admin": {

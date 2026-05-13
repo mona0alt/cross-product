@@ -39,7 +39,7 @@ export function StorefrontFooter({
   return (
     <footer
       data-testid="storefront-footer-shell"
-      className="mt-12 border-t border-white/10 bg-[#07111f] text-white"
+      className="border-t border-white/10 bg-[#07111f] text-white"
     >
       {/* Main footer */}
       <div className="mk-container grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-[1.35fr_0.85fr_1fr_1fr]">
@@ -80,9 +80,12 @@ export function StorefrontFooter({
         {/* Support */}
         <div className="space-y-3">
           <h3 className="text-sm font-bold uppercase tracking-wide text-white">{copy.footer.supportTitle}</h3>
-          <p className="text-sm leading-6 text-white/58">
+          <a
+            href={`mailto:${copy.footer.supportDescription}`}
+            className="inline-flex text-sm font-medium leading-6 text-white/78 transition hover:text-white"
+          >
             {copy.footer.supportDescription}
-          </p>
+          </a>
           <div className="flex flex-col gap-2 pt-1">
             <Link href={`https://wa.me/${whatsAppNumber.replace(/[^\d]/g, '')}`} className="text-sm font-medium text-white/78 transition hover:text-white">
               {copy.whatsApp}
@@ -99,21 +102,6 @@ export function StorefrontFooter({
             <Link href={`/${locale}/contact`} className="font-medium text-white transition hover:text-white/78">
               {copy.footer.helpCenter}
             </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom bar */}
-      <div className="border-t border-white/10 bg-[#050b14]">
-        <div className="mk-container flex flex-col items-center justify-between gap-3 py-4 text-xs text-white/45 sm:flex-row">
-          <p>{copy.footer.rights}</p>
-          <div className="flex items-center gap-4">
-            <span>{copy.footer.paymentMethods}</span>
-            <div className="flex gap-2">
-              <div className="h-6 w-10 rounded border border-white/10 bg-white/8" />
-              <div className="h-6 w-10 rounded border border-white/10 bg-white/8" />
-              <div className="h-6 w-10 rounded border border-white/10 bg-white/8" />
-            </div>
           </div>
         </div>
       </div>

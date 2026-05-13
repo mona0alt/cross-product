@@ -167,7 +167,24 @@ describe('storefront routes', () => {
     getHomepagePayload.mockResolvedValue({
       banners: [],
       featuredCategories: [],
-      recommendedProducts: []
+      recommendedProducts: [
+        {
+          id: 'product-2',
+          slug: 'related-phone',
+          productCode: 'P-1002',
+          coverImageUrl: '/related.jpg',
+          priceUsd: 499,
+          isRecommended: true,
+          name: 'Related Phone',
+          intro: 'Related intro',
+          detail: 'Related detail',
+          images: ['/related.jpg'],
+          category: {
+            slug: 'electronics',
+            name: 'Electronics'
+          }
+        }
+      ]
     });
 
     const ProductDetailPage =
@@ -179,8 +196,19 @@ describe('storefront routes', () => {
     );
 
     expect(html).toContain('Star River Pro Phone');
-    expect(html).toContain('P-1001');
-    expect(html).toContain('Gallery');
+    expect(html).toContain('Flagship phone');
+    expect(html).toContain('Full detail');
+    expect(html).toContain('WhatsApp');
+    expect(html).toContain('href="https://wa.me/15551234567?text=Star%20River%20Pro%20Phone"');
+    expect(html).toContain('href="/en/subscribe"');
+    expect(html).not.toContain('Gallery');
+    expect(html).not.toContain('P-1001');
+    expect(html).not.toContain('$699');
+    expect(html).not.toContain('Recommended only');
+    expect(html).not.toContain('View details');
+    expect(html).not.toContain('Related Products');
+    expect(html).not.toContain('Related Phone');
+    expect(getHomepagePayload).not.toHaveBeenCalled();
 
     getProductDetailBySlug.mockResolvedValueOnce(null);
 
@@ -215,13 +243,13 @@ describe('storefront routes', () => {
     );
 
     expect(contactHtml).toContain('Contact and message');
-    expect(contactHtml).toContain('Support');
+    expect(contactHtml).toContain('support@fbgm.com');
     expect(contactHtml).toContain('Send');
     expect(subscribeHtml).toContain('Subscribe for updates');
-    expect(subscribeHtml).toContain('Customer Service');
+    expect(subscribeHtml).toContain('support@fbgm.com');
     expect(subscribeHtml).toContain('Subscribe');
-    expect(portalHtml).toContain('Client portal is coming soon');
-    expect(portalHtml).toContain('Support');
-    expect(portalHtml).toContain('Back to storefront');
+    expect(portalHtml).toContain('Help Center');
+    expect(portalHtml).toContain('support@fbgm.com');
+    expect(portalHtml).toContain('Back to home');
   });
 });

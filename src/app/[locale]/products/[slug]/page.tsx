@@ -2,8 +2,7 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 
 import { ProductGallery } from '@/components/storefront/product-gallery';
-import { RecommendedProducts } from '@/components/storefront/recommended-products';
-import { getHomepagePayload, getProductDetailBySlug } from '@/features/catalog/queries';
+import { getProductDetailBySlug } from '@/features/catalog/queries';
 import { defaultLocale, isLocale, type Locale } from '@/lib/i18n/config';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
 
@@ -24,65 +23,61 @@ export default async function ProductDetailPage({
     notFound();
   }
 
-  const homepagePayload = await getHomepagePayload(locale);
-  const recommendedProducts = homepagePayload.recommendedProducts.filter(
-    (item) => item.slug !== product.slug
-  );
+  const galleryImages =
+    product.images.length > 0 ? product.images : [product.coverImageUrl];
   const whatsAppNumber = process.env.WHATSAPP_NUMBER ?? '15551234567';
+  const whatsAppHref = `https://wa.me/${whatsAppNumber.replace(/[^\d]/g, '')}?text=${encodeURIComponent(product.name)}`;
 
   return (
-    <div className="space-y-10">
-      <section className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_380px]">
-        <ProductGallery
-          images={
-            product.images.length > 0 ? product.images : [product.coverImageUrl]
-          }
-          label={Storefront.sections.gallery}
-        />
-        <aside className="storefront-surface h-fit rounded-[var(--store-radius-lg)] p-6">
-          <div className="space-y-5">
-            <p className="storefront-eyebrow">
-              {product.category?.name}
-            </p>
-            <h1 className="text-4xl font-black tracking-[-0.04em] text-[var(--store-text)]">
-              {product.name}
-            </h1>
-            <p className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--store-text-muted)]">
-              {product.productCode}
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <span className="rounded-full bg-[var(--store-accent)] px-4 py-2 text-sm font-semibold text-white">
-                ${product.priceUsd.toFixed(2)}
-              </span>
-              {product.isRecommended ? (
-                <span className="rounded-full border border-[var(--store-border-strong)] px-4 py-2 text-sm font-semibold text-[var(--store-accent)]">
-                  {Storefront.products.filters.recommendedOnly}
-                </span>
+    <div className="mx-auto max-w-[1440px] px-3 py-4 sm:px-5 lg:px-6">
+      <section className="grid gap-4 lg:grid-cols-[minmax(0,1.12fr)_minmax(380px,0.88fr)] lg:items-stretch xl:gap-5">
+        <div className="h-full">
+          <ProductGallery images={galleryImages} />
+        </div>
+
+        <aside className="flex h-full min-h-[360px] flex-col overflow-hidden rounded-[var(--mk-radius-lg)] border border-[var(--mk-border)] bg-white shadow-[0_18px_44px_rgba(112,89,81,0.08)] sm:min-h-[460px] lg:min-h-[560px]">
+          <div className="flex flex-1 flex-col justify-center space-y-5 p-5 sm:p-6 lg:p-7">
+            <div className="space-y-3 border-b border-[var(--mk-border)] pb-5">
+              {product.category?.name ? (
+                <p className="inline-flex rounded-full bg-[var(--mk-bg-muted)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--mk-accent)]">
+                  {product.category.name}
+                </p>
               ) : null}
+              <h1 className="text-3xl font-black leading-tight tracking-[-0.03em] text-[var(--mk-text)] sm:text-4xl">
+                {product.name}
+              </h1>
             </div>
-            <p className="text-base leading-8 text-[var(--store-text-muted)]">
-              {product.detail}
-            </p>
-            <div className="grid gap-3">
-              <a
-                href={`https://wa.me/${whatsAppNumber.replace(/[^\d]/g, '')}?text=${encodeURIComponent(product.name)}`}
-                className="inline-flex items-center justify-center rounded-full bg-[var(--store-accent)] px-4 py-3 text-sm font-semibold text-white"
-              >
-                {Storefront.whatsApp}
-              </a>
+
+            <div className="space-y-3">
+              <div className="rounded-[var(--mk-radius-md)] bg-[var(--mk-bg-muted)] px-4 py-3.5">
+                <p className="text-[15px] leading-7 text-[var(--mk-text)]">
+                  {product.intro}
+                </p>
+              </div>
+              <p className="border-l-2 border-[var(--mk-accent)] pl-4 text-[15px] leading-7 text-[var(--mk-text-muted)]">
+                {product.detail}
+              </p>
             </div>
+          </div>
+
+          <div className="grid gap-2 border-t border-[var(--mk-border)] bg-[var(--mk-bg-muted)] p-3 sm:grid-cols-2">
+            <a
+              href={whatsAppHref}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex min-h-11 items-center justify-center rounded-[var(--mk-radius-md)] bg-[var(--mk-accent)] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[var(--mk-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mk-accent)]"
+            >
+              {Storefront.whatsApp}
+            </a>
+            <a
+              href={`/${locale}/subscribe`}
+              className="inline-flex min-h-11 items-center justify-center rounded-[var(--mk-radius-md)] border border-[var(--mk-border-strong)] bg-white px-4 py-3 text-sm font-semibold text-[var(--mk-accent)] transition hover:border-[var(--mk-accent)] hover:bg-white/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--mk-accent)]"
+            >
+              {Storefront.nav.subscribe}
+            </a>
           </div>
         </aside>
       </section>
-
-      <RecommendedProducts
-        locale={locale}
-        products={recommendedProducts}
-        title={Storefront.sections.related}
-        emptyLabel={Storefront.emptyProducts}
-        ctaLabel={Storefront.productCta}
-        stockLabel={Storefront.product.stockAvailable}
-      />
     </div>
   );
 }

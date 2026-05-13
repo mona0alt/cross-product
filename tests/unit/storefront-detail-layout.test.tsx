@@ -5,12 +5,14 @@ import { describe, expect, it } from 'vitest';
 import { ProductGallery } from '@/components/storefront/product-gallery';
 
 describe('storefront detail layout', () => {
-  it('renders the gallery header and thumbnails', () => {
+  it('renders product images without gallery chrome', () => {
     const html = renderToStaticMarkup(
-      <ProductGallery images={['/one.jpg', '/two.jpg']} label="Gallery" />
+      <ProductGallery images={['/one.jpg', '/two.jpg']} />
     );
 
-    expect(html).toContain('Gallery');
-    expect(html).toContain('1 / 2');
+    expect(html).toContain('/one.jpg');
+    expect(html).toContain('/two.jpg');
+    expect(html).not.toContain('Gallery');
+    expect(html).not.toContain('1 / 2');
   });
 });

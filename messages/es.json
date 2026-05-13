@@ -44,7 +44,7 @@
       "tagline": "Vitrina multilingüe de productos robóticos con panel administrativo.",
       "rights": "FBGM. Todos los derechos reservados.",
       "supportTitle": "Soporte",
-      "supportDescription": "Centraliza consultas de producto, suscripciones y acceso al portal en una sola experiencia retail.",
+      "supportDescription": "support@fbgm.com",
       "contactTitle": "Contacto",
       "phoneSales": "Venta telefónica",
       "businessHours": "Lun - Vie: 09:00 - 18:00",
@@ -139,20 +139,20 @@
     "contact": {
       "eyebrow": "Contacto",
       "title": "Contacto y mensaje",
-      "description": "Deja necesidades de compra, ideas de colaboración o preguntas de entrega. La escritura real llegará en la siguiente tarea.",
-      "success": "Modo demo: el formulario se envió localmente."
+      "description": "Envía necesidades de compra, ideas de colaboración o preguntas de entrega y nuestro equipo responderá.",
+      "success": "Tu mensaje fue enviado. Nuestro equipo responderá pronto."
     },
     "subscribe": {
       "eyebrow": "Suscripción",
       "title": "Suscribirse a novedades",
       "description": "Registra un correo para recibir novedades y avisos de lanzamiento.",
-      "success": "Modo demo: la suscripción se envió localmente."
+      "success": "Suscripción enviada. Te enviaremos las novedades de producto."
     },
     "portalPage": {
       "eyebrow": "Portal",
-      "title": "El portal del cliente llegará pronto",
-      "description": "La fase uno entrega una página ligera de espera. Las siguientes tareas conectarán el portal con la tienda.",
-      "back": "Volver a la tienda"
+      "title": "Centro de ayuda",
+      "description": "Encuentra soporte de producto, novedades de suscripción y accesos de atención al cliente.",
+      "back": "Volver al inicio"
     }
   },
   "Admin": {
