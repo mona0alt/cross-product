@@ -9,7 +9,9 @@ import type {
   ProductListPayload,
   StorefrontCategory,
   StorefrontProductCard,
-  StorefrontCategoryGroup
+  StorefrontCategoryGroup,
+  LocalizedCategoryFields,
+  LocalizedProductFields
 } from '@/features/catalog/types';
 import { mapLocalizedCategory, mapLocalizedProduct } from '@/features/catalog/mappers';
 import { getLocalImagePath } from '@/features/catalog/local-image-paths';
@@ -36,11 +38,37 @@ type StorefrontCategoryGroupNode = StorefrontCategory & {
   children: StorefrontCategory[];
 };
 
+type StorefrontNavigationProductRecord = {
+  id: string;
+  categoryId: string;
+  slug: string;
+  productCode: string;
+  coverImageUrl: string;
+  priceUsd: number | { toString(): string } | string;
+  isRecommended: boolean;
+  images?: Array<{
+    imageUrl: string;
+    sortOrder?: number;
+  }>;
+  category?: {
+    slug: string;
+  } & LocalizedCategoryFields;
+} & LocalizedProductFields;
+
 function buildStorefrontCategoryGroupsFromRecords(
   categories: StorefrontCategoryRecord[],
-  locale: CatalogLocale
+  locale: CatalogLocale,
+  products: StorefrontNavigationProductRecord[] = []
 ): StorefrontCategoryGroup[] {
   const activeCategories = categories.filter((category) => category.isActive);
+  const childrenByParentId = new Map<string | null, StorefrontCategoryRecord[]>();
+
+  for (const category of activeCategories) {
+    const siblings = childrenByParentId.get(category.parentId) ?? [];
+    siblings.push(category);
+    childrenByParentId.set(category.parentId, siblings);
+  }
+
   const nodes = new Map<string, StorefrontCategoryGroupNode>(
     activeCategories.map((category) => [
       category.id,
@@ -76,14 +104,30 @@ function buildStorefrontCategoryGroupsFromRecords(
     roots.push(node);
   }
 
-  return roots.map((root) => ({
-    id: root.id,
-    slug: root.slug,
-    iconImageUrl: root.iconImageUrl,
-    name: root.name,
-    description: root.description,
-    children: root.children
-  }));
+  const collectCategoryIds = (categoryId: string): string[] => {
+    const children = childrenByParentId.get(categoryId) ?? [];
+
+    return [
+      categoryId,
+      ...children.flatMap((child) => collectCategoryIds(child.id))
+    ];
+  };
+
+  return roots.map((root) => {
+    const categoryIds = new Set(collectCategoryIds(root.id));
+
+    return {
+      id: root.id,
+      slug: root.slug,
+      iconImageUrl: root.iconImageUrl,
+      name: root.name,
+      description: root.description,
+      children: root.children,
+      products: products
+        .filter((product) => categoryIds.has(product.categoryId))
+        .map((product) => mapLocalizedProduct(product, locale))
+    };
+  });
 }
 
 function getBannerCategoryImageUrl(
@@ -319,18 +363,40 @@ function sortStorefrontProducts(
 }
 
 export async function getStorefrontCategoryGroups(locale: CatalogLocale) {
-  const groups = await db.category.findMany({
-    orderBy: [
-      {
-        sortOrder: 'asc'
+  const [groups, products] = await Promise.all([
+    db.category.findMany({
+      orderBy: [
+        {
+          sortOrder: 'asc'
+        },
+        {
+          createdAt: 'asc'
+        }
+      ]
+    }),
+    db.product.findMany({
+      where: {
+        status: 'published',
+        category: {
+          isActive: true
+        }
       },
-      {
-        createdAt: 'asc'
-      }
-    ]
-  });
+      include: {
+        images: true,
+        category: true
+      },
+      orderBy: [
+        {
+          sortOrder: 'asc'
+        },
+        {
+          publishedAt: 'desc'
+        }
+      ]
+    })
+  ]);
 
-  return buildStorefrontCategoryGroupsFromRecords(groups, locale);
+  return buildStorefrontCategoryGroupsFromRecords(groups, locale, products);
 }
 
 export async function getProductDetailBySlug(

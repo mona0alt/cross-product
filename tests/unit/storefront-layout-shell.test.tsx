@@ -200,6 +200,103 @@ describe('storefront layout shell', () => {
     expect(html).toContain('Robots for classrooms');
   });
 
+  it('renders every product in a category hover dropdown', () => {
+    const html = renderToStaticMarkup(
+      <StorefrontHeader
+        locale="en"
+        whatsAppNumber="+1 555 123 4567"
+        contactEmail="support@fbgm.com"
+        categoryGroups={[
+          {
+            id: 'group-1',
+            slug: 'industrial-drones',
+            iconImageUrl: '/uploads/categories/drone.webp',
+            name: 'Industrial Drones',
+            description: 'Industrial drone systems',
+            children: [],
+            products: [
+              {
+                id: 'product-1',
+                slug: 'falcon-pro',
+                productCode: 'DR-1001',
+                coverImageUrl: '/uploads/products/falcon.webp',
+                priceUsd: 1299,
+                isRecommended: true,
+                name: 'Falcon Pro',
+                intro: 'Industrial inspection drone',
+                detail: 'Details',
+                images: []
+              },
+              {
+                id: 'product-2',
+                slug: 'survey-mini',
+                productCode: 'DR-2001',
+                coverImageUrl: '/uploads/products/survey-mini.webp',
+                priceUsd: 899,
+                isRecommended: false,
+                name: 'Survey Mini',
+                intro: 'Lightweight survey drone',
+                detail: 'Details',
+                images: []
+              }
+            ]
+          }
+        ]}
+        copy={{
+          brand: 'Cross',
+          nav: {
+            home: 'Home',
+            products: 'Products',
+            contact: 'Contact',
+            subscribe: 'Subscribe'
+          },
+          searchPlaceholder: 'Search products',
+          portal: 'Portal',
+          whatsApp: 'WhatsApp',
+          languageLabel: 'Language',
+          topLinks: {
+            blog: 'Blog',
+            studio: 'Studio MK',
+            professionals: 'MK Pros'
+          },
+          phoneSales: 'Phone sales',
+          utilityBar: {
+            support: 'Support',
+            service: 'Customer Service'
+          },
+          quickActions: {
+            trackOrder: 'Track order',
+            stores: 'Stores',
+            helpCenter: 'Help Center',
+            account: 'My account'
+          },
+          featuredNav: {
+            inspiration: 'Inspiration',
+            outlet: 'Outlet'
+          },
+          categoryPromo: {
+            viewAll: 'View all',
+            offerTitle: 'Offers',
+            offerLink: 'Last chance',
+            featuredTitle: 'Featured',
+            featuredDescription: 'Discover best sellers'
+          }
+        }}
+      />
+    );
+
+    expect(html).toContain('data-testid="desktop-mega-menu"');
+    expect(html).toContain('href="/en/products/falcon-pro"');
+    expect(html).toContain('href="/en/products/survey-mini"');
+    expect(html).toContain('Falcon Pro');
+    expect(html).toContain('Survey Mini');
+    expect(html).toContain('Industrial inspection drone');
+    expect(html).toContain('Lightweight survey drone');
+    expect(html).toContain('/uploads/products/falcon.webp');
+    expect(html).toContain('/uploads/products/survey-mini.webp');
+    expect(html).not.toContain('href="/en/categories/industrial-drones"');
+  });
+
   it('keeps a hover dropdown for top-level categories without child items', () => {
     const html = renderToStaticMarkup(
       <StorefrontHeader

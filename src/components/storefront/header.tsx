@@ -153,20 +153,37 @@ export function StorefrontHeader({
           <nav className="hidden self-stretch flex-1 items-center justify-center gap-5 lg:flex">
             {mainNav.map((item) => {
               const group = item.group;
-              const featuredChildren = group
-                ? group.children.length > 0
-                  ? group.children.slice(0, 6)
-                  : [
-                      {
-                        id: group.id,
-                        slug: group.slug,
-                        iconImageUrl: group.iconImageUrl,
-                        name: group.name,
-                        description: group.description
-                      }
-                    ]
+              const featuredProducts = group?.products ?? [];
+              const featuredItems = group
+                ? featuredProducts.length > 0
+                  ? featuredProducts.map((product) => ({
+                      id: product.id,
+                      slug: product.slug,
+                      href: `/${locale}/products/${product.slug}`,
+                      imageUrl: product.coverImageUrl,
+                      name: product.name,
+                      description: product.intro
+                    }))
+                  : (group.children.length > 0
+                      ? group.children.slice(0, 6)
+                      : [
+                          {
+                            id: group.id,
+                            slug: group.slug,
+                            iconImageUrl: group.iconImageUrl,
+                            name: group.name,
+                            description: group.description
+                          }
+                        ]).map((category) => ({
+                          id: category.id,
+                          slug: category.slug,
+                          href: `/${locale}/categories/${category.slug}`,
+                          imageUrl: category.iconImageUrl,
+                          name: category.name,
+                          description: category.description
+                        }))
                 : [];
-              const hasDropdown = featuredChildren.length > 0;
+              const hasDropdown = featuredItems.length > 0;
               const isDropdownOpen = activeCategoryKey === item.key;
 
               return (
@@ -203,18 +220,18 @@ export function StorefrontHeader({
                       <div className="border-y border-white/10 bg-[#07111f] text-white shadow-[0_22px_55px_rgba(0,0,0,0.22)]">
                         <div className="mk-container py-8">
                           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                            {featuredChildren.map((child) => (
+                            {featuredItems.map((child) => (
                               <Link
                                 key={child.slug}
-                                href={`/${locale}/categories/${child.slug}`}
+                                href={child.href}
                                 className="group/card relative overflow-hidden rounded-lg border border-white/10 bg-[#0b1728] transition hover:border-white/25 hover:shadow-[0_18px_35px_rgba(0,0,0,0.18)]"
                               >
                                 <div className="aspect-[4/3] bg-[#0f1c30]">
-                                  {child.iconImageUrl ? (
+                                  {child.imageUrl ? (
                                     // eslint-disable-next-line @next/next/no-img-element
                                     <img
-                                      src={child.iconImageUrl}
-                                      alt=""
+                                      src={child.imageUrl}
+                                      alt={child.name}
                                       className="h-full w-full object-cover transition duration-300 group-hover/card:scale-105"
                                     />
                                   ) : (

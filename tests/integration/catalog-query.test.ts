@@ -164,6 +164,7 @@ describe('catalog queries', () => {
         descriptionPt: 'Industrial'
       }
     ]);
+    productFindMany.mockResolvedValue([]);
 
     const { getStorefrontCategoryGroups } = await import('@/features/catalog/queries');
     const groups = await getStorefrontCategoryGroups('en');
@@ -180,6 +181,120 @@ describe('catalog queries', () => {
         children: []
       }
     ]);
+  });
+
+  it('includes every published product under each storefront navigation category branch', async () => {
+    categoryFindMany.mockResolvedValue([
+      {
+        id: 'root-drone',
+        parentId: null,
+        slug: 'industrial-drones',
+        sortOrder: 1,
+        isActive: true,
+        iconImageUrl: '/uploads/categories/drone.webp',
+        nameZh: '工业无人机',
+        nameEn: 'Industrial Drones',
+        nameEs: 'Drones Industriales',
+        namePt: 'Drones Industriais',
+        descriptionZh: '工业无人机',
+        descriptionEn: 'Industrial drones',
+        descriptionEs: 'Drones industriales',
+        descriptionPt: 'Drones industriais'
+      },
+      {
+        id: 'child-survey',
+        parentId: 'root-drone',
+        slug: 'survey-drones',
+        sortOrder: 2,
+        isActive: true,
+        iconImageUrl: '/uploads/categories/survey.webp',
+        nameZh: '测绘无人机',
+        nameEn: 'Survey Drones',
+        nameEs: 'Drones de inspeccion',
+        namePt: 'Drones de levantamento',
+        descriptionZh: '测绘',
+        descriptionEn: 'Survey',
+        descriptionEs: 'Inspeccion',
+        descriptionPt: 'Levantamento'
+      }
+    ]);
+    productFindMany.mockResolvedValue([
+      {
+        id: 'product-root',
+        slug: 'falcon-pro',
+        productCode: 'DR-1001',
+        coverImageUrl: '/uploads/products/falcon.webp',
+        priceUsd: new Decimal('1299.00'),
+        isRecommended: true,
+        categoryId: 'root-drone',
+        nameZh: '猎鹰 Pro',
+        nameEn: 'Falcon Pro',
+        nameEs: 'Falcon Pro',
+        namePt: 'Falcon Pro',
+        introZh: '工业巡检无人机',
+        introEn: 'Industrial inspection drone',
+        introEs: 'Drone de inspeccion industrial',
+        introPt: 'Drone de inspeção industrial',
+        detailZh: '详情',
+        detailEn: 'Details',
+        detailEs: 'Detalles',
+        detailPt: 'Detalhes',
+        images: [],
+        category: {
+          slug: 'industrial-drones',
+          nameZh: '工业无人机',
+          nameEn: 'Industrial Drones',
+          nameEs: 'Drones Industriales',
+          namePt: 'Drones Industriais'
+        }
+      },
+      {
+        id: 'product-child',
+        slug: 'survey-mini',
+        productCode: 'DR-2001',
+        coverImageUrl: '/uploads/products/survey-mini.webp',
+        priceUsd: new Decimal('899.00'),
+        isRecommended: false,
+        categoryId: 'child-survey',
+        nameZh: '测绘 Mini',
+        nameEn: 'Survey Mini',
+        nameEs: 'Survey Mini',
+        namePt: 'Survey Mini',
+        introZh: '轻量测绘无人机',
+        introEn: 'Lightweight survey drone',
+        introEs: 'Drone ligero de inspeccion',
+        introPt: 'Drone leve de levantamento',
+        detailZh: '详情',
+        detailEn: 'Details',
+        detailEs: 'Detalles',
+        detailPt: 'Detalhes',
+        images: [],
+        category: {
+          slug: 'survey-drones',
+          nameZh: '测绘无人机',
+          nameEn: 'Survey Drones',
+          nameEs: 'Drones de inspeccion',
+          namePt: 'Drones de levantamento'
+        }
+      }
+    ]);
+
+    const { getStorefrontCategoryGroups } = await import('@/features/catalog/queries');
+    const groups = await getStorefrontCategoryGroups('en');
+
+    expect(groups[0]).toMatchObject({
+      slug: 'industrial-drones',
+      products: [
+        {
+          slug: 'falcon-pro',
+          name: 'Falcon Pro'
+        },
+        {
+          slug: 'survey-mini',
+          name: 'Survey Mini'
+        }
+      ]
+    });
   });
 
   it('uses configured category images for homepage banners that target a category branch', async () => {

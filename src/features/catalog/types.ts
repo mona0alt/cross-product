@@ -38,6 +38,7 @@ export type StorefrontCategory = {
 
 export type StorefrontCategoryGroup = StorefrontCategory & {
   children: StorefrontCategory[];
+  products?: StorefrontProductCard[];
 };
 
 export type StorefrontProductCard = {
