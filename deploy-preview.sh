@@ -40,40 +40,13 @@ rsync -avz \
   --exclude='test-results' \
   --exclude='*.log' \
   --exclude='.claude' \
-  --exclude='.env' \
+  --exclude='.codex' \
+  --exclude='.agents' \
   "${SCRIPT_DIR}/" \
   "${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_DIR}/"
 
 # 3. 远程部署
 log "在远程执行部署..."
-ssh -t "${REMOTE_USER}@${REMOTE_HOST}" bash -lc "
-set -e
-cd '${REMOTE_DIR}'
-
-# 如果远程没有 .env，从 .env.example 复制
-if [ ! -f .env ] && [ -f .env.example ]; then
-  echo '创建 .env 从 .env.example'
-  cp .env.example .env
-fi
-
-# 确保 logs 目录存在
-mkdir -p logs
-
-echo '安装依赖...'
-npm install
-
-echo '构建...'
-npm run build
-
-echo 'PM2 重启...'
-if pm2 describe '${PROJECT_NAME}' >/dev/null 2>&1; then
-  pm2 restart ecosystem.config.js
-else
-  pm2 start ecosystem.config.js
-fi
-
-pm2 save >/dev/null 2>&1 || true
-echo '部署完成'
-"
+ssh "${REMOTE_USER}@${REMOTE_HOST}" "cd '${REMOTE_DIR}' && ./deploy.sh"
 
 log "预览环境部署完成: http://${REMOTE_HOST}"

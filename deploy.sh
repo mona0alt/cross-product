@@ -29,7 +29,7 @@ for cmd in node npm psql nginx pm2 curl; do
 done
 
 NODE_VERSION=$(node -v | sed 's/v//')
-REQUIRED_NODE="18.0.0"
+REQUIRED_NODE="20.19.0"
 if [ "$(printf '%s\n' "$REQUIRED_NODE" "$NODE_VERSION" | sort -V | head -n1)" != "$REQUIRED_NODE" ]; then
   error "Node.js 版本过低: $NODE_VERSION，需要 >= $REQUIRED_NODE"
 fi
@@ -102,8 +102,12 @@ else
   npx prisma db push --accept-data-loss
 fi
 
-log "Prisma seed..."
-npx prisma db seed
+if [ "${RUN_PRISMA_SEED:-0}" = "1" ]; then
+  log "Prisma seed..."
+  npx prisma db seed
+else
+  log "跳过 Prisma seed（设置 RUN_PRISMA_SEED=1 可执行）"
+fi
 
 # 6. 构建
 log "构建 Next.js..."
@@ -169,8 +173,8 @@ fi
 log "验证服务..."
 sleep 2
 LOCAL_IP=$(hostname -I | awk '{print $1}')
-HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://$LOCAL_IP/" || echo "000")
-SHOW_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://$LOCAL_IP/show/robot_window_cleaner.png" || echo "000")
+HTTP_CODE=$(curl -L -s -o /dev/null -w "%{http_code}" "http://$LOCAL_IP/" || echo "000")
+SHOW_CODE=$(curl -L -s -o /dev/null -w "%{http_code}" "http://$LOCAL_IP/show/robot_window_cleaner.png" || echo "000")
 
 log "================================"
 log "首页状态: $HTTP_CODE"
