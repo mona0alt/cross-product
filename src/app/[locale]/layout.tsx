@@ -6,6 +6,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
 import { StorefrontFooter } from '@/components/storefront/footer';
+import { StorefrontFloatingWhatsAppButton } from '@/components/storefront/floating-whatsapp-button';
 import { StorefrontHeader } from '@/components/storefront/header';
 import { defaultLocale, isLocale, locales, type Locale } from '@/lib/i18n/config';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
@@ -61,6 +62,10 @@ export default async function LocaleLayout({
           categoryGroups={categoryGroups}
         />
         <main className="flex-1">{children}</main>
+        <StorefrontFloatingWhatsAppButton
+          whatsAppLabel={Storefront.whatsApp}
+          whatsAppNumber={whatsAppNumber}
+        />
         <StorefrontFooter
           locale={locale}
           copy={{

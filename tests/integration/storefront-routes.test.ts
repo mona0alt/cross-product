@@ -92,7 +92,8 @@ describe('storefront routes', () => {
   it('renders the localized product list page', async () => {
     getProductListPayload.mockResolvedValue({
       filters: {
-        search: 'phone'
+        search: 'phone',
+        sort: 'price-desc'
       },
       categoryGroups: [
         {
@@ -137,14 +138,38 @@ describe('storefront routes', () => {
       await ProductsPage({
         params: Promise.resolve({ locale: 'en' }),
         searchParams: Promise.resolve({
-          search: 'phone'
+          search: 'phone',
+          sort: 'price-desc'
         })
       })
     );
 
     expect(html).toContain('Star River Pro Phone');
     expect(html).toContain('phone');
-    expect(html).toContain('Sort by');
+    expect(html).toContain('bg-[#f4f0ed] py-6 sm:py-8 lg:py-10');
+    expect(html).toContain('mx-auto max-w-7xl px-4 sm:px-6 lg:px-8');
+    expect(html).toContain('grid gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4');
+    expect(html).toContain('rounded-[24px] border border-[#d8cec7] bg-white/90');
+    expect(html).toContain('relative block aspect-[5/6] overflow-hidden rounded-[20px] bg-[#f3efec]');
+    expect(html).toContain('class="flex flex-1 flex-col px-2 pb-2 pt-3');
+    expect(html).toContain('href="/en/products/star-river-pro-phone"');
+    expect(html).not.toContain('Filters');
+    expect(html).not.toContain('Catalog');
+    expect(html).not.toContain('Products');
+    expect(html).not.toContain('View details');
+    expect(html).not.toContain('Browse products');
+    expect(html).not.toContain('Sort by');
+    expect(html).not.toContain('name="sort"');
+    expect(html).not.toContain('P-1001');
+    expect(html).not.toContain('In stock');
+    expect(html).not.toContain('$699');
+    expect(getProductListPayload).toHaveBeenCalledWith(
+      expect.objectContaining({
+        search: 'phone',
+        sort: 'price-desc'
+      }),
+      'en'
+    );
   });
 
   it('renders published product details and throws 404 for missing slug', async () => {

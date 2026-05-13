@@ -254,4 +254,88 @@ describe('catalog queries', () => {
 
     expect(payload).toBeNull();
   });
+
+  it('sorts product list payload by selected sort strategy', async () => {
+    categoryFindMany.mockResolvedValue([]);
+    productFindMany.mockResolvedValue([
+      {
+        id: 'product-1',
+        slug: 'zeta-robot',
+        productCode: 'P-3001',
+        coverImageUrl: '/zeta.jpg',
+        priceUsd: new Decimal('199.00'),
+        isRecommended: true,
+        categoryId: 'cat-1',
+        nameZh: '泽塔机器人',
+        nameEn: 'Zeta Robot',
+        nameEs: 'Robot Zeta',
+        namePt: 'Robo Zeta',
+        introZh: '中文简介',
+        introEn: 'English intro',
+        introEs: 'Intro ES',
+        introPt: 'Intro PT',
+        detailZh: '中文详情',
+        detailEn: 'English detail',
+        detailEs: 'Detalle ES',
+        detailPt: 'Detalhe PT',
+        images: [],
+        category: {
+          slug: 'electronics',
+          nameZh: '电子数码',
+          nameEn: 'Electronics',
+          nameEs: 'Electronica',
+          namePt: 'Eletronicos'
+        }
+      },
+      {
+        id: 'product-2',
+        slug: 'alpha-robot',
+        productCode: 'P-1001',
+        coverImageUrl: '/alpha.jpg',
+        priceUsd: new Decimal('699.00'),
+        isRecommended: true,
+        categoryId: 'cat-1',
+        nameZh: '阿尔法机器人',
+        nameEn: 'Alpha Robot',
+        nameEs: 'Robot Alpha',
+        namePt: 'Robo Alpha',
+        introZh: '中文简介',
+        introEn: 'English intro',
+        introEs: 'Intro ES',
+        introPt: 'Intro PT',
+        detailZh: '中文详情',
+        detailEn: 'English detail',
+        detailEs: 'Detalle ES',
+        detailPt: 'Detalhe PT',
+        images: [],
+        category: {
+          slug: 'electronics',
+          nameZh: '电子数码',
+          nameEn: 'Electronics',
+          nameEs: 'Electronica',
+          namePt: 'Eletronicos'
+        }
+      }
+    ]);
+
+    const { getProductListPayload } = await import('@/features/catalog/queries');
+
+    const priceSortedPayload = await getProductListPayload(
+      { sort: 'price-desc' },
+      'en'
+    );
+    expect(priceSortedPayload.products.map((product) => product.name)).toEqual([
+      'Alpha Robot',
+      'Zeta Robot'
+    ]);
+
+    const nameSortedPayload = await getProductListPayload(
+      { sort: 'name-asc' },
+      'en'
+    );
+    expect(nameSortedPayload.products.map((product) => product.name)).toEqual([
+      'Alpha Robot',
+      'Zeta Robot'
+    ]);
+  });
 });

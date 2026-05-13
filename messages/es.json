@@ -123,6 +123,12 @@
       "title": "Productos",
       "description": "Filtra productos por palabra clave, categoría principal, subcategoría y recomendación.",
       "sortLabel": "Ordenar por",
+      "sortOptions": {
+        "featured": "Destacados",
+        "priceAsc": "Precio: menor a mayor",
+        "priceDesc": "Precio: mayor a menor",
+        "nameAsc": "Nombre: A-Z"
+      },
       "filters": {
         "title": "Filtros",
         "allPrimary": "Todas las categorías principales",

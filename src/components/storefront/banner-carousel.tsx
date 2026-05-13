@@ -14,7 +14,10 @@ type BannerItem = {
 
 export function BannerCarousel({
   banners,
-  emptyLabel
+  emptyLabel,
+  copy,
+  primaryHref,
+  secondaryHref
 }: {
   banners: BannerItem[];
   emptyLabel: string;
@@ -59,6 +62,38 @@ export function BannerCarousel({
             {emptyLabel}
           </div>
         )}
+      </div>
+
+      {/* Gradient overlay for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+
+      {/* Hero content */}
+      <div className="absolute inset-0 flex items-center pb-16">
+        <div className="mx-auto w-full max-w-7xl px-6 sm:px-12 lg:px-16">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--mk-accent)]">
+            {copy.eyebrow}
+          </p>
+          <h1 className="mt-4 max-w-2xl text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
+            {copy.title}
+          </h1>
+          <p className="mt-4 max-w-xl text-base text-white/80 sm:text-lg">
+            {copy.description}
+          </p>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <a
+              href={primaryHref}
+              className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-bold uppercase tracking-wide text-black transition hover:bg-[var(--mk-accent)] hover:text-white"
+            >
+              {copy.primaryCta}
+            </a>
+            <a
+              href={secondaryHref}
+              className="inline-flex items-center justify-center rounded-full border border-white/30 px-6 py-3 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-white/10"
+            >
+              {copy.secondaryCta}
+            </a>
+          </div>
+        </div>
       </div>
 
       {banners.length > 1 && (

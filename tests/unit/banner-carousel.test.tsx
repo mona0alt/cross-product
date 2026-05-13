@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { BannerCarousel } from '@/components/storefront/banner-carousel';
 
 describe('BannerCarousel', () => {
-  it('renders a full-bleed image carousel without hero copy', () => {
+  it('renders a full-bleed image carousel with hero copy', () => {
     const html = renderToStaticMarkup(
       <BannerCarousel
         banners={[
@@ -34,10 +34,10 @@ describe('BannerCarousel', () => {
     expect(html).toContain('min-h-[calc(100vh-76px)]');
     expect(html).toContain('h-full w-full object-cover');
     expect(html).toContain('/show/robot_humanoid.png');
-    expect(html).not.toContain('AI ROBOTICS SHOWCASE');
-    expect(html).not.toContain('Premium robotics for modern work');
-    expect(html).not.toContain('Browse Products');
-    expect(html).not.toContain('Contact Us');
+    expect(html).toContain('AI ROBOTICS SHOWCASE');
+    expect(html).toContain('Premium robotics for modern work');
+    expect(html).toContain('Browse Products');
+    expect(html).toContain('Contact Us');
   });
 
   it('wraps the active banner with a link when a target url is provided', () => {

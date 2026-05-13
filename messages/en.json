@@ -123,6 +123,12 @@
       "title": "Products",
       "description": "Filter products by keyword, primary category, secondary category and recommendation status.",
       "sortLabel": "Sort by",
+      "sortOptions": {
+        "featured": "Featured",
+        "priceAsc": "Price: low to high",
+        "priceDesc": "Price: high to low",
+        "nameAsc": "Name: A to Z"
+      },
       "filters": {
         "title": "Filters",
         "allPrimary": "All primary categories",

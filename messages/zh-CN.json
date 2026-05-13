@@ -123,6 +123,12 @@
       "title": "商品列表",
       "description": "按关键词、一级分类、二级分类和推荐状态筛选商品。",
       "sortLabel": "排序方式",
+      "sortOptions": {
+        "featured": "默认排序",
+        "priceAsc": "价格从低到高",
+        "priceDesc": "价格从高到低",
+        "nameAsc": "名称 A-Z"
+      },
       "filters": {
         "title": "筛选条件",
         "allPrimary": "全部一级分类",

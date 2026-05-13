@@ -70,6 +70,15 @@ export type HomepagePayload = {
   recommendedProducts: StorefrontProductCard[];
 };
 
+export const productListSorts = [
+  'featured',
+  'price-asc',
+  'price-desc',
+  'name-asc'
+] as const;
+
+export type ProductListSort = (typeof productListSorts)[number];
+
 export type ProductListPayload = {
   filters: ProductListFilters;
   categoryGroups: StorefrontCategoryGroup[];
@@ -80,6 +89,7 @@ export type ProductListFilters = {
   search?: string;
   categorySlug?: string;
   recommended?: boolean;
+  sort?: ProductListSort;
 };
 
 export type AdminProductFilters = {

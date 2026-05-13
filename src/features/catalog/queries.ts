@@ -5,8 +5,10 @@ import type {
   CatalogLocale,
   HomepagePayload,
   ProductListFilters,
+  ProductListSort,
   ProductListPayload,
   StorefrontCategory,
+  StorefrontProductCard,
   StorefrontCategoryGroup
 } from '@/features/catalog/types';
 import { mapLocalizedCategory, mapLocalizedProduct } from '@/features/catalog/mappers';
@@ -274,14 +276,46 @@ export async function getProductListPayload(
     })
   ]);
 
+  const mappedProducts = products.map((product) =>
+    mapLocalizedProduct(product, locale)
+  );
+
   return {
     filters,
     categoryGroups: buildStorefrontCategoryGroupsFromRecords(
       categoryGroups,
       locale
     ),
-    products: products.map((product) => mapLocalizedProduct(product, locale))
+    products: sortStorefrontProducts(mappedProducts, filters.sort, locale)
   };
+}
+
+function sortStorefrontProducts(
+  products: StorefrontProductCard[],
+  sort: ProductListSort | undefined,
+  locale: CatalogLocale
+) {
+  if (!sort || sort === 'featured') {
+    return products;
+  }
+
+  const sortedProducts = [...products];
+
+  switch (sort) {
+    case 'price-asc':
+      return sortedProducts.sort((left, right) => left.priceUsd - right.priceUsd);
+    case 'price-desc':
+      return sortedProducts.sort((left, right) => right.priceUsd - left.priceUsd);
+    case 'name-asc':
+      return sortedProducts.sort((left, right) =>
+        left.name.localeCompare(right.name, locale, {
+          numeric: true,
+          sensitivity: 'base'
+        })
+      );
+    default:
+      return products;
+  }
 }
 
 export async function getStorefrontCategoryGroups(locale: CatalogLocale) {

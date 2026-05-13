@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,15 +6,17 @@
 
 :root {
   color-scheme: light;
-  --mk-bg: #ffffff;
-  --mk-bg-muted: #f6f9fd;
+  --mk-bg: #fff8f6;
+  --mk-bg-muted: #f8ebe8;
   --mk-surface: #ffffff;
-  --mk-border: #d8e6f6;
-  --mk-border-strong: #9cc9f6;
-  --mk-text: #0b1f3a;
-  --mk-text-muted: #54708f;
-  --mk-accent: #1d7eea;
-  --mk-highlight: #0f63ce;
+  --mk-border: #d3c3be;
+  --mk-border-strong: #b9aaa4;
+  --mk-text: #201a19;
+  --mk-text-muted: #635e53;
+  --mk-accent: #705951;
+  --mk-highlight: #735c00;
+  --mk-gold: #fed65b;
+  --mk-tech: #123b73;
   --mk-success: #127c49;
   --mk-radius-sm: 0.25rem;
   --mk-radius-md: 0.5rem;
@@ -49,7 +51,7 @@ body {
   margin: 0;
   background: var(--mk-bg);
   color: var(--mk-text);
-  font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Plus Jakarta Sans", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
   line-height: 1.5;
 }
 
@@ -68,6 +70,10 @@ select {
 img {
   display: block;
   max-width: 100%;
+}
+
+.mk-display-font {
+  font-family: "Playfair Display", Georgia, serif;
 }
 
 .mk-container {

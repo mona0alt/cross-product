@@ -53,6 +53,7 @@ export default async function LocalizedHomePage({
 
       <HomepageCategoryGrid
         locale={locale}
+        eyebrow={Storefront.sections.categoryGrid}
         title={Storefront.sections.productSeries}
         categories={payload.featuredCategories}
       />

@@ -29,10 +29,9 @@ export function FilterSidebar({
   categoryGroups
 }: FilterSidebarProps) {
   return (
-    <aside className="storefront-surface h-fit rounded-[var(--store-radius-lg)] p-5">
+    <aside className="h-fit rounded-[24px] border border-[#d8cec7] bg-white/82 p-5 shadow-[0_18px_48px_rgba(32,26,25,0.08)] backdrop-blur xl:sticky xl:top-24">
       <div className="space-y-5">
         <div>
-          <p className="storefront-eyebrow">{copy.title}</p>
           <h2 className="text-lg font-bold text-[var(--store-text)]">
             {copy.title}
           </h2>
@@ -42,7 +41,7 @@ export function FilterSidebar({
           <input
             name="search"
             defaultValue={search}
-            className="w-full rounded-2xl border border-[var(--store-border)] bg-white px-4 py-3 text-sm"
+            className="w-full rounded-[18px] border border-[#d8cec7] bg-white px-4 py-3 text-sm text-[var(--mk-text)] outline-none transition focus:border-[var(--mk-accent)]"
             placeholder={copy.searchPlaceholder}
           />
 
@@ -51,7 +50,7 @@ export function FilterSidebar({
               <select
                 name="category"
                 defaultValue={category ?? ''}
-                className="w-full rounded-2xl border border-[var(--store-border)] bg-white px-4 py-3 text-sm"
+                className="w-full rounded-[18px] border border-[#d8cec7] bg-white px-4 py-3 text-sm text-[var(--mk-text)] outline-none transition focus:border-[var(--mk-accent)]"
               >
                 <option value="">{copy.allPrimary}</option>
                 {categoryGroups.map((group) => (
@@ -64,7 +63,7 @@ export function FilterSidebar({
               <select
                 name="subcategory"
                 defaultValue={subcategory ?? ''}
-                className="w-full rounded-2xl border border-[var(--store-border)] bg-white px-4 py-3 text-sm"
+                className="w-full rounded-[18px] border border-[#d8cec7] bg-white px-4 py-3 text-sm text-[var(--mk-text)] outline-none transition focus:border-[var(--mk-accent)]"
               >
                 <option value="">{copy.allSecondary}</option>
                 {categoryGroups.flatMap((group) =>
@@ -78,7 +77,7 @@ export function FilterSidebar({
             </>
           )}
 
-          <label className="flex items-center gap-3 rounded-2xl border border-[var(--store-border)] bg-[var(--store-surface-muted)] px-4 py-3 text-sm font-medium text-[var(--store-text)]">
+          <label className="flex items-center gap-3 rounded-[18px] border border-[#d8cec7] bg-[#f8f5f2] px-4 py-3 text-sm font-medium text-[var(--mk-text)]">
             <input
               type="checkbox"
               name="recommended"
@@ -90,7 +89,7 @@ export function FilterSidebar({
 
           <button
             type="submit"
-            className="w-full rounded-full bg-[var(--store-accent)] px-4 py-3 text-sm font-semibold text-white"
+            className="w-full rounded-full bg-[#201a19] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[var(--mk-accent)]"
           >
             {copy.apply}
           </button>
