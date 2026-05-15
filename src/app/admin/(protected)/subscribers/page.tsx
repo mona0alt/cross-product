@@ -1,28 +1,98 @@
 import React from 'react';
 
 import { SubscriberMailWorkspace } from '@/components/admin/subscriber-mail-workspace';
-import { mockBackoffice } from '@/features/admin/mock-backoffice';
+import {
+  mapMailCampaign,
+  mapMailTemplate,
+  mapSubscriberRow
+} from '@/features/admin/subscriber-actions';
+import { getAdminDictionary } from '@/lib/admin-i18n';
+import { db } from '@/lib/db';
 
-const mockSubscribers = [
-  { id: '1', email: 'alice.chen@example.com', status: 'active', createdAt: '2025-04-28' },
-  { id: '2', email: 'bob.wang@designstudio.cn', status: 'active', createdAt: '2025-04-25' },
-  { id: '3', email: 'carol.li@techcorp.com', status: 'inactive', createdAt: '2025-04-20' },
-  { id: '4', email: 'david.zhang@startup.io', status: 'active', createdAt: '2025-04-18' },
-  { id: '5', email: 'eva.liu@freelance.net', status: 'active', createdAt: '2025-04-15' },
-  { id: '6', email: 'frank.zhao@enterprise.com', status: 'inactive', createdAt: '2025-04-10' },
-  { id: '7', email: 'grace.wu@creative.agency', status: 'active', createdAt: '2025-04-05' },
-  { id: '8', email: 'henry.sun@global.org', status: 'active', createdAt: '2025-03-28' },
-  { id: '9', email: 'iris.yang@digital.cn', status: 'inactive', createdAt: '2025-03-20' },
-  { id: '10', email: 'jack.ma@innovation.com', status: 'active', createdAt: '2025-03-15' },
-];
+export const dynamic = 'force-dynamic';
 
-export default function AdminSubscribersPage() {
+function formatNumber(value: number) {
+  return new Intl.NumberFormat('zh-CN').format(value);
+}
+
+function getOpenRate(campaigns: Array<{ recipientCount: number; successCount: number }>) {
+  const totalRecipients = campaigns.reduce((total, campaign) => total + campaign.recipientCount, 0);
+  const totalSuccess = campaigns.reduce((total, campaign) => total + campaign.successCount, 0);
+
+  if (totalRecipients === 0) {
+    return '0%';
+  }
+
+  return `${Math.round((totalSuccess / totalRecipients) * 100)}%`;
+}
+
+function mapAutomationSetting(
+  setting: {
+    trigger: string;
+    frequencyCap: string;
+    enabled: boolean;
+  } | null
+) {
+  return {
+    trigger:
+      setting?.trigger === 'restock' || setting?.trigger === 'manual'
+        ? setting.trigger
+        : 'product_new',
+    frequencyCap:
+      setting?.frequencyCap === 'weekly' || setting?.frequencyCap === 'unlimited'
+        ? setting.frequencyCap
+        : 'daily',
+    enabled: setting?.enabled ?? true
+  } as const;
+}
+
+export default async function AdminSubscribersPage() {
+  const [subscribers, templates, campaigns, automationSetting, { Admin }] = await Promise.all([
+    db.subscriber.findMany({
+      orderBy: { createdAt: 'desc' }
+    }),
+    db.mailTemplate.findMany({
+      orderBy: { updatedAt: 'desc' }
+    }),
+    db.mailCampaign.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 50
+    }),
+    db.mailAutomationSetting.findFirst({
+      where: { singletonKey: 'default' }
+    }),
+    getAdminDictionary()
+  ]);
+
+  const subscriberRows = subscribers.map(mapSubscriberRow);
+  const templateRows = templates.map(mapMailTemplate);
+  const sentRecords = campaigns.map(mapMailCampaign);
+  const failedCount = campaigns.reduce((total, campaign) => total + campaign.failureCount, 0);
+  const data = {
+    total: formatNumber(subscriberRows.length),
+    openRate: getOpenRate(campaigns),
+    failed: formatNumber(failedCount),
+    campaigns: sentRecords.slice(0, 5).map((campaign) => ({
+      title: campaign.templateName,
+      status: campaign.status,
+      detail: `收件 ${campaign.recipients} 位，成功 ${campaign.success} 封，失败 ${campaign.failed} 封${
+        campaign.errorMessage ? `，${campaign.errorMessage}` : ''
+      }`
+    })),
+    templates: templateRows
+  };
+
   return (
-    <section className="flex min-h-[calc(100vh-104px)] flex-col">
+    <section className="flex h-[calc(100vh-104px)] min-h-0 flex-col overflow-hidden">
       <div className="min-h-0 flex-1 animate-fade-in-up">
         <SubscriberMailWorkspace
-          data={mockBackoffice.subscribers}
-          subscribers={mockSubscribers}
+          data={data}
+          subscribers={subscriberRows}
+          templates={templateRows}
+          sentRecords={sentRecords}
+          automation={mapAutomationSetting(automationSetting)}
+          initialTab="subscribers"
+          copy={Admin.subscribers}
         />
       </div>
     </section>

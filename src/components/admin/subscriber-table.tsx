@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight, Mail, Plus, Search } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Search, Trash2, X } from 'lucide-react';
 import { StatusBadge } from './status-badge';
 import { AdminTableShell } from './admin-table-shell';
 
@@ -14,6 +14,83 @@ export type SubscriberRow = {
 
 const PAGE_SIZE = 8;
 
+export type SubscriberTableCopy = {
+  subscriberList: string;
+  searchPlaceholder: string;
+  searchLabel: string;
+  addSubscriber: string;
+  openAddDialog: string;
+  addDescription: string;
+  closeAddDialog: string;
+  emailLabel: string;
+  emailPlaceholder: string;
+  cancel: string;
+  saving: string;
+  saveSubscriber: string;
+  columns: {
+    email: string;
+    status: string;
+    createdAt: string;
+    preference: string;
+    actions: string;
+  };
+  active: string;
+  inactive: string;
+  preferenceValue: string;
+  deleteLabel: string;
+  deleting: string;
+  delete: string;
+  empty: string;
+  pagination: string;
+  previousPage: string;
+  nextPage: string;
+  invalidEmail: string;
+  duplicateEmail: string;
+  saveError: string;
+};
+
+const defaultSubscriberTableCopy: SubscriberTableCopy = {
+  subscriberList: '订阅者列表',
+  searchPlaceholder: '搜索邮箱...',
+  searchLabel: '搜索订阅邮箱',
+  addSubscriber: '新增订阅者',
+  openAddDialog: '打开新增订阅者弹窗',
+  addDescription: '输入邮箱后会以活跃状态加入当前订阅者列表。',
+  closeAddDialog: '关闭新增订阅者弹窗',
+  emailLabel: '订阅邮箱',
+  emailPlaceholder: '输入订阅者邮箱',
+  cancel: '取消',
+  saving: '保存中...',
+  saveSubscriber: '保存订阅者',
+  columns: {
+    email: '邮箱',
+    status: '状态',
+    createdAt: '订阅时间',
+    preference: '触达偏好',
+    actions: '操作'
+  },
+  active: '活跃',
+  inactive: '已停用',
+  preferenceValue: '新品 / 简报',
+  deleteLabel: '删除订阅者 {email}',
+  deleting: '删除中',
+  delete: '删除',
+  empty: '没有匹配的订阅者。',
+  pagination: '每页 {pageSize} 位 · 当前显示 {visible} 位 · 第 {page} / {totalPages} 页',
+  previousPage: '上一页',
+  nextPage: '下一页',
+  invalidEmail: '请输入有效的邮箱地址。',
+  duplicateEmail: '该邮箱已在订阅者列表中。',
+  saveError: '订阅者保存失败，请稍后重试。'
+};
+
+function formatCopy(template: string, values: Record<string, string | number>) {
+  return Object.entries(values).reduce(
+    (text, [key, value]) => text.replaceAll(`{${key}}`, String(value)),
+    template
+  );
+}
+
 function formatDate(date: Date | string) {
   return new Date(date).toLocaleDateString('zh-CN', {
     year: 'numeric',
@@ -24,16 +101,21 @@ function formatDate(date: Date | string) {
 
 export function SubscriberTable({
   subscribers,
-  framed = true
+  framed = false,
+  copy = defaultSubscriberTableCopy
 }: {
   subscribers: SubscriberRow[];
   framed?: boolean;
+  copy?: SubscriberTableCopy;
 }) {
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
   const [subscriberRows, setSubscriberRows] = useState(() => subscribers);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [newEmail, setNewEmail] = useState('');
   const [addMessage, setAddMessage] = useState('');
+  const [pendingSubscriberId, setPendingSubscriberId] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
   const normalizedQuery = query.trim().toLowerCase();
   const filteredSubscribers = useMemo(
     () =>
@@ -51,38 +133,87 @@ export function SubscriberTable({
     currentPage * PAGE_SIZE
   );
 
+  function openAddDialog() {
+    setNewEmail('');
+    setAddMessage('');
+    setIsAddDialogOpen(true);
+  }
+
+  function closeAddDialog() {
+    setIsAddDialogOpen(false);
+    setNewEmail('');
+    setAddMessage('');
+  }
+
   function handleQueryChange(event: React.ChangeEvent<HTMLInputElement>) {
     setQuery(event.target.value);
     setPage(1);
   }
 
-  function handleAddSubscriber(event: React.FormEvent<HTMLFormElement>) {
+  async function handleAddSubscriber(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const email = newEmail.trim().toLowerCase();
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setAddMessage('请输入有效的邮箱地址。');
+      setAddMessage(copy.invalidEmail);
       return;
     }
 
     if (subscriberRows.some((subscriber) => subscriber.email.toLowerCase() === email)) {
-      setAddMessage('该邮箱已在订阅者列表中。');
+      setAddMessage(copy.duplicateEmail);
       return;
     }
 
-    setSubscriberRows((currentRows) => [
-      {
-        id: `manual-${Date.now()}`,
-        email,
-        status: 'active',
-        createdAt: new Date()
-      },
-      ...currentRows
-    ]);
-    setNewEmail('');
-    setQuery('');
-    setPage(1);
-    setAddMessage('订阅者已添加到当前列表。');
+    setIsSaving(true);
+
+    try {
+      const response = await fetch('/api/admin/subscribers', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+      });
+
+      if (!response.ok) {
+        throw new Error('CREATE_SUBSCRIBER_FAILED');
+      }
+
+      const payload = (await response.json()) as {
+        subscriber: SubscriberRow;
+      };
+
+      setSubscriberRows((currentRows) => [payload.subscriber, ...currentRows]);
+      setNewEmail('');
+      setQuery('');
+      setPage(1);
+      setAddMessage('');
+      setIsAddDialogOpen(false);
+    } catch {
+      setAddMessage(copy.saveError);
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleDeleteSubscriber(subscriberId: string) {
+    setPendingSubscriberId(subscriberId);
+
+    try {
+      const response = await fetch(`/api/admin/subscribers/${subscriberId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('DELETE_SUBSCRIBER_FAILED');
+      }
+
+      setSubscriberRows((currentRows) =>
+        currentRows.filter((subscriber) => subscriber.id !== subscriberId)
+      );
+    } finally {
+      setPendingSubscriberId('');
+    }
   }
 
   const searchToolbar = (
@@ -91,9 +222,9 @@ export function SubscriberTable({
         type="text"
         value={query}
         onChange={handleQueryChange}
-        placeholder="搜索邮箱..."
-        aria-label="搜索订阅邮箱"
-        className="w-full rounded-xl border border-admin-border bg-white px-4 py-2 pl-9 text-[13px] text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20 md:w-64"
+        placeholder={copy.searchPlaceholder}
+        aria-label={copy.searchLabel}
+        className="h-10 w-full rounded-xl border border-admin-border bg-white px-4 pl-9 text-[13px] text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20 md:w-64"
       />
       <Search
         className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-admin-text-muted"
@@ -102,86 +233,140 @@ export function SubscriberTable({
     </div>
   );
 
+  const addSubscriberButton = (
+    <button
+      type="button"
+      onClick={openAddDialog}
+      aria-label={copy.openAddDialog}
+      className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-admin-text-primary px-4 text-[13px] font-medium text-white transition-colors hover:bg-black"
+    >
+      <Plus className="h-4 w-4" aria-hidden="true" />
+      {copy.addSubscriber}
+    </button>
+  );
+
+  const tableToolbar = (
+    <>
+      {searchToolbar}
+      {addSubscriberButton}
+    </>
+  );
+
+  const addSubscriberDialog = isAddDialogOpen ? (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 py-6"
+      role="presentation"
+    >
+      <form
+        onSubmit={handleAddSubscriber}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="add-subscriber-title"
+        className="w-full max-w-md rounded-2xl border border-admin-border bg-white shadow-[0_24px_80px_rgba(15,23,42,0.18)]"
+      >
+        <div className="flex items-start justify-between gap-4 border-b border-admin-border px-5 py-4">
+          <div>
+            <h4
+              id="add-subscriber-title"
+              className="text-base font-semibold text-admin-text-primary"
+            >
+              {copy.addSubscriber}
+            </h4>
+            <p className="mt-1 text-xs leading-5 text-admin-text-secondary">
+              {copy.addDescription}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={closeAddDialog}
+            aria-label={copy.closeAddDialog}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-admin-border text-admin-text-secondary transition-colors hover:bg-admin-elevated"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="space-y-3 px-5 py-5">
+          <label
+            htmlFor="add-subscriber-email"
+            className="block text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted"
+          >
+            {copy.emailLabel}
+          </label>
+          <input
+            id="add-subscriber-email"
+            type="email"
+            value={newEmail}
+            onChange={(event) => {
+              setNewEmail(event.target.value);
+              setAddMessage('');
+            }}
+            placeholder={copy.emailPlaceholder}
+            className="w-full rounded-xl border border-admin-border bg-white px-4 py-2.5 text-[13px] text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+          />
+          {addMessage ? (
+            <p className="text-xs leading-5 text-admin-text-secondary">
+              {addMessage}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="flex flex-col-reverse gap-2 border-t border-admin-border px-5 py-4 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            onClick={closeAddDialog}
+            className="inline-flex min-h-11 items-center justify-center rounded-xl border border-admin-border px-5 py-2.5 text-[13px] font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated"
+          >
+            {copy.cancel}
+          </button>
+          <button
+            type="submit"
+            disabled={isSaving}
+            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-admin-text-primary px-5 py-2.5 text-[13px] font-medium text-white transition-colors hover:bg-black"
+          >
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            {isSaving ? copy.saving : copy.saveSubscriber}
+          </button>
+        </div>
+      </form>
+    </div>
+  ) : null;
+
   const content = (
-    <div className="flex min-h-0 flex-1 flex-col gap-5 p-5">
+    <div className="flex h-full min-h-0 flex-col gap-4 p-4">
       {!framed ? (
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <h4 className="text-base font-semibold text-admin-text-primary">
-              订阅者列表
+              {copy.subscriberList}
             </h4>
-            <p className="mt-1 text-xs leading-5 text-admin-text-secondary">
-              列表展示订阅者资料，每页 {PAGE_SIZE} 位，共 {subscriberRows.length} 位订阅者。
-            </p>
           </div>
-          {searchToolbar}
+          <div className="flex flex-wrap gap-2">
+            {tableToolbar}
+          </div>
         </div>
       ) : null}
 
-      <form
-        onSubmit={handleAddSubscriber}
-        className="rounded-2xl border border-admin-border bg-admin-elevated px-4 py-4"
-      >
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <label
-              htmlFor="manual-subscriber-email"
-              className="block text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted"
-            >
-              手动添加订阅者
-            </label>
-            <p className="mt-1 text-xs leading-5 text-admin-text-secondary">
-              输入邮箱后会以活跃状态加入当前订阅者列表。
-            </p>
-          </div>
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <input
-              id="manual-subscriber-email"
-              type="email"
-              value={newEmail}
-              onChange={(event) => {
-                setNewEmail(event.target.value);
-                setAddMessage('');
-              }}
-              placeholder="输入订阅者邮箱"
-              className="w-full rounded-xl border border-admin-border bg-white px-4 py-2.5 text-[13px] text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20 sm:w-72"
-            />
-            <button
-              type="submit"
-              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-admin-text-primary px-5 py-2.5 text-[13px] font-medium text-white transition-colors hover:bg-black"
-            >
-              <Plus className="h-4 w-4" aria-hidden="true" />
-              新增订阅者
-            </button>
-          </div>
-        </div>
-        {addMessage ? (
-          <p className="mt-3 text-xs leading-5 text-admin-text-secondary">
-            {addMessage}
-          </p>
-        ) : null}
-      </form>
-
       <div
         data-testid="subscriber-list-card"
-        className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-admin-border bg-white"
+        className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-admin-border bg-white"
       >
-        <div className="hidden shrink-0 grid-cols-[minmax(240px,1.4fr)_120px_180px_160px_120px] border-b border-admin-border bg-admin-elevated px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:grid">
-          <span>邮箱</span>
-          <span>状态</span>
-          <span>订阅时间</span>
-          <span>触达偏好</span>
-          <span className="text-right">操作</span>
+        <div className="hidden shrink-0 grid-cols-[minmax(220px,1.5fr)_100px_150px_130px_92px] border-b border-admin-border bg-admin-elevated px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:grid">
+          <span>{copy.columns.email}</span>
+          <span>{copy.columns.status}</span>
+          <span>{copy.columns.createdAt}</span>
+          <span>{copy.columns.preference}</span>
+          <span className="text-right">{copy.columns.actions}</span>
         </div>
 
-        <ul className="min-h-0 flex-1 divide-y divide-admin-border overflow-y-auto [scrollbar-gutter:stable]">
+        <ul className="divide-y divide-admin-border">
           {visibleSubscribers.map((subscriber) => (
             <li
               key={subscriber.id}
-              className="grid min-h-[68px] gap-3 px-4 py-3.5 transition-colors hover:bg-admin-elevated lg:grid-cols-[minmax(240px,1.4fr)_120px_180px_160px_120px] lg:items-center"
+              className="grid min-h-[58px] gap-3 px-4 py-3 transition-colors hover:bg-admin-elevated lg:grid-cols-[minmax(220px,1.5fr)_100px_150px_130px_92px] lg:items-center"
             >
               <div className="flex min-w-0 items-center gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-admin-elevated text-[12px] font-semibold text-admin-text-muted">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-admin-elevated text-[11px] font-semibold text-admin-text-muted">
                   {subscriber.email.charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">
@@ -196,17 +381,17 @@ export function SubscriberTable({
 
               <div>
                 <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:hidden">
-                  状态
+                  {copy.columns.status}
                 </p>
                 <StatusBadge
-                  label={subscriber.status === 'active' ? '活跃' : '已停用'}
+                  label={subscriber.status === 'active' ? copy.active : copy.inactive}
                   tone={subscriber.status === 'active' ? 'green' : 'slate'}
                 />
               </div>
 
               <div>
                 <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:hidden">
-                  订阅时间
+                  {copy.columns.createdAt}
                 </p>
                 <p className="text-xs text-admin-text-secondary">
                   {formatDate(subscriber.createdAt)}
@@ -215,75 +400,94 @@ export function SubscriberTable({
 
               <div>
                 <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:hidden">
-                  触达偏好
+                  {copy.columns.preference}
                 </p>
                 <p className="text-xs text-admin-text-secondary">
-                  新品 / 简报
+                  {copy.preferenceValue}
                 </p>
               </div>
 
               <div className="flex justify-start lg:justify-end">
                 <button
                   type="button"
-                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-admin-border px-3 text-[13px] font-medium text-admin-text-secondary transition-colors hover:bg-white"
-                  aria-label={`查看订阅者 ${subscriber.email}`}
+                  onClick={() => handleDeleteSubscriber(subscriber.id)}
+                  disabled={pendingSubscriberId === subscriber.id}
+                  className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-red-200 px-3 text-[12px] font-medium text-red-600 transition-colors hover:bg-red-50"
+                  aria-label={formatCopy(copy.deleteLabel, { email: subscriber.email })}
                 >
-                  <Mail className="h-4 w-4" aria-hidden="true" />
-                  查看
+                  <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+                  {pendingSubscriberId === subscriber.id ? copy.deleting : copy.delete}
                 </button>
               </div>
             </li>
           ))}
         </ul>
-      </div>
 
-      {visibleSubscribers.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-admin-border bg-admin-elevated px-6 py-10 text-center text-sm text-admin-text-secondary">
-          没有匹配的订阅者。
-        </div>
-      ) : null}
+        {visibleSubscribers.length === 0 ? (
+          <div className="m-4 rounded-2xl border border-dashed border-admin-border bg-admin-elevated px-6 py-10 text-center text-sm text-admin-text-secondary">
+            {copy.empty}
+          </div>
+        ) : null}
 
-      <div className="flex flex-col gap-3 border-t border-admin-border pt-5 md:flex-row md:items-center md:justify-between">
-        <p className="text-xs text-admin-text-secondary">
-          每页 {PAGE_SIZE} 位 · 当前显示 {visibleSubscribers.length} 位 · 第 {currentPage} / {totalPages} 页
-        </p>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            aria-label="上一页"
-            disabled={currentPage === 1}
-            onClick={() => setPage((value) => Math.max(1, value - 1))}
-            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-admin-border px-4 text-[13px] font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-45"
-          >
-            <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-            上一页
-          </button>
-          <button
-            type="button"
-            aria-label="下一页"
-            disabled={currentPage === totalPages}
-            onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
-            className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-admin-border px-4 text-[13px] font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-45"
-          >
-            下一页
-            <ChevronRight className="h-4 w-4" aria-hidden="true" />
-          </button>
+        <div
+          data-testid="subscriber-list-pagination"
+          className="mt-auto flex flex-col gap-3 border-t border-admin-border px-4 py-3 md:flex-row md:items-center md:justify-between"
+        >
+          <p className="text-xs text-admin-text-secondary">
+            {formatCopy(copy.pagination, {
+              pageSize: PAGE_SIZE,
+              visible: visibleSubscribers.length,
+              page: currentPage,
+              totalPages
+            })}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              aria-label={copy.previousPage}
+              disabled={currentPage === 1}
+              onClick={() => setPage((value) => Math.max(1, value - 1))}
+              className="inline-flex h-10 items-center gap-2 rounded-xl border border-admin-border px-4 text-[13px] font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+              {copy.previousPage}
+            </button>
+            <button
+              type="button"
+              aria-label={copy.nextPage}
+              disabled={currentPage === totalPages}
+              onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
+              className="inline-flex h-10 items-center gap-2 rounded-xl border border-admin-border px-4 text-[13px] font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-45"
+            >
+              {copy.nextPage}
+              <ChevronRight className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
   );
 
   if (!framed) {
-    return content;
+    return (
+      <>
+        {content}
+        {addSubscriberDialog}
+      </>
+    );
   }
 
   return (
-    <AdminTableShell
-      title="订阅者列表"
-      description={`列表展示订阅者资料，每页 ${PAGE_SIZE} 位，共 ${subscribers.length} 位订阅者。`}
-      toolbar={searchToolbar}
-    >
-      {content}
-    </AdminTableShell>
+    <>
+      <AdminTableShell
+        title={copy.subscriberList}
+        kicker={null}
+        compact
+        toolbar={tableToolbar}
+      >
+        {content}
+      </AdminTableShell>
+      {addSubscriberDialog}
+    </>
   );
 }

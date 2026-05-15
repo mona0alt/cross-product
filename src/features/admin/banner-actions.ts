@@ -1,5 +1,6 @@
 'use server';
 
+import { markMessageRead } from '@/features/admin/message-actions';
 import { db } from '@/lib/db';
 
 type BannerInput = {
@@ -93,11 +94,5 @@ export async function toggleBanner(id: string, isActive: boolean) {
 }
 
 export async function markMessageProcessed(id: string) {
-  return db.message.update({
-    where: { id },
-    data: {
-      status: 'processed',
-      processedAt: new Date()
-    }
-  });
+  return markMessageRead(id);
 }

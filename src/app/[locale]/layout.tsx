@@ -8,6 +8,7 @@ import { notFound } from 'next/navigation';
 import { StorefrontFooter } from '@/components/storefront/footer';
 import { StorefrontFloatingWhatsAppButton } from '@/components/storefront/floating-whatsapp-button';
 import { StorefrontHeader } from '@/components/storefront/header';
+import { getRuntimeSystemSettings } from '@/features/admin/system-settings-actions';
 import { defaultLocale, isLocale, locales, type Locale } from '@/lib/i18n/config';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
 import { getStorefrontCategoryGroups } from '@/features/catalog/queries';
@@ -34,9 +35,12 @@ export default async function LocaleLayout({
 
   setRequestLocale(locale);
 
-  const messages = await getDictionary(locale);
+  const [messages, runtimeSettings] = await Promise.all([
+    getDictionary(locale),
+    getRuntimeSystemSettings()
+  ]);
   const { Storefront } = messages;
-  const whatsAppNumber = process.env.WHATSAPP_NUMBER ?? '15551234567';
+  const whatsAppNumber = runtimeSettings.contact.whatsappNumber;
   const contactEmail = Storefront.footer.supportDescription;
   const categoryGroups = await getStorefrontCategoryGroups(locale);
 

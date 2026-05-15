@@ -30,6 +30,18 @@ enum SubscriberStatus {
   unsubscribed
 }
 
+enum MailCampaignStatus {
+  pending
+  sent
+  partial
+  failed
+}
+
+enum MailDeliveryStatus {
+  sent
+  failed
+}
+
 model Admin {
   id           String   @id @default(cuid())
   username     String   @unique
@@ -140,8 +152,77 @@ model Subscriber {
   email      String            @unique
   status     SubscriberStatus  @default(active)
   source     String?
+  deliveries MailDelivery[]
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
 
   @@index([status])
+}
+
+model MailTemplate {
+  id        String         @id @default(cuid())
+  name      String
+  subject   String
+  body      String
+  campaigns MailCampaign[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model MailCampaign {
+  id             String              @id @default(cuid())
+  templateId     String?
+  templateName   String
+  subject        String
+  body           String
+  status         MailCampaignStatus  @default(pending)
+  recipientCount Int                 @default(0)
+  successCount   Int                 @default(0)
+  failureCount   Int                 @default(0)
+  errorMessage   String?
+  sentAt         DateTime?
+  template       MailTemplate?       @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  deliveries     MailDelivery[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@index([templateId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model MailDelivery {
+  id           String             @id @default(cuid())
+  campaignId   String
+  subscriberId String?
+  email        String
+  status       MailDeliveryStatus
+  errorMessage String?
+  campaign     MailCampaign       @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  subscriber   Subscriber?        @relation(fields: [subscriberId], references: [id], onDelete: SetNull)
+  createdAt    DateTime           @default(now())
+
+  @@index([campaignId])
+  @@index([subscriberId])
+  @@index([status])
+}
+
+model MailAutomationSetting {
+  id           String   @id @default(cuid())
+  singletonKey String   @unique
+  trigger      String   @default("product_new")
+  frequencyCap String   @default("daily")
+  enabled      Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SystemSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([key])
 }

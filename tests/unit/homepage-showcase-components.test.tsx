@@ -83,6 +83,7 @@ describe('homepage showcase components', () => {
     const html = renderToStaticMarkup(
       <HomepageCategoryGrid
         locale="en"
+        eyebrow="Categories"
         title="Product Series"
         categories={categories}
       />

@@ -81,7 +81,7 @@ describe('admin login flow', () => {
   });
 
   it('does not mark the session cookie as secure for http admin login requests', async () => {
-    process.env.NODE_ENV = 'production';
+    vi.stubEnv('NODE_ENV', 'production');
 
     const { hashPassword } = await import('@/lib/auth');
     const passwordHash = await hashPassword('ChangeMe123!');

@@ -7,6 +7,7 @@ import {
   MAX_ADMIN_UPLOAD_BYTES,
   type AdminUploadValidationError
 } from '@/features/admin/upload-rules';
+import { getRuntimeSystemSettings } from '@/features/admin/system-settings-actions';
 
 export type AdminUploadScope = 'product' | 'banner' | 'category';
 
@@ -42,11 +43,16 @@ export async function saveAdminImageUpload(
   scope: AdminUploadScope
 ) {
   const extension = ADMIN_IMAGE_EXTENSIONS[file.type as keyof typeof ADMIN_IMAGE_EXTENSIONS];
+  const settings = await getRuntimeSystemSettings();
   const now = new Date();
   const year = String(now.getFullYear());
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const segment =
-    scope === 'banner' ? 'banners' : scope === 'category' ? 'categories' : 'products';
+    scope === 'banner'
+      ? settings.upload.bannerSegment
+      : scope === 'category'
+        ? settings.upload.categorySegment
+        : settings.upload.productSegment;
   const filename = `${randomUUID()}.${extension}`;
   const relativeUrl = `/uploads/${segment}/${year}/${month}/${filename}`;
   const directory = join(process.cwd(), 'public', 'uploads', segment, year, month);

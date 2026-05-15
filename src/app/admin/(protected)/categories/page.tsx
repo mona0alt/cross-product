@@ -1,72 +1,94 @@
 import React from 'react';
 
+import { SystemSettingsPanel } from '@/components/admin/system-settings-panel';
 import {
-  SystemSettingsPanel,
-  type SystemSettingsViewModel
-} from '@/components/admin/system-settings-panel';
+  getAdminSystemSettingsViewModel,
+  updateAdminSystemSettings
+} from '@/features/admin/system-settings-actions';
+import type { SystemSettingsViewModel } from '@/features/admin/system-settings-types';
+import { getAdminDictionary } from '@/lib/admin-i18n';
 
-function getConfiguredStatus(value: string | undefined) {
-  return value && value.trim().length > 0 ? '已配置' : '未配置';
-}
+export const dynamic = 'force-dynamic';
 
-function getDatabaseProvider(databaseUrl: string | undefined) {
-  if (!databaseUrl) {
-    return 'SQLite';
+function localizeSystemSettings(
+  settings: SystemSettingsViewModel,
+  copy: {
+    configured: string;
+    unconfigured: string;
+    groups: Record<string, Record<string, string>>;
   }
-
-  if (databaseUrl.startsWith('postgres')) {
-    return 'PostgreSQL';
-  }
-
-  if (databaseUrl.startsWith('mysql')) {
-    return 'MySQL';
-  }
-
-  if (databaseUrl.startsWith('file:')) {
-    return 'SQLite';
-  }
-
-  return '自定义数据库';
-}
-
-function getSystemSettings(): SystemSettingsViewModel {
-  const databaseUrl = process.env.DATABASE_URL ?? 'file:./dev.db';
-  const smtpHost = process.env.SMTP_HOST ?? '未配置';
-  const smtpUser = process.env.SMTP_USER ?? '未配置';
-  const smtpPort = process.env.SMTP_PORT ?? '465';
+): SystemSettingsViewModel {
+  const groupCopy = copy.groups;
+  const fieldLabelKeyByFieldKey: Record<string, string> = {
+    'contact.whatsappNumber': 'whatsappNumber',
+    'email.mailFrom': 'fromAddress',
+    'email.smtpHost': 'smtpHost',
+    'email.smtpPort': 'smtpPort',
+    'email.smtpUser': 'smtpUser',
+    'email.smtpPassword': 'smtpPassword',
+    'upload.productSegment': 'productSegment',
+    'upload.categorySegment': 'categorySegment',
+    'upload.bannerSegment': 'bannerSegment',
+    'llm.provider': 'provider',
+    'llm.model': 'model',
+    'llm.apiBaseUrl': 'apiBaseUrl',
+    'runtime.databaseProvider': 'databaseProvider',
+    'runtime.databaseUrl': 'databaseUrl'
+  };
+  const fieldHelpKeyByFieldKey: Record<string, string> = {
+    'contact.whatsappNumber': 'whatsappHelp',
+    'email.mailFrom': 'mailFromHelp',
+    'email.smtpPassword': 'smtpPasswordHelp',
+    'upload.productSegment': 'productHelp',
+    'llm.apiKey': 'apiKeyNote',
+    'runtime.databaseUrl': 'databaseUrlHelp'
+  };
 
   return {
-    email: {
-      fromAddress: process.env.MAIL_FROM ?? 'support@fbgm.com',
-      smtpHost,
-      smtpPort,
-      smtpUser,
-      enabled: Boolean(process.env.SMTP_HOST && process.env.SMTP_USER)
-    },
-    database: {
-      provider: getDatabaseProvider(databaseUrl),
-      url: getConfiguredStatus(databaseUrl),
-      status: getConfiguredStatus(databaseUrl)
-    },
-    storage: {
-      uploadRoot: '/public/uploads',
-      productImages: '/public/uploads/products',
-      categoryImages: '/public/uploads/categories',
-      bannerImages: '/public/uploads/banners'
-    },
-    llm: {
-      provider: process.env.LLM_PROVIDER ?? 'OpenAI compatible',
-      model: process.env.LLM_MODEL ?? 'gpt-4o-mini',
-      apiBaseUrl: process.env.OPENAI_BASE_URL ?? 'https://api.openai.com/v1',
-      apiKeyConfigured: Boolean(process.env.OPENAI_API_KEY)
-    }
+    groups: settings.groups.map((group) => {
+      const currentGroupCopy = groupCopy[group.key] ?? {};
+
+      return {
+        ...group,
+        title: currentGroupCopy.title ?? group.title,
+        description: currentGroupCopy.description ?? group.description,
+        fields: group.fields.map((field) => {
+          const labelKey = fieldLabelKeyByFieldKey[field.key];
+          const helpKey = fieldHelpKeyByFieldKey[field.key];
+          const placeholder = field.sensitive && field.configured
+            ? `${copy.configured}`
+            : field.placeholder;
+
+          return {
+            ...field,
+            label: labelKey ? currentGroupCopy[labelKey] ?? field.label : field.label,
+            value: field.value === '已配置'
+              ? copy.configured
+              : field.value === '未配置'
+                ? copy.unconfigured
+                : field.value,
+            placeholder,
+            help: helpKey ? currentGroupCopy[helpKey] ?? field.help : field.help
+          };
+        })
+      };
+    })
   };
 }
 
-export default function AdminCategoriesPage() {
+export default async function AdminCategoriesPage() {
+  const [settings, { Admin }] = await Promise.all([
+    getAdminSystemSettingsViewModel(),
+    getAdminDictionary()
+  ]);
+
   return (
     <section className="min-h-[calc(100vh-104px)]">
-      <SystemSettingsPanel settings={getSystemSettings()} />
+      <SystemSettingsPanel
+        settings={localizeSystemSettings(settings, Admin.settings)}
+        saveAction={updateAdminSystemSettings}
+        copy={Admin.settings}
+      />
     </section>
   );
 }

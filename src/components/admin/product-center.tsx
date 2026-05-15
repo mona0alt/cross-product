@@ -144,6 +144,103 @@ export function getProductActionMenuState({
   return null;
 }
 
+type ProductCenterCopy = {
+  listTitle: string;
+  categoryTitle: string;
+  searchPlaceholder: string;
+  actionsLabel: string;
+  filterLabel: string;
+  allProducts: string;
+  pendingQueue: string;
+  recommendedProducts: string;
+  exportCsv: string;
+  newProduct: string;
+  addCategory: string;
+  emptyCategoriesTitle: string;
+  emptyCategoriesDescription: string;
+  selectedProducts: string;
+  bulkRecommend: string;
+  bulkUnrecommend: string;
+  bulkArchive: string;
+  scrollAreaLabel: string;
+  selectCurrentPage: string;
+  columns: {
+    name: string;
+    category: string;
+    status: string;
+    price: string;
+    recommended: string;
+    actions: string;
+  };
+  yes: string;
+  no: string;
+  previousPage: string;
+  nextPage: string;
+  pagination: string;
+  editProductLabel: string;
+  productActionLabel: string;
+  productActionMenuLabel: string;
+  editCategoryLabel: string;
+  deleteCategoryLabel: string;
+  deleteCategoryTitle: string;
+  productCount: string;
+  emptyProductsTitle: string;
+  emptyCategoryProductsTitle: string;
+  emptyProductsDescription: string;
+};
+
+const defaultProductCenterCopy: ProductCenterCopy = {
+  listTitle: '商品管理',
+  categoryTitle: '产品类目',
+  searchPlaceholder: '搜索商品...',
+  actionsLabel: '商品管理操作',
+  filterLabel: '商品筛选',
+  allProducts: '全部商品',
+  pendingQueue: '待审核队列',
+  recommendedProducts: '推荐商品',
+  exportCsv: '导出 CSV',
+  newProduct: '新增商品',
+  addCategory: '添加类目',
+  emptyCategoriesTitle: '暂无分类',
+  emptyCategoriesDescription: '创建分类后，商品可挂载到对应类目。',
+  selectedProducts: '已选择 {count} 个商品',
+  bulkRecommend: '批量推荐',
+  bulkUnrecommend: '取消推荐',
+  bulkArchive: '批量归档',
+  scrollAreaLabel: '商品列表滚动区域',
+  selectCurrentPage: '选择当前页商品',
+  columns: {
+    name: '产品名称',
+    category: '类别',
+    status: '状态',
+    price: '价格',
+    recommended: '推荐',
+    actions: '操作'
+  },
+  yes: '是',
+  no: '否',
+  previousPage: '上一页',
+  nextPage: '下一页',
+  pagination: '第 {page} / {totalPages} 页 · 共 {total} 个商品',
+  editProductLabel: '编辑商品 {name}',
+  productActionLabel: '商品操作 {name}',
+  productActionMenuLabel: '商品操作菜单 {name}',
+  editCategoryLabel: '编辑类目 {name}',
+  deleteCategoryLabel: '删除类目 {name}',
+  deleteCategoryTitle: '删除类目',
+  productCount: '{count} 个商品',
+  emptyProductsTitle: '暂无商品',
+  emptyCategoryProductsTitle: '该类目暂无商品',
+  emptyProductsDescription: '新增商品并发布后，前台商品展示会同步更新。'
+};
+
+function formatCopy(template: string, values: Record<string, string | number>) {
+  return Object.entries(values).reduce(
+    (text, [key, value]) => text.replaceAll(`{${key}}`, String(value)),
+    template
+  );
+}
+
 export type ProductGalleryImageItem = {
   url: string;
   previewUrl?: string | null;
@@ -293,7 +390,8 @@ export function ProductCenter({
   defaultCategoryEditorMode = 'edit',
   defaultStatusFilter = 'all',
   defaultSelectedProductIds = [],
-  defaultOpenActionMenuProductId
+  defaultOpenActionMenuProductId,
+  copy = defaultProductCenterCopy
 }: {
   categories: ProductCenterCategory[];
   products: ProductCenterRow[];
@@ -308,6 +406,7 @@ export function ProductCenter({
   defaultStatusFilter?: ProductStatusFilter;
   defaultSelectedProductIds?: string[];
   defaultOpenActionMenuProductId?: string;
+  copy?: ProductCenterCopy;
 }) {
   const [productRows, setProductRows] = useState(() => sortProductRowsByName(products));
   const firstProductId = productRows[0]?.id ?? null;
@@ -577,7 +676,7 @@ export function ProductCenter({
               <Package className="h-4 w-4" />
             </div>
             <h2 className="shrink-0 text-xl font-bold text-admin-text-primary">
-              商品管理
+              {copy.listTitle}
             </h2>
           </div>
 
@@ -590,19 +689,19 @@ export function ProductCenter({
                 setSearchTerm(event.target.value);
                 setCurrentProductPage(1);
               }}
-              placeholder="搜索商品..."
+              placeholder={copy.searchPlaceholder}
               className="h-10 w-full rounded-lg border border-admin-border bg-admin-elevated pl-9 pr-3 text-sm text-admin-text-primary outline-none transition focus:border-admin-accent focus:bg-white focus:ring-2 focus:ring-emerald-500/10"
             />
           </label>
         </div>
         <div
           role="group"
-          aria-label="商品管理操作"
+          aria-label={copy.actionsLabel}
           className="flex shrink-0 flex-wrap items-center gap-2 xl:max-w-[680px] xl:justify-end 2xl:max-w-none"
         >
           <div
             role="group"
-            aria-label="商品筛选"
+            aria-label={copy.filterLabel}
             className="inline-flex h-10 items-center gap-1 rounded-lg border border-admin-border bg-admin-elevated p-1"
           >
             <button
@@ -612,21 +711,21 @@ export function ProductCenter({
                 statusFilter === 'all' && activeCategoryId === null
               )}
             >
-              全部商品
+              {copy.allProducts}
             </button>
             <button
               type="button"
               onClick={() => updateStatusFilter('pending')}
               className={filterButtonClass(statusFilter === 'pending')}
             >
-              待审核队列
+              {copy.pendingQueue}
             </button>
             <button
               type="button"
               onClick={() => updateStatusFilter('recommended')}
               className={filterButtonClass(statusFilter === 'recommended')}
             >
-              推荐商品
+              {copy.recommendedProducts}
             </button>
           </div>
           <button
@@ -635,7 +734,7 @@ export function ProductCenter({
             className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border border-admin-border bg-white px-4 text-sm font-semibold text-admin-text-secondary transition hover:border-admin-border-strong hover:bg-admin-elevated focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
           >
             <Download className="h-4 w-4" />
-            导出 CSV
+            {copy.exportCsv}
           </button>
           <button
             type="button"
@@ -643,7 +742,7 @@ export function ProductCenter({
             className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-admin-accent px-4 text-sm font-semibold text-white transition hover:bg-admin-accent-hover focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
           >
             <CirclePlus className="h-4 w-4" />
-            新增商品
+            {copy.newProduct}
           </button>
         </div>
       </header>
@@ -651,14 +750,14 @@ export function ProductCenter({
       <div className="grid min-h-0 flex-1 gap-5 bg-admin-bg p-4 lg:grid-cols-[minmax(280px,360px)_minmax(0,1fr)] lg:p-5">
         <aside className="min-h-0 overflow-y-auto rounded-xl border border-admin-border bg-white p-5 shadow-sm">
           <div className="mb-5 flex items-center justify-between gap-3">
-            <h3 className="text-xl font-bold text-admin-text-primary">产品类目</h3>
+            <h3 className="text-xl font-bold text-admin-text-primary">{copy.categoryTitle}</h3>
             <button
               type="button"
               onClick={openCreateCategoryEditor}
               className="inline-flex items-center gap-1.5 rounded-lg bg-admin-accent px-3 py-2 text-sm font-semibold text-white transition hover:bg-admin-accent-hover"
             >
               <CirclePlus className="h-4 w-4" />
-              添加类目
+              {copy.addCategory}
             </button>
           </div>
 
@@ -675,11 +774,12 @@ export function ProductCenter({
                     setSelectedProductIds([]);
                   }}
                   onEdit={openEditCategoryEditor}
+                  copy={copy}
                 />
               ))}
             </div>
           ) : (
-            <EmptyState title="暂无分类" description="创建分类后，商品可挂载到对应类目。" />
+            <EmptyState title={copy.emptyCategoriesTitle} description={copy.emptyCategoriesDescription} />
           )}
         </aside>
 
@@ -692,7 +792,7 @@ export function ProductCenter({
             {selectedProductIds.length > 0 ? (
               <div className="flex shrink-0 flex-wrap items-center gap-2 rounded-lg border border-admin-border bg-white px-3 py-2 text-sm text-admin-text-secondary shadow-sm">
                 <span className="font-semibold">
-                  已选择 {selectedProductIds.length} 个商品
+                  {formatCopy(copy.selectedProducts, { count: selectedProductIds.length })}
                 </span>
                 <button
                   type="button"
@@ -700,14 +800,14 @@ export function ProductCenter({
                   className="inline-flex items-center gap-1 rounded-md border border-admin-border bg-white px-3 py-1.5 text-xs font-semibold transition hover:border-admin-border-strong"
                 >
                   <Star className="h-3.5 w-3.5" />
-                  批量推荐
+                  {copy.bulkRecommend}
                 </button>
                 <button
                   type="button"
                   onClick={() => void applyBulkOperation('unrecommend')}
                   className="rounded-md border border-admin-border bg-white px-3 py-1.5 text-xs font-semibold transition hover:border-admin-border-strong"
                 >
-                  取消推荐
+                  {copy.bulkUnrecommend}
                 </button>
                 <button
                   type="button"
@@ -715,7 +815,7 @@ export function ProductCenter({
                   className="inline-flex items-center gap-1 rounded-md border border-rose-200 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:border-rose-300"
                 >
                   <Archive className="h-3.5 w-3.5" />
-                  批量归档
+                  {copy.bulkArchive}
                 </button>
               </div>
             ) : null}
@@ -723,7 +823,7 @@ export function ProductCenter({
           <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-admin-border bg-white shadow-sm">
             {filteredProducts.length > 0 ? (
               <div
-                aria-label="商品列表滚动区域"
+                aria-label={copy.scrollAreaLabel}
                 className="min-h-0 flex-1 overflow-auto [scrollbar-gutter:stable]"
               >
                 <table className="w-full min-w-[1040px] border-separate border-spacing-0 text-left">
@@ -732,20 +832,20 @@ export function ProductCenter({
                       <ColumnHeader>
                         <input
                           type="checkbox"
-                          aria-label="选择当前页商品"
+                          aria-label={copy.selectCurrentPage}
                           checked={allVisibleProductsSelected}
                           onChange={toggleVisibleProductSelection}
                           className="h-4 w-4 rounded border-admin-border text-admin-accent"
                         />
                       </ColumnHeader>
-                      <ColumnHeader>产品名称</ColumnHeader>
+                      <ColumnHeader>{copy.columns.name}</ColumnHeader>
                       <ColumnHeader>SKU</ColumnHeader>
-                      <ColumnHeader>类别</ColumnHeader>
-                      <ColumnHeader>状态</ColumnHeader>
-                      <ColumnHeader>价格</ColumnHeader>
-                      <ColumnHeader>推荐</ColumnHeader>
+                      <ColumnHeader>{copy.columns.category}</ColumnHeader>
+                      <ColumnHeader>{copy.columns.status}</ColumnHeader>
+                      <ColumnHeader>{copy.columns.price}</ColumnHeader>
+                      <ColumnHeader>{copy.columns.recommended}</ColumnHeader>
                       <ColumnHeader align="right" className="w-28 pl-6 pr-8">
-                        操作
+                        {copy.columns.actions}
                       </ColumnHeader>
                     </tr>
                   </thead>
@@ -767,7 +867,7 @@ export function ProductCenter({
                             <div className="min-w-0">
                               <button
                                 type="button"
-                                aria-label={`编辑商品 ${product.nameZh}`}
+                                aria-label={formatCopy(copy.editProductLabel, { name: product.nameZh })}
                                 onClick={() => openEditEditor(product.id)}
                                 className="block max-w-full truncate rounded text-left text-sm font-semibold text-admin-text-primary transition hover:text-admin-accent hover:underline focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
                               >
@@ -792,7 +892,7 @@ export function ProductCenter({
                           {formatPrice(product.priceUsd)}
                         </td>
                         <td className="px-5 py-3 text-sm text-admin-text-secondary">
-                          {product.isRecommended ? '是' : '否'}
+                          {product.isRecommended ? copy.yes : copy.no}
                         </td>
                         <td className="py-3 pl-6 pr-8 text-right">
                           <div className="flex justify-end gap-2">
@@ -809,6 +909,7 @@ export function ProductCenter({
                                 )
                               }
                               onArchive={() => void archiveProduct(product.id)}
+                              copy={copy}
                             />
                           </div>
                         </td>
@@ -820,21 +921,24 @@ export function ProductCenter({
             ) : (
               <div className="flex min-h-0 flex-1 items-center justify-center p-5">
                 <EmptyState
-                  title={activeCategory ? '该类目暂无商品' : '暂无商品'}
-                  description="新增商品并发布后，前台商品展示会同步更新。"
+                  title={activeCategory ? copy.emptyCategoryProductsTitle : copy.emptyProductsTitle}
+                  description={copy.emptyProductsDescription}
                 />
               </div>
             )}
             {showProductPagination ? (
               <footer className="flex shrink-0 flex-col gap-3 border-t border-admin-border bg-admin-elevated px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                 <span className="text-xs font-medium text-admin-text-muted">
-                  第 {visibleProductPage} / {totalProductPages} 页 · 共{' '}
-                  {filteredProducts.length} 个商品
+                  {formatCopy(copy.pagination, {
+                    page: visibleProductPage,
+                    totalPages: totalProductPages,
+                    total: filteredProducts.length
+                  })}
                 </span>
                 <div className="flex items-center gap-2">
                   <button
                     type="button"
-                    aria-label="上一页"
+                    aria-label={copy.previousPage}
                     disabled={visibleProductPage === 1}
                     onClick={() =>
                       setCurrentProductPage((page) => Math.max(1, page - 1))
@@ -845,7 +949,7 @@ export function ProductCenter({
                   </button>
                   <button
                     type="button"
-                    aria-label="下一页"
+                    aria-label={copy.nextPage}
                     disabled={visibleProductPage === totalProductPages}
                     onClick={() =>
                       setCurrentProductPage((page) =>
@@ -898,18 +1002,20 @@ function ProductActionMenu({
   product,
   isOpen,
   onToggle,
-  onArchive
+  onArchive,
+  copy
 }: {
   product: ProductCenterRow;
   isOpen: boolean;
   onToggle: () => void;
   onArchive: () => void;
+  copy: ProductCenterCopy;
 }) {
   return (
     <div className="relative inline-flex" data-product-action-menu>
       <button
         type="button"
-        aria-label={`商品操作 ${product.nameZh}`}
+        aria-label={formatCopy(copy.productActionLabel, { name: product.nameZh })}
         aria-expanded={isOpen}
         aria-haspopup="menu"
         onClick={onToggle}
@@ -925,7 +1031,7 @@ function ProductActionMenu({
       {isOpen ? (
         <div
           role="menu"
-          aria-label={`商品操作菜单 ${product.nameZh}`}
+          aria-label={formatCopy(copy.productActionMenuLabel, { name: product.nameZh })}
           className="absolute right-0 top-10 z-30 w-44 rounded-xl border border-admin-border bg-white p-1.5 text-left shadow-xl ring-1 ring-black/5"
         >
           <a
@@ -958,12 +1064,14 @@ function CategoryItem({
   category,
   isSelected,
   onSelect,
-  onEdit
+  onEdit,
+  copy
 }: {
   category: ProductCenterCategory;
   isSelected: boolean;
   onSelect: (categoryId: string) => void;
   onEdit: (categoryId: string) => void;
+  copy: ProductCenterCopy;
 }) {
   return (
     <div
@@ -1004,13 +1112,13 @@ function CategoryItem({
           </span>
         </span>
         <span className="shrink-0 rounded-full bg-white px-2 py-1 text-xs font-semibold text-admin-text-secondary ring-1 ring-admin-border">
-          {category.productCount} 个商品
+          {formatCopy(copy.productCount, { count: category.productCount })}
         </span>
       </button>
       <div className="flex shrink-0 items-center gap-1">
         <button
           type="button"
-          aria-label={`编辑类目 ${category.nameZh}`}
+          aria-label={formatCopy(copy.editCategoryLabel, { name: category.nameZh })}
           onClick={() => onEdit(category.id)}
           className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition hover:bg-white hover:text-admin-accent"
         >
@@ -1019,8 +1127,8 @@ function CategoryItem({
         <form action={deleteCategoryFormAction.bind(null, category.id)}>
           <button
             type="submit"
-            aria-label={`删除类目 ${category.nameZh}`}
-            title="删除类目"
+            aria-label={formatCopy(copy.deleteCategoryLabel, { name: category.nameZh })}
+            title={copy.deleteCategoryTitle}
             className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition hover:bg-white hover:text-rose-600"
           >
             <Trash2 className="h-4 w-4" />

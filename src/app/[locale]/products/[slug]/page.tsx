@@ -2,6 +2,7 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 
 import { ProductGallery } from '@/components/storefront/product-gallery';
+import { getRuntimeSystemSettings } from '@/features/admin/system-settings-actions';
 import { getProductDetailBySlug } from '@/features/catalog/queries';
 import { defaultLocale, isLocale, type Locale } from '@/lib/i18n/config';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
@@ -15,9 +16,12 @@ export default async function ProductDetailPage({
 }) {
   const { locale: localeParam, slug } = await params;
   const locale: Locale = isLocale(localeParam) ? localeParam : defaultLocale;
-  const messages = await getDictionary(locale);
+  const [messages, runtimeSettings, product] = await Promise.all([
+    getDictionary(locale),
+    getRuntimeSystemSettings(),
+    getProductDetailBySlug(slug, locale)
+  ]);
   const { Storefront } = messages;
-  const product = await getProductDetailBySlug(slug, locale);
 
   if (!product) {
     notFound();
@@ -25,7 +29,7 @@ export default async function ProductDetailPage({
 
   const galleryImages =
     product.images.length > 0 ? product.images : [product.coverImageUrl];
-  const whatsAppNumber = process.env.WHATSAPP_NUMBER ?? '15551234567';
+  const whatsAppNumber = runtimeSettings.contact.whatsappNumber;
   const whatsAppHref = `https://wa.me/${whatsAppNumber.replace(/[^\d]/g, '')}?text=${encodeURIComponent(product.name)}`;
 
   return (

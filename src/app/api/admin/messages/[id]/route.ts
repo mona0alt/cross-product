@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 
-import { markMessageRead } from '@/features/admin/message-actions';
+import { deleteAdminMessage } from '@/features/admin/message-actions';
 import { requireAdminSession } from '@/lib/auth';
 
-export async function POST(
+export async function DELETE(
   _request: Request,
   context: {
     params: Promise<{ id: string }>;
@@ -16,11 +16,10 @@ export async function POST(
   }
 
   const { id } = await context.params;
-  const message = await markMessageRead(id);
+  const message = await deleteAdminMessage(id);
 
   return NextResponse.json({
     ok: true,
-    id: message.id,
-    status: message.status
+    id: message.id
   });
 }

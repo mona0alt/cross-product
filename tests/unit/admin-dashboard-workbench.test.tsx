@@ -3,12 +3,17 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 
 import { DashboardWorkbench } from '@/components/admin/dashboard-workbench';
-import { mockBackoffice } from '@/features/admin/mock-backoffice';
-
 describe('DashboardWorkbench', () => {
   it('renders the workbench hero and todo counts', () => {
     const html = renderToStaticMarkup(
-      <DashboardWorkbench data={mockBackoffice.dashboard} />
+      <DashboardWorkbench
+        data={{
+          pendingProducts: 26,
+          todayCandidates: 11,
+          weeklyPace: '保持稳定',
+          hotCategories: ['清洁机器人', '巡检无人机', '工业机械臂']
+        }}
+      />
     );
 
     expect(html).toContain('先处理待审核商品');

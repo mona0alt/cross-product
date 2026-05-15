@@ -1,9 +1,22 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
-import { FileText, Save, Send, Users } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  FileText,
+  History,
+  Plus,
+  Save,
+  Search,
+  Send,
+  Trash2,
+  Users
+} from 'lucide-react';
 import { SubscriberAutomationRules } from './subscriber-notification-board';
-import { SubscriberTable, type SubscriberRow } from './subscriber-table';
+import { SubscriberTable, type SubscriberRow, type SubscriberTableCopy } from './subscriber-table';
+import { AdminTableShell } from './admin-table-shell';
+import { StatusBadge } from './status-badge';
 
 type SubscriberMailData = {
   total: string;
@@ -22,286 +35,897 @@ type SubscriberMailData = {
   }>;
 };
 
-type TabKey = 'automation' | 'templates' | 'campaign' | 'subscribers';
+export type MailTemplateRow = {
+  id: string;
+  name: string;
+  subject: string;
+  body: string;
+};
 
-const tabs: ReadonlyArray<{
+export type SentMailRecord = {
+  id: string;
+  templateId: string;
+  templateName: string;
+  sentAt: string;
+  recipients: number;
+  success: number;
+  failed: number;
+  status: '成功' | '部分成功' | '失败' | '待发送';
+  errorMessage?: string | null;
+};
+
+type MailAutomationSetting = {
+  trigger: 'product_new' | 'restock' | 'manual';
+  frequencyCap: 'daily' | 'weekly' | 'unlimited';
+  enabled: boolean;
+};
+
+type TabKey = 'automation' | 'mail' | 'sent' | 'subscribers';
+type InitialTabKey = TabKey | 'templates' | 'campaign';
+
+type SubscriberWorkspaceCopy = SubscriberTableCopy & {
+  automationRules: string;
+  automationDetail: string;
+  mailWorkspace: string;
+  mailDetail: string;
+  sentMail: string;
+  sentDetail: string;
+  subscriberList: string;
+  subscriberDetail: string;
+};
+
+const defaultSubscriberWorkspaceCopy: SubscriberWorkspaceCopy = {
+  automationRules: '自动化发送规则',
+  automationDetail: '触发与频控',
+  mailWorkspace: '邮件模板与群发',
+  mailDetail: '编辑与发送',
+  sentMail: '已发送邮件',
+  sentDetail: '发送记录',
+  subscriberList: '订阅者列表',
+  subscriberDetail: '列表与分页',
+  searchPlaceholder: '搜索邮箱...',
+  searchLabel: '搜索订阅邮箱',
+  addSubscriber: '新增订阅者',
+  openAddDialog: '打开新增订阅者弹窗',
+  addDescription: '输入邮箱后会以活跃状态加入当前订阅者列表。',
+  closeAddDialog: '关闭新增订阅者弹窗',
+  emailLabel: '订阅邮箱',
+  emailPlaceholder: '输入订阅者邮箱',
+  cancel: '取消',
+  saving: '保存中...',
+  saveSubscriber: '保存订阅者',
+  columns: {
+    email: '邮箱',
+    status: '状态',
+    createdAt: '订阅时间',
+    preference: '触达偏好',
+    actions: '操作'
+  },
+  active: '活跃',
+  inactive: '已停用',
+  preferenceValue: '新品 / 简报',
+  deleteLabel: '删除订阅者 {email}',
+  deleting: '删除中',
+  delete: '删除',
+  empty: '没有匹配的订阅者。',
+  pagination: '每页 {pageSize} 位 · 当前显示 {visible} 位 · 第 {page} / {totalPages} 页',
+  previousPage: '上一页',
+  nextPage: '下一页',
+  invalidEmail: '请输入有效的邮箱地址。',
+  duplicateEmail: '该邮箱已在订阅者列表中。',
+  saveError: '订阅者保存失败，请稍后重试。'
+};
+
+function getTabs(copy: SubscriberWorkspaceCopy): ReadonlyArray<{
   key: TabKey;
   label: string;
   detail: string;
   icon: typeof Send;
-}> = [
+}> {
+  return [
   {
     key: 'automation',
-    label: '自动化发送规则',
-    detail: '触发与频控',
+    label: copy.automationRules,
+    detail: copy.automationDetail,
     icon: Send
   },
   {
-    key: 'templates',
-    label: '邮件模板管理',
-    detail: '主题与正文',
+    key: 'mail',
+    label: copy.mailWorkspace,
+    detail: copy.mailDetail,
     icon: FileText
   },
   {
-    key: 'campaign',
-    label: '群发邮件',
-    detail: '模板群发',
-    icon: Send
+    key: 'sent',
+    label: copy.sentMail,
+    detail: copy.sentDetail,
+    icon: History
   },
   {
     key: 'subscribers',
-    label: '订阅者列表',
-    detail: '列表与分页',
+    label: copy.subscriberList,
+    detail: copy.subscriberDetail,
     icon: Users
   }
-];
-
-function getMailTemplates(data: SubscriberMailData) {
-  return data.templates && data.templates.length > 0
-    ? data.templates
-    : data.campaigns.map((campaign, index) => ({
-        id: `campaign-${index + 1}`,
-        name: campaign.title,
-        subject: `${campaign.title} 通知`,
-        body: campaign.detail
-      }));
+  ];
 }
 
-function MailTemplateManager({
-  data
-}: {
-  data: SubscriberMailData;
-}) {
-  const initialTemplates = useMemo(() => getMailTemplates(data), [data]);
-  const [templates, setTemplates] = useState(() => initialTemplates);
-  const [selectedTemplateId, setSelectedTemplateId] = useState(templates[0]?.id ?? '');
-  const selectedTemplate =
-    templates.find((template) => template.id === selectedTemplateId) ?? templates[0];
-  const [subject, setSubject] = useState(selectedTemplate?.subject ?? '');
-  const [body, setBody] = useState(selectedTemplate?.body ?? '');
-
-  function handleTemplateChange(templateId: string) {
-    const nextTemplate = templates.find((template) => template.id === templateId);
-    setSelectedTemplateId(templateId);
-    setSubject(nextTemplate?.subject ?? '');
-    setBody(nextTemplate?.body ?? '');
+function getSentMailTone(status: SentMailRecord['status']) {
+  if (status === '成功') {
+    return 'green';
   }
 
-  function handleSaveTemplate() {
-    setTemplates((currentTemplates) =>
-      currentTemplates.map((template) =>
-        template.id === selectedTemplateId
-          ? {
-              ...template,
-              subject,
-              body
-            }
-          : template
-      )
-    );
+  if (status === '部分成功') {
+    return 'amber';
+  }
+
+  if (status === '待发送') {
+    return 'slate';
+  }
+
+  return 'danger';
+}
+
+function getSuccessRate(record: SentMailRecord) {
+  if (record.recipients === 0) {
+    return '0%';
+  }
+
+  return `${Math.round((record.success / record.recipients) * 100)}%`;
+}
+
+const SENT_MAIL_PAGE_SIZE = 8;
+
+function StatusWithFailureLog({
+  status,
+  errorMessage
+}: {
+  status: SentMailRecord['status'] | '待发送';
+  errorMessage?: string | null;
+}) {
+  const hasFailureLog = Boolean(errorMessage && status !== '成功' && status !== '待发送');
+
+  if (!hasFailureLog) {
+    return <StatusBadge label={status} tone={getSentMailTone(status)} />;
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-5 p-5">
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div>
-          <h4 className="text-base font-semibold text-admin-text-primary">
-            邮件模板管理
-          </h4>
-          <p className="mt-1 text-xs leading-5 text-admin-text-secondary">
-            维护订阅通知的主题、正文和变量占位符，保存后可用于后续发送流程。
-          </p>
-        </div>
-        <select
-          value={selectedTemplateId}
-          onChange={(event) => handleTemplateChange(event.target.value)}
-          aria-label="选择邮件模板"
-          className="w-full rounded-xl border border-admin-border bg-white px-4 py-2.5 text-[13px] text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20 md:w-56"
-        >
-          {templates.map((template) => (
-            <option key={template.id} value={template.id}>
-              {template.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="grid min-h-0 flex-1 gap-5 lg:grid-cols-[220px_minmax(0,1fr)]">
-        <div className="space-y-2 lg:overflow-y-auto">
-          {templates.map((template) => (
-            <button
-              key={template.id}
-              type="button"
-              onClick={() => handleTemplateChange(template.id)}
-              className={`flex min-h-12 w-full items-center gap-2 rounded-xl border px-3 py-2 text-left text-[13px] font-medium transition-colors ${
-                template.id === selectedTemplateId
-                  ? 'border-admin-accent bg-admin-accent/10 text-admin-accent'
-                  : 'border-admin-border bg-white text-admin-text-secondary hover:bg-admin-elevated'
-              }`}
-            >
-              <FileText className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-              <span className="truncate">{template.name}</span>
-            </button>
-          ))}
-        </div>
-
-        <div className="flex min-h-0 flex-col gap-4">
-          <div className="space-y-2">
-            <label
-              htmlFor="mail-template-subject"
-              className="block text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted"
-            >
-              模板主题
-            </label>
-            <input
-              id="mail-template-subject"
-              value={subject}
-              onChange={(event) => setSubject(event.target.value)}
-              className="w-full rounded-xl border border-admin-border bg-white px-4 py-2.5 text-[13px] text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label
-              htmlFor="mail-template-body"
-              className="block text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted"
-            >
-              模板正文
-            </label>
-            <textarea
-              id="mail-template-body"
-              value={body}
-              onChange={(event) => setBody(event.target.value)}
-              className="min-h-[280px] w-full resize-y rounded-xl border border-admin-border bg-white px-4 py-3 text-[13px] leading-6 text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
-            />
-          </div>
-
-          <div className="flex flex-col gap-3 rounded-xl border border-admin-border bg-admin-elevated px-4 py-3 md:flex-row md:items-center md:justify-between">
-            <p className="text-xs leading-5 text-admin-text-secondary">
-              可用变量：{'{{subscriberName}}'}、{'{{productName}}'}、{'{{categoryName}}'}、{'{{month}}'}
-            </p>
-            <div className="flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => handleTemplateChange(selectedTemplate?.id ?? '')}
-                className="min-h-11 rounded-xl border border-admin-border px-5 py-2.5 text-[13px] font-medium text-admin-text-secondary transition-colors hover:bg-white"
-              >
-                取消编辑
-              </button>
-              <button
-                type="button"
-                onClick={handleSaveTemplate}
-                className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-admin-text-primary px-5 py-2.5 text-[13px] font-medium text-white transition-colors hover:bg-black"
-              >
-                <Save className="h-4 w-4" aria-hidden="true" />
-                保存模板
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <span
+      className="group relative inline-flex"
+      title={errorMessage ?? undefined}
+      tabIndex={0}
+    >
+      <StatusBadge label={status} tone={getSentMailTone(status)} />
+      <span className="pointer-events-none absolute right-0 top-full z-30 mt-2 w-72 rounded-xl border border-admin-danger/20 bg-white px-3 py-2 text-left text-[11px] leading-5 text-admin-text-secondary opacity-0 shadow-[0_16px_40px_rgba(15,23,42,0.18)] transition-opacity group-hover:opacity-100 group-focus:opacity-100">
+        <span className="block font-semibold text-admin-danger">失败日志</span>
+        <span className="mt-1 block break-words">{errorMessage}</span>
+      </span>
+    </span>
   );
 }
 
-function BulkMailSender({
-  data,
-  subscribers
+function MailTemplateCampaignWorkspace({
+  initialTemplates,
+  subscribers,
+  sentRecords,
+  setSentRecords
 }: {
-  data: SubscriberMailData;
+  initialTemplates: ReadonlyArray<MailTemplateRow>;
   subscribers: SubscriberRow[];
+  sentRecords: SentMailRecord[];
+  setSentRecords: React.Dispatch<React.SetStateAction<SentMailRecord[]>>;
 }) {
-  const templates = useMemo(() => getMailTemplates(data), [data]);
+  const [templates, setTemplates] = useState(() => [...initialTemplates]);
   const [selectedTemplateId, setSelectedTemplateId] = useState(templates[0]?.id ?? '');
-  const [sendStatus, setSendStatus] = useState('');
   const selectedTemplate =
     templates.find((template) => template.id === selectedTemplateId) ?? templates[0];
+  const [templateQuery, setTemplateQuery] = useState('');
+  const [templateName, setTemplateName] = useState(selectedTemplate?.name ?? '');
+  const [subject, setSubject] = useState(selectedTemplate?.subject ?? '');
+  const [body, setBody] = useState(selectedTemplate?.body ?? '');
+  const [sendStatus, setSendStatus] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const selectedTemplateRecords = sentRecords.filter(
+    (record) => record.templateId === selectedTemplateId
+  );
+  const latestSelectedRecord = selectedTemplateRecords[0];
+  const deliveryStatus = latestSelectedRecord?.status ?? '待发送';
+  const totalSent = sentRecords.reduce((total, record) => total + record.recipients, 0);
+  const totalSuccess = sentRecords.reduce((total, record) => total + record.success, 0);
+  const overallSuccessRate =
+    totalSent > 0 ? `${Math.round((totalSuccess / totalSent) * 100)}%` : '0%';
+  const previewTemplate = selectedTemplate
+    ? {
+        ...selectedTemplate,
+        subject,
+        body
+      }
+    : null;
+  const filteredTemplates = useMemo(() => {
+    const normalizedQuery = templateQuery.trim().toLowerCase();
 
-  function handleSendAll() {
-    if (!selectedTemplate || subscribers.length === 0) {
+    return normalizedQuery
+      ? templates.filter((template) =>
+          `${template.name} ${template.subject} ${template.body}`
+            .toLowerCase()
+            .includes(normalizedQuery)
+        )
+      : templates;
+  }, [templateQuery, templates]);
+
+  function loadTemplate(templateId: string) {
+    const nextTemplate = templates.find((template) => template.id === templateId);
+    setSelectedTemplateId(templateId);
+    setTemplateName(nextTemplate?.name ?? '');
+    setSubject(nextTemplate?.subject ?? '');
+    setBody(nextTemplate?.body ?? '');
+    setSendStatus('');
+  }
+
+  async function handleCreateTemplate() {
+    setIsSaving(true);
+    setSendStatus('');
+
+    try {
+      const response = await fetch('/api/admin/mail-templates', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: '新邮件模板',
+          subject: '未命名主题',
+          body: '请输入邮件正文。'
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('CREATE_TEMPLATE_FAILED');
+      }
+
+      const payload = (await response.json()) as {
+        template: MailTemplateRow;
+      };
+      const newTemplate = payload.template;
+
+      setTemplates((currentTemplates) => [newTemplate, ...currentTemplates]);
+      setTemplateQuery('');
+      setSelectedTemplateId(newTemplate.id);
+      setTemplateName(newTemplate.name);
+      setSubject(newTemplate.subject);
+      setBody(newTemplate.body);
+      setSendStatus('模板已创建。');
+    } catch {
+      setSendStatus('模板创建失败，请稍后重试。');
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleSaveTemplate() {
+    if (!selectedTemplate || !templateName.trim() || !subject.trim() || !body.trim()) {
+      setSendStatus('模板名称、主题和正文不能为空。');
+      return;
+    }
+
+    const nextTemplate = {
+      ...selectedTemplate,
+      name: templateName.trim(),
+      subject,
+      body
+    };
+
+    setIsSaving(true);
+    setSendStatus('');
+
+    try {
+      const response = await fetch(`/api/admin/mail-templates/${selectedTemplateId}`, {
+        method: 'PATCH',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: nextTemplate.name,
+          subject: nextTemplate.subject,
+          body: nextTemplate.body
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('SAVE_TEMPLATE_FAILED');
+      }
+
+      const payload = (await response.json()) as {
+        template: MailTemplateRow;
+      };
+
+      setTemplates((currentTemplates) =>
+        currentTemplates.map((template) =>
+          template.id === selectedTemplateId ? payload.template : template
+        )
+      );
+      setSentRecords((currentRecords) =>
+        currentRecords.map((record) =>
+          record.templateId === selectedTemplateId
+            ? {
+                ...record,
+                templateName: payload.template.name
+              }
+            : record
+        )
+      );
+      setSendStatus('模板已保存。');
+    } catch {
+      setSendStatus('模板保存失败，请稍后重试。');
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleDeleteTemplate(templateId = selectedTemplateId) {
+    const templateToDelete = templates.find((template) => template.id === templateId);
+
+    if (!templateToDelete) {
+      return;
+    }
+
+    setIsSaving(true);
+    setSendStatus('');
+
+    try {
+      const response = await fetch(`/api/admin/mail-templates/${templateId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error('DELETE_TEMPLATE_FAILED');
+      }
+
+    const remainingTemplates = templates.filter((template) => template.id !== templateId);
+    const nextTemplate = remainingTemplates[0];
+
+    setTemplates(remainingTemplates);
+    setSentRecords((currentRecords) =>
+      currentRecords.filter((record) => record.templateId !== templateId)
+    );
+    setSelectedTemplateId(nextTemplate?.id ?? '');
+    setTemplateName(nextTemplate?.name ?? '');
+    setSubject(nextTemplate?.subject ?? '');
+    setBody(nextTemplate?.body ?? '');
+      setSendStatus('模板已删除。');
+    } catch {
+      setSendStatus('模板删除失败，请稍后重试。');
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handleSendAll() {
+    if (!previewTemplate || subscribers.length === 0) {
       setSendStatus('没有可发送的模板或订阅者。');
       return;
     }
 
-    setSendStatus(`已创建发送任务，将向 ${subscribers.length} 位订阅者发送。`);
+    setIsSending(true);
+    setSendStatus('');
+
+    try {
+      const response = await fetch('/api/admin/mail-campaigns', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          templateId: previewTemplate.id,
+          subject,
+          body
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('SEND_CAMPAIGN_FAILED');
+      }
+
+      const payload = (await response.json()) as {
+        campaign: SentMailRecord;
+      };
+
+      setSentRecords((currentRecords) => [payload.campaign, ...currentRecords]);
+      setSendStatus(
+        `发送任务已完成，成功 ${payload.campaign.success} 封，失败 ${payload.campaign.failed} 封。`
+      );
+    } catch {
+      setSendStatus('发送任务创建失败，请检查 SMTP 配置和服务端日志。');
+    } finally {
+      setIsSending(false);
+    }
   }
+
+  const toolbar = (
+    <div className="flex flex-wrap gap-2">
+      <button
+        type="button"
+        onClick={handleSendAll}
+        disabled={!previewTemplate || subscribers.length === 0 || isSending}
+        className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-admin-text-primary px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-black"
+      >
+        <Send className="h-4 w-4" aria-hidden="true" />
+        {isSending ? '发送中...' : '发送给全部订阅者'}
+      </button>
+    </div>
+  );
 
   return (
     <div
       data-testid="bulk-mail-sender"
-      className="flex min-h-0 flex-1 flex-col gap-5 p-5"
+      data-layout="full-page"
+      className="flex h-full min-h-0 flex-1 flex-col"
     >
-      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div>
-          <h4 className="text-base font-semibold text-admin-text-primary">
-            群发邮件
-          </h4>
-          <p className="mt-1 text-xs leading-5 text-admin-text-secondary">
-            选择一个邮件模板，一次性发送给当前全部订阅者。
-          </p>
-        </div>
-        <div className="rounded-xl border border-admin-border bg-white px-4 py-3 text-right">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted">
-            预计收件人
-          </p>
-          <p className="mt-1 text-sm font-semibold text-admin-text-primary">
-            {subscribers.length} 位订阅者
-          </p>
-        </div>
-      </div>
+      <AdminTableShell
+        title="邮件模板与群发"
+        kicker={null}
+        toolbar={toolbar}
+        fullHeight
+      >
+        <div className="grid h-full min-h-0 gap-4 p-4 xl:grid-cols-[minmax(320px,0.72fr)_minmax(0,1.28fr)]">
+          <section
+            data-testid="mail-template-list"
+            className="flex min-h-0 flex-col rounded-2xl border border-admin-border bg-white"
+          >
+            <div className="flex items-center justify-between gap-3 border-b border-admin-border px-5 py-5">
+              <div>
+                <p className="admin-kicker">邮件模板管理</p>
+                <h4 className="mt-1 text-base font-semibold text-admin-text-primary">
+                  模板库
+                </h4>
+              </div>
+              <button
+                type="button"
+                onClick={handleCreateTemplate}
+                disabled={isSaving}
+                className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-admin-text-primary px-4 text-[13px] font-medium text-white transition-colors hover:bg-black"
+              >
+                <Plus className="h-4 w-4" aria-hidden="true" />
+                {isSaving ? '处理中...' : '新增模板'}
+              </button>
+            </div>
+            <div className="border-b border-admin-border p-3">
+              <label htmlFor="mail-template-search" className="sr-only">
+                搜索邮件模板
+              </label>
+              <div className="flex min-h-10 items-center gap-2 rounded-xl border border-admin-border bg-white px-3 focus-within:border-admin-accent focus-within:ring-2 focus-within:ring-admin-accent/20">
+                <Search className="h-4 w-4 shrink-0 text-admin-text-muted" aria-hidden="true" />
+                <input
+                  id="mail-template-search"
+                  value={templateQuery}
+                  onChange={(event) => setTemplateQuery(event.target.value)}
+                  placeholder="搜索模板"
+                  className="h-9 min-w-0 flex-1 bg-transparent text-[13px] text-admin-text-primary outline-none placeholder:text-admin-text-muted"
+                />
+              </div>
+            </div>
+            <div className="grid min-h-0 flex-1 content-start gap-2 overflow-y-auto p-3">
+              {filteredTemplates.map((template) => {
+                const isSelected = template.id === selectedTemplateId;
 
-      <div className="grid min-h-0 flex-1 gap-5 lg:grid-cols-[280px_minmax(0,1fr)]">
-        <div className="space-y-3">
-          <label
-            htmlFor="bulk-mail-template"
-            className="block text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted"
-          >
-            选择邮件模板
-          </label>
-          <select
-            id="bulk-mail-template"
-            value={selectedTemplateId}
-            onChange={(event) => {
-              setSelectedTemplateId(event.target.value);
-              setSendStatus('');
-            }}
-            className="w-full rounded-xl border border-admin-border bg-white px-4 py-2.5 text-[13px] text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
-          >
-            {templates.map((template) => (
-              <option key={template.id} value={template.id}>
-                {template.name}
-              </option>
+                return (
+                  <div
+                    key={template.id}
+                    className={`grid min-h-[64px] grid-cols-[minmax(0,1fr)_36px] items-center gap-2 rounded-lg border px-3 py-2.5 transition-colors ${
+                      isSelected
+                        ? 'border-admin-success bg-admin-success/10 text-admin-success'
+                        : 'border-admin-border bg-white text-admin-text-secondary hover:bg-admin-elevated'
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => loadTemplate(template.id)}
+                      aria-label={`选择并编辑模板 ${template.name}`}
+                      className="flex min-w-0 items-start gap-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin-accent"
+                    >
+                      <FileText className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                      <span className="min-w-0">
+                        <span className="block truncate text-[13px] font-semibold">
+                          {template.name}
+                        </span>
+                        <span className="mt-1 line-clamp-2 block text-[11px] leading-4 text-admin-text-muted">
+                          {template.subject}
+                        </span>
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteTemplate(template.id)}
+                      disabled={isSaving}
+                      aria-label={`删除模板 ${template.name}`}
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-admin-text-muted transition-colors hover:bg-white hover:text-admin-danger focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin-accent"
+                    >
+                      <Trash2 className="h-4 w-4" aria-hidden="true" />
+                    </button>
+                  </div>
+                );
+              })}
+              {filteredTemplates.length === 0 ? (
+                <p className="rounded-xl border border-dashed border-admin-border px-3 py-6 text-center text-xs text-admin-text-muted">
+                  无匹配模板
+                </p>
+              ) : null}
+            </div>
+          </section>
+
+          <div className="flex min-h-0 flex-col">
+            <section
+              data-testid="bulk-mail-campaign-list"
+              className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-admin-border bg-white"
+            >
+              <div className="border-b border-admin-border bg-admin-elevated px-4 py-3">
+                <h4 className="text-base font-semibold text-admin-text-primary">
+                  模板展示与编辑
+                </h4>
+                <p className="mt-1 text-xs text-admin-text-secondary">
+                  选择左侧模板后在此维护内容，并用于群发控制。
+                </p>
+              </div>
+
+              <div className="grid grid-cols-3 border-b border-admin-border px-4 py-3">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted">
+                    预计收件人
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-admin-text-primary">
+                    {subscribers.length} 位订阅者
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted">
+                    成功率
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-admin-text-primary">
+                    {overallSuccessRate}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted">
+                    发送状态
+                  </p>
+                  <div className="mt-1">
+                    <StatusWithFailureLog
+                      status={deliveryStatus}
+                      errorMessage={latestSelectedRecord?.errorMessage}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div
+                data-testid="mail-template-editor-panel"
+                className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4"
+              >
+                <div className="grid gap-4 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="mail-template-name"
+                      className="block text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted"
+                    >
+                      模板名称
+                    </label>
+                    <input
+                      id="mail-template-name"
+                      value={templateName}
+                      onChange={(event) => {
+                        setTemplateName(event.target.value);
+                        setSendStatus('');
+                      }}
+                      className="w-full rounded-xl border border-admin-border bg-white px-4 py-2.5 text-[13px] text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="mail-template-subject"
+                      className="block text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted"
+                    >
+                      模板主题
+                    </label>
+                    <input
+                      id="mail-template-subject"
+                      value={subject}
+                      onChange={(event) => {
+                        setSubject(event.target.value);
+                        setSendStatus('');
+                      }}
+                      className="w-full rounded-xl border border-admin-border bg-white px-4 py-2.5 text-[13px] text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label
+                    htmlFor="mail-template-body"
+                    className="block text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted"
+                  >
+                    模板正文
+                  </label>
+                  <textarea
+                    id="mail-template-body"
+                    value={body}
+                    onChange={(event) => {
+                      setBody(event.target.value);
+                      setSendStatus('');
+                    }}
+                    className="min-h-[260px] w-full resize-y rounded-xl border border-admin-border bg-white px-4 py-3 text-[13px] leading-6 text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+                  />
+                </div>
+
+                <p className="rounded-xl border border-admin-border bg-admin-elevated px-4 py-3 text-xs leading-5 text-admin-text-secondary">
+                  变量：{'{{subscriberName}}'}、{'{{productName}}'}、{'{{categoryName}}'}、{'{{month}}'}
+                </p>
+              </div>
+
+              {sendStatus ? (
+                <p className="border-t border-admin-border px-4 py-3 text-xs leading-5 text-admin-text-secondary">
+                  {sendStatus}
+                </p>
+              ) : null}
+
+              <div className="flex flex-col-reverse gap-2 border-t border-admin-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+                <button
+                  type="button"
+                  onClick={() => handleDeleteTemplate()}
+                  disabled={!selectedTemplate || isSaving}
+                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-red-200 px-4 py-2 text-[13px] font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Trash2 className="h-4 w-4" aria-hidden="true" />
+                  删除模板
+                </button>
+                <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+                  <button
+                    type="button"
+                    onClick={handleSaveTemplate}
+                    disabled={!selectedTemplate || !templateName.trim() || isSaving}
+                    className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-admin-text-primary px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Save className="h-4 w-4" aria-hidden="true" />
+                    {isSaving ? '保存中...' : '保存模板'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSendAll}
+                    disabled={!previewTemplate || subscribers.length === 0 || isSending}
+                    className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-admin-border px-4 py-2 text-[13px] font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <Send className="h-4 w-4" aria-hidden="true" />
+                    {isSending ? '发送中...' : '发送'}
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </AdminTableShell>
+    </div>
+  );
+}
+
+function SentMailHistoryWorkspace({
+  sentRecords,
+  setSentRecords
+}: {
+  sentRecords: SentMailRecord[];
+  setSentRecords: React.Dispatch<React.SetStateAction<SentMailRecord[]>>;
+}) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [actionStatus, setActionStatus] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const totalSuccess = sentRecords.reduce((total, record) => total + record.success, 0);
+  const totalFailed = sentRecords.reduce((total, record) => total + record.failed, 0);
+  const totalPages = Math.max(1, Math.ceil(sentRecords.length / SENT_MAIL_PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const pageStart = (safePage - 1) * SENT_MAIL_PAGE_SIZE;
+  const visibleRecords = sentRecords.slice(pageStart, pageStart + SENT_MAIL_PAGE_SIZE);
+  const visibleRecordIds = visibleRecords.map((record) => record.id);
+  const allVisibleSelected =
+    visibleRecordIds.length > 0 && visibleRecordIds.every((id) => selectedIds.includes(id));
+  const hasSelected = selectedIds.length > 0;
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages));
+  }, [totalPages]);
+
+  useEffect(() => {
+    const availableIds = new Set(sentRecords.map((record) => record.id));
+    setSelectedIds((ids) => ids.filter((id) => availableIds.has(id)));
+  }, [sentRecords]);
+
+  function toggleRecord(recordId: string) {
+    setActionStatus('');
+    setSelectedIds((ids) =>
+      ids.includes(recordId)
+        ? ids.filter((id) => id !== recordId)
+        : [...ids, recordId]
+    );
+  }
+
+  function toggleVisibleRecords() {
+    setActionStatus('');
+    setSelectedIds((ids) => {
+      if (allVisibleSelected) {
+        return ids.filter((id) => !visibleRecordIds.includes(id));
+      }
+
+      return Array.from(new Set([...ids, ...visibleRecordIds]));
+    });
+  }
+
+  async function deleteRecords(ids: string[]) {
+    const uniqueIds = Array.from(new Set(ids));
+
+    if (uniqueIds.length === 0) {
+      return;
+    }
+
+    setIsDeleting(true);
+    setActionStatus('');
+
+    try {
+      const response = await fetch('/api/admin/mail-campaigns', {
+        method: 'DELETE',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({ ids: uniqueIds })
+      });
+
+      if (!response.ok) {
+        throw new Error('DELETE_MAIL_CAMPAIGNS_FAILED');
+      }
+
+      setSentRecords((records) => records.filter((record) => !uniqueIds.includes(record.id)));
+      setSelectedIds((ids) => ids.filter((id) => !uniqueIds.includes(id)));
+      setActionStatus(`已删除 ${uniqueIds.length} 条发送记录。`);
+    } catch {
+      setActionStatus('删除失败，请稍后重试。');
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
+  const toolbar = (
+    <div className="flex flex-wrap items-center gap-2">
+      <button
+        type="button"
+        onClick={() => deleteRecords(selectedIds)}
+        disabled={!hasSelected || isDeleting}
+        className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-red-200 px-4 py-2 text-[13px] font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <Trash2 className="h-4 w-4" aria-hidden="true" />
+        {isDeleting ? '删除中...' : `批量删除${hasSelected ? ` (${selectedIds.length})` : ''}`}
+      </button>
+    </div>
+  );
+
+  return (
+    <div
+      data-testid="sent-mail-history"
+      data-layout="full-page"
+      className="flex h-full min-h-0 flex-1 flex-col"
+    >
+      <AdminTableShell
+        title="已发送邮件"
+        description={`成功 ${totalSuccess} 封 · 失败 ${totalFailed} 封`}
+        kicker={null}
+        toolbar={toolbar}
+        fullHeight
+      >
+        <div className="flex h-full min-h-0 flex-col p-4">
+          <div className="hidden grid-cols-[40px_minmax(0,1fr)_96px_96px_96px_44px] items-center border border-admin-border bg-admin-elevated px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:grid">
+            <label className="inline-flex h-8 w-8 items-center justify-center">
+              <input
+                type="checkbox"
+                checked={allVisibleSelected}
+                onChange={toggleVisibleRecords}
+                disabled={visibleRecords.length === 0}
+                aria-label="全选当前页邮件记录"
+                className="h-4 w-4 rounded border-admin-border text-admin-accent focus:ring-admin-accent"
+              />
+            </label>
+            <span>发送时间</span>
+            <span>成功</span>
+            <span>失败</span>
+            <span className="text-right">状态</span>
+            <span className="text-right">操作</span>
+          </div>
+          <div className="min-h-0 flex-1 divide-y divide-admin-border overflow-y-auto border-x border-admin-border bg-white">
+            {visibleRecords.map((record) => (
+              <div
+                key={record.id}
+                className="grid gap-3 px-4 py-3 text-xs transition-colors hover:bg-admin-elevated lg:grid-cols-[40px_minmax(0,1fr)_96px_96px_96px_44px] lg:items-center"
+              >
+                <label className="inline-flex h-8 w-8 items-center justify-center">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.includes(record.id)}
+                    onChange={() => toggleRecord(record.id)}
+                    aria-label={`选择邮件记录 ${record.templateName}`}
+                    className="h-4 w-4 rounded border-admin-border text-admin-accent focus:ring-admin-accent"
+                  />
+                </label>
+                <div className="min-w-0">
+                  <p className="truncate font-semibold text-admin-text-primary">
+                    {record.templateName}
+                  </p>
+                  <p className="mt-1 text-[11px] text-admin-text-muted">
+                    {record.sentAt} · 成功率 {getSuccessRate(record)}
+                  </p>
+                </div>
+                <p className="text-admin-text-secondary">成功 {record.success}</p>
+                <p className="text-admin-text-secondary">失败 {record.failed}</p>
+                <div className="flex justify-start lg:justify-end">
+                  <StatusWithFailureLog
+                    status={record.status}
+                    errorMessage={record.errorMessage}
+                  />
+                </div>
+                <div className="flex justify-start lg:justify-end">
+                  <button
+                    type="button"
+                    onClick={() => deleteRecords([record.id])}
+                    disabled={isDeleting}
+                    aria-label={`删除邮件记录 ${record.templateName}`}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-admin-text-muted transition-colors hover:bg-red-50 hover:text-admin-danger disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin-accent"
+                  >
+                    <Trash2 className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                </div>
+              </div>
             ))}
-          </select>
-
-          <button
-            type="button"
-            onClick={handleSendAll}
-            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-admin-text-primary px-5 py-2.5 text-[13px] font-medium text-white transition-colors hover:bg-black"
-          >
-            <Send className="h-4 w-4" aria-hidden="true" />
-            发送给全部订阅者
-          </button>
-
-          {sendStatus ? (
-            <p className="rounded-xl border border-admin-border bg-admin-elevated px-4 py-3 text-xs leading-5 text-admin-text-secondary">
-              {sendStatus}
+            {sentRecords.length === 0 ? (
+              <p className="m-4 rounded-xl border border-dashed border-admin-border bg-admin-elevated px-4 py-8 text-center text-xs text-admin-text-muted">
+                暂无已发送邮件。
+              </p>
+            ) : null}
+          </div>
+          {actionStatus ? (
+            <p className="border-x border-admin-border bg-white px-4 py-2 text-xs text-admin-text-secondary">
+              {actionStatus}
             </p>
           ) : null}
+          <div
+            data-testid="sent-mail-history-pagination"
+            className="flex flex-col gap-3 rounded-b-2xl border border-admin-border bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                disabled={safePage === 1}
+                aria-label="上一页"
+                className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-admin-border px-3 text-xs font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
+                上一页
+              </button>
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-admin-text-primary text-xs font-semibold text-white">
+                {safePage}
+              </span>
+              <button
+                type="button"
+                onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                disabled={safePage === totalPages}
+                aria-label="下一页"
+                className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-admin-border px-3 text-xs font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated"
+              >
+                下一页
+                <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
+              </button>
+            </div>
+            <p className="text-xs text-admin-text-secondary">
+              每页 {SENT_MAIL_PAGE_SIZE} 封 · 共 {sentRecords.length} 封 · 第 {safePage} / {totalPages} 页
+            </p>
+          </div>
         </div>
-
-        <div className="min-h-0 rounded-2xl border border-admin-border bg-white p-5">
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted">
-            发送预览
-          </p>
-          <h5 className="mt-3 text-base font-semibold text-admin-text-primary">
-            {selectedTemplate?.subject ?? '未选择模板'}
-          </h5>
-          <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-admin-text-secondary">
-            {selectedTemplate?.body ?? '请选择一个邮件模板后预览正文。'}
-          </p>
-        </div>
-      </div>
+      </AdminTableShell>
     </div>
   );
 }
@@ -309,19 +933,32 @@ function BulkMailSender({
 export function SubscriberMailWorkspace({
   data,
   subscribers,
-  initialTab = 'automation'
+  templates = data.templates ?? [],
+  sentRecords: initialSentRecords = [],
+  automation,
+  initialTab = 'automation',
+  copy = defaultSubscriberWorkspaceCopy
 }: {
   data: SubscriberMailData;
   subscribers: SubscriberRow[];
-  initialTab?: TabKey;
+  templates?: ReadonlyArray<MailTemplateRow>;
+  sentRecords?: SentMailRecord[];
+  automation?: MailAutomationSetting;
+  initialTab?: InitialTabKey;
+  copy?: SubscriberWorkspaceCopy;
 }) {
-  const [activeTab, setActiveTab] = useState<TabKey>(initialTab);
+  const normalizedInitialTab = initialTab === 'templates' || initialTab === 'campaign'
+    ? 'mail'
+    : initialTab;
+  const tabs = getTabs(copy);
+  const [activeTab, setActiveTab] = useState<TabKey>(normalizedInitialTab);
   const activeTabMeta = tabs.find((tab) => tab.key === activeTab) ?? tabs[0];
+  const [sentRecords, setSentRecords] = useState<SentMailRecord[]>(() => initialSentRecords);
 
   return (
-    <div className="grid min-h-full gap-4 xl:grid-cols-[240px_minmax(0,1fr)]">
-      <aside className="flex min-h-0 flex-col rounded-[20px] border border-admin-border bg-admin-surface shadow-[0_16px_48px_rgba(15,23,42,0.05)]">
-        <div className="border-b border-admin-border px-4 py-3.5">
+    <div className="grid h-full min-h-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)]">
+      <aside className="flex h-full min-h-0 flex-col rounded-[18px] border border-admin-border bg-admin-surface shadow-[0_16px_48px_rgba(15,23,42,0.05)]">
+        <div className="border-b border-admin-border px-4 py-3">
           <h3 className="text-lg font-semibold text-admin-text-primary font-display">
             邮件管理
           </h3>
@@ -329,7 +966,7 @@ export function SubscriberMailWorkspace({
         <div
           role="tablist"
           aria-label="邮件订阅管理"
-          className="grid flex-1 content-start gap-2 p-2.5"
+          className="grid min-h-0 flex-1 content-start gap-2 overflow-y-auto p-2"
         >
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -342,14 +979,14 @@ export function SubscriberMailWorkspace({
                 role="tab"
                 aria-selected={isActive}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex min-h-14 w-full items-center gap-3 rounded-2xl border px-3 py-2.5 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin-accent ${
+                className={`flex min-h-12 w-full items-center gap-2.5 rounded-xl border px-3 py-2 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin-accent ${
                   isActive
                     ? 'border-admin-accent/20 bg-admin-accent/10 text-admin-accent'
                     : 'border-transparent bg-white text-admin-text-secondary hover:border-admin-border hover:bg-admin-elevated'
                 }`}
               >
                 <span
-                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
                     isActive ? 'bg-white text-admin-accent' : 'bg-admin-elevated text-admin-text-muted'
                   }`}
                 >
@@ -370,15 +1007,40 @@ export function SubscriberMailWorkspace({
       </aside>
 
       {activeTab === 'subscribers' ? (
-        <section data-testid="subscriber-mail-workspace-panel" className="min-h-0">
-          <SubscriberTable subscribers={subscribers} />
+        <section
+          data-testid="subscriber-mail-workspace-panel"
+          className="flex h-full min-h-0 flex-col"
+        >
+          <SubscriberTable subscribers={subscribers} framed={false} copy={copy} />
+        </section>
+      ) : activeTab === 'sent' ? (
+        <section
+          data-testid="subscriber-mail-workspace-panel"
+          className="flex h-full min-h-0 flex-col"
+        >
+          <SentMailHistoryWorkspace
+            sentRecords={sentRecords}
+            setSentRecords={setSentRecords}
+          />
+        </section>
+      ) : activeTab === 'mail' ? (
+        <section
+          data-testid="subscriber-mail-workspace-panel"
+          className="flex h-full min-h-0 flex-col"
+        >
+          <MailTemplateCampaignWorkspace
+            initialTemplates={templates}
+            subscribers={subscribers}
+            sentRecords={sentRecords}
+            setSentRecords={setSentRecords}
+          />
         </section>
       ) : (
         <section
           data-testid="subscriber-mail-workspace-panel"
-          className="flex min-h-0 flex-col rounded-[20px] border border-admin-border bg-admin-surface shadow-[0_16px_48px_rgba(15,23,42,0.05)]"
+          className="flex h-full min-h-0 flex-col rounded-[18px] border border-admin-border bg-admin-surface shadow-[0_16px_48px_rgba(15,23,42,0.05)]"
         >
-          <div className="flex flex-col gap-3 border-b border-admin-border px-6 py-4 md:flex-row md:items-start md:justify-between">
+          <div className="flex flex-col gap-3 border-b border-admin-border px-5 py-4 md:flex-row md:items-center md:justify-between">
             <div>
               <p className="admin-kicker">Workspace Panel</p>
               <h3 className="mt-1 text-xl font-semibold text-admin-text-primary font-display">
@@ -393,10 +1055,8 @@ export function SubscriberMailWorkspace({
             </span>
           </div>
 
-          {activeTab === 'automation' ? <SubscriberAutomationRules data={data} /> : null}
-          {activeTab === 'templates' ? <MailTemplateManager data={data} /> : null}
-          {activeTab === 'campaign' ? (
-            <BulkMailSender data={data} subscribers={subscribers} />
+          {activeTab === 'automation' ? (
+            <SubscriberAutomationRules data={data} automation={automation} />
           ) : null}
         </section>
       )}

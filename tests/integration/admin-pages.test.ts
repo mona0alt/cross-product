@@ -9,6 +9,10 @@ const cookiesMock = vi.fn();
 const bannerFindMany = vi.fn();
 const messageFindMany = vi.fn();
 const subscriberFindMany = vi.fn();
+const mailTemplateFindMany = vi.fn();
+const mailCampaignFindMany = vi.fn();
+const mailAutomationSettingFindFirst = vi.fn();
+const systemSettingFindMany = vi.fn();
 const productFindUnique = vi.fn();
 
 vi.mock('@/features/catalog/queries', () => ({
@@ -52,6 +56,18 @@ vi.mock('@/lib/db', () => ({
     subscriber: {
       findMany: subscriberFindMany
     },
+    mailTemplate: {
+      findMany: mailTemplateFindMany
+    },
+    mailCampaign: {
+      findMany: mailCampaignFindMany
+    },
+    mailAutomationSetting: {
+      findFirst: mailAutomationSettingFindFirst
+    },
+    systemSetting: {
+      findMany: systemSettingFindMany
+    },
     product: {
       findUnique: productFindUnique
     }
@@ -66,6 +82,10 @@ describe('admin pages', () => {
     bannerFindMany.mockReset();
     messageFindMany.mockReset();
     subscriberFindMany.mockReset();
+    mailTemplateFindMany.mockReset();
+    mailCampaignFindMany.mockReset();
+    mailAutomationSettingFindFirst.mockReset();
+    systemSettingFindMany.mockReset();
     productFindUnique.mockReset();
     cookiesMock.mockReset();
     cookiesMock.mockResolvedValue({
@@ -75,6 +95,7 @@ describe('admin pages', () => {
       id: 'admin-1',
       username: 'admin'
     });
+    systemSettingFindMany.mockResolvedValue([]);
   });
 
   it('redirects anonymous visitors away from protected admin routes', async () => {
@@ -312,11 +333,45 @@ describe('admin pages', () => {
         createdAt: new Date('2026-04-29T00:00:00.000Z')
       }
     ]);
+    mailTemplateFindMany.mockResolvedValue([
+      {
+        id: 'template-1',
+        name: '真实模板',
+        subject: '真实主题',
+        body: '真实正文',
+        createdAt: new Date('2026-04-28T00:00:00.000Z'),
+        updatedAt: new Date('2026-04-29T00:00:00.000Z')
+      }
+    ]);
+    mailCampaignFindMany.mockResolvedValue([
+      {
+        id: 'campaign-1',
+        templateId: 'template-1',
+        templateName: '真实模板',
+        subject: '真实主题',
+        body: '真实正文',
+        status: 'sent',
+        recipientCount: 1,
+        successCount: 1,
+        failureCount: 0,
+        errorMessage: null,
+        sentAt: new Date('2026-04-30T09:30:00.000Z'),
+        createdAt: new Date('2026-04-30T09:30:00.000Z')
+      }
+    ]);
+    mailAutomationSettingFindFirst.mockResolvedValue({
+      id: 'automation-1',
+      trigger: 'product_new',
+      frequencyCap: 'daily',
+      enabled: true
+    });
 
     const MessagesPage =
       (await import('@/app/admin/(protected)/messages/page')).default;
     const SubscribersPage =
       (await import('@/app/admin/(protected)/subscribers/page')).default;
+    const SubscribersPageModule =
+      await import('@/app/admin/(protected)/subscribers/page');
     const CrawlTasksPage =
       (await import('@/app/admin/(protected)/crawl-tasks/page')).default;
     const AnalyticsPage =
@@ -327,7 +382,7 @@ describe('admin pages', () => {
     const messagesHtml = renderToStaticMarkup(await MessagesPage());
     const subscribersHtml = renderToStaticMarkup(await SubscribersPage());
     const crawlHtml = renderToStaticMarkup(CrawlTasksPage());
-    const analyticsHtml = renderToStaticMarkup(AnalyticsPage());
+    const analyticsHtml = renderToStaticMarkup(await AnalyticsPage());
     const categoriesHtml = renderToStaticMarkup(await CategoriesPage());
 
     expect(messagesHtml).not.toContain('支持中心');
@@ -335,13 +390,41 @@ describe('admin pages', () => {
     expect(messagesHtml).toContain('留言清单');
     expect(messagesHtml).toContain('data-testid="message-list-scroll"');
     expect(messagesHtml).toContain('总留言');
-    expect(messagesHtml).toContain('待处理');
-    expect(messagesHtml).toContain('张明远');
+    expect(messagesHtml).toContain('未读');
+    expect(messagesHtml).toContain('已读');
+    expect(messagesHtml).not.toContain('待处理');
+    expect(messagesHtml).not.toContain('已处理');
+    expect(messagesHtml).toContain('Alice');
+    expect(messagesHtml).toContain('alice@example.com');
+    expect(messageFindMany).toHaveBeenCalledWith({
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        content: true,
+        status: true,
+        createdAt: true
+      }
+    });
     expect(subscribersHtml).toContain('邮件');
+    expect(SubscribersPageModule.dynamic).toBe('force-dynamic');
     expect(subscribersHtml).not.toContain('总订阅数');
     expect(subscribersHtml).not.toContain('本周新增');
     expect(subscribersHtml).toContain('自动化发送规则');
+    expect(subscribersHtml).toContain('邮件模板与群发');
+    expect(subscribersHtml).toContain('已发送邮件');
     expect(subscribersHtml).toContain('订阅者列表');
+    expect(subscribersHtml).toContain('buyer@example.com');
+    expect(subscribersHtml).toContain('aria-selected="true"');
+    expect(subscribersHtml).not.toContain('alice.chen@example.com');
+    expect(subscribersHtml).not.toContain('April New Arrivals');
+    expect(subscriberFindMany).toHaveBeenCalled();
+    expect(mailTemplateFindMany).toHaveBeenCalled();
+    expect(mailCampaignFindMany).toHaveBeenCalled();
+    expect(mailAutomationSettingFindFirst).toHaveBeenCalled();
+    expect(subscribersHtml).toContain('h-[calc(100vh-104px)]');
+    expect(subscribersHtml).toContain('xl:grid-cols-[220px_minmax(0,1fr)]');
     expect(crawlHtml).toContain('系统设置');
     expect(crawlHtml).toContain('抓取系统配置');
     expect(crawlHtml).toContain('源站任务配置');
@@ -373,5 +456,113 @@ describe('admin pages', () => {
     expect(categoriesHtml).not.toContain('智能穿戴设备');
     expect(categoriesHtml).not.toContain('启用分类');
     expect(categoriesHtml).not.toContain('Banner 列表');
+  });
+
+  it('renders protected admin pages with the selected admin locale', async () => {
+    cookiesMock.mockResolvedValue({
+      get: (name: string) =>
+        name === 'ADMIN_LOCALE' ? { value: 'en' } : undefined
+    });
+    getAdminProductList.mockResolvedValue([
+      {
+        id: 'product-1',
+        slug: 'alpha-humanoid',
+        productCode: 'P-1001',
+        categoryId: 'cat-humanoid',
+        nameZh: 'Alpha Humanoid 服务机器人',
+        nameEn: 'Alpha Humanoid',
+        nameEs: 'Alpha Humanoid',
+        namePt: 'Alpha Humanoid',
+        introZh: '类人智能，服务未来。',
+        introEn: 'Human-like intelligence.',
+        introEs: 'Inteligencia humanoide.',
+        introPt: 'Inteligencia humanoide.',
+        detailZh: '全尺寸双足人形机器人。',
+        detailEn: 'Full-size humanoid robot.',
+        detailEs: 'Robot humanoide.',
+        detailPt: 'Robo humanoide.',
+        priceUsd: { toString: () => '12999' },
+        coverImageUrl: '/show/robot_humanoid.png',
+        status: 'published',
+        isRecommended: true,
+        sortOrder: 1,
+        images: [],
+        category: {
+          nameZh: '人形机器人',
+          nameEn: 'Humanoid Robots',
+          nameEs: 'Robots humanoides',
+          namePt: 'Robos humanoides'
+        }
+      }
+    ]);
+    getAdminCategoryTree.mockResolvedValue([
+      {
+        id: 'cat-humanoid',
+        slug: 'humanoid-robots',
+        sortOrder: 1,
+        isActive: true,
+        parentId: null,
+        iconImageUrl: null,
+        nameZh: '人形机器人',
+        nameEn: 'Humanoid Robots',
+        nameEs: 'Robots humanoides',
+        namePt: 'Robos humanoides',
+        descriptionZh: null,
+        descriptionEn: null,
+        descriptionEs: null,
+        descriptionPt: null,
+        children: []
+      }
+    ]);
+    messageFindMany.mockResolvedValue([
+      {
+        id: 'message-1',
+        name: 'Alice',
+        email: 'alice@example.com',
+        content: 'Need a quote',
+        status: 'new',
+        createdAt: new Date('2026-04-29T00:00:00.000Z')
+      }
+    ]);
+    subscriberFindMany.mockResolvedValue([]);
+    mailTemplateFindMany.mockResolvedValue([]);
+    mailCampaignFindMany.mockResolvedValue([]);
+    mailAutomationSettingFindFirst.mockResolvedValue(null);
+
+    const ProductsPage =
+      (await import('@/app/admin/(protected)/products/page')).default;
+    const MessagesPage =
+      (await import('@/app/admin/(protected)/messages/page')).default;
+    const SubscribersPage =
+      (await import('@/app/admin/(protected)/subscribers/page')).default;
+    const AnalyticsPage =
+      (await import('@/app/admin/(protected)/analytics/page')).default;
+    const CategoriesPage =
+      (await import('@/app/admin/(protected)/categories/page')).default;
+
+    const productsHtml = renderToStaticMarkup(await ProductsPage());
+    const messagesHtml = renderToStaticMarkup(await MessagesPage());
+    const subscribersHtml = renderToStaticMarkup(await SubscribersPage());
+    const analyticsHtml = renderToStaticMarkup(await AnalyticsPage());
+    const categoriesHtml = renderToStaticMarkup(await CategoriesPage());
+
+    expect(productsHtml).toContain('Products');
+    expect(productsHtml).toContain('Product categories');
+    expect(productsHtml).toContain('Search products...');
+    expect(productsHtml).toContain('Humanoid Robots');
+    expect(productsHtml).not.toContain('商品管理');
+    expect(productsHtml).not.toContain('产品类目');
+    expect(messagesHtml).toContain('Message list');
+    expect(messagesHtml).toContain('Unread');
+    expect(messagesHtml).not.toContain('留言清单');
+    expect(subscribersHtml).toContain('Automation rules');
+    expect(subscribersHtml).toContain('Subscribers');
+    expect(subscribersHtml).not.toContain('自动化发送规则');
+    expect(analyticsHtml).toContain('Total products');
+    expect(analyticsHtml).toContain('Top product ranking');
+    expect(analyticsHtml).not.toContain('总商品数量');
+    expect(categoriesHtml).toContain('Configuration groups');
+    expect(categoriesHtml).toContain('Configuration items');
+    expect(categoriesHtml).not.toContain('配置类别');
   });
 });

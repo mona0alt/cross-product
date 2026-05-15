@@ -12,7 +12,9 @@ const categoryUpdate = vi.fn();
 const categoryDelete = vi.fn();
 const bannerCreate = vi.fn();
 const bannerUpdate = vi.fn();
+const messageFindMany = vi.fn();
 const messageUpdate = vi.fn();
+const messageDelete = vi.fn();
 const transaction = vi.fn();
 const revalidatePath = vi.fn();
 
@@ -39,7 +41,9 @@ vi.mock('@/lib/db', () => ({
       update: bannerUpdate
     },
     message: {
-      update: messageUpdate
+      findMany: messageFindMany,
+      update: messageUpdate,
+      delete: messageDelete
     },
     $transaction: transaction
   }
@@ -88,7 +92,9 @@ describe('admin actions', () => {
     categoryDelete.mockReset();
     bannerCreate.mockReset();
     bannerUpdate.mockReset();
+    messageFindMany.mockReset();
     messageUpdate.mockReset();
+    messageDelete.mockReset();
     transaction.mockReset();
     revalidatePath.mockReset();
     transaction.mockImplementation(async (callback) =>
@@ -479,6 +485,50 @@ describe('admin actions', () => {
 
     expect(messageUpdate).toHaveBeenCalled();
     expect(result.status).toBe('processed');
+  });
+
+  it('reads admin messages ordered by newest first', async () => {
+    messageFindMany.mockResolvedValue([
+      {
+        id: 'message-1',
+        name: 'Alice',
+        email: 'alice@example.com',
+        content: 'Need a quote',
+        status: 'new',
+        createdAt: new Date('2026-05-15T08:00:00.000Z')
+      }
+    ]);
+
+    const { getAdminMessages } = await import('@/features/admin/message-actions');
+    const result = await getAdminMessages();
+
+    expect(messageFindMany).toHaveBeenCalledWith({
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        content: true,
+        status: true,
+        createdAt: true
+      }
+    });
+    expect(result).toHaveLength(1);
+    expect(result[0].email).toBe('alice@example.com');
+  });
+
+  it('deletes admin messages', async () => {
+    messageDelete.mockResolvedValue({
+      id: 'message-1'
+    });
+
+    const { deleteAdminMessage } = await import('@/features/admin/message-actions');
+    const result = await deleteAdminMessage('message-1');
+
+    expect(messageDelete).toHaveBeenCalledWith({
+      where: { id: 'message-1' }
+    });
+    expect(result.id).toBe('message-1');
   });
 
   it('creates banners from form data', async () => {

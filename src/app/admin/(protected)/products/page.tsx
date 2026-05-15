@@ -11,13 +11,16 @@ import {
 } from '@/features/catalog/queries';
 import { getLocalImagePath } from '@/features/catalog/local-image-paths';
 import type { AdminCategoryTreeNode } from '@/features/catalog/types';
+import { getAdminDictionary } from '@/lib/admin-i18n';
+import type { Locale } from '@/lib/i18n/config';
 
 function flattenCategories(nodes: AdminCategoryTreeNode[]): AdminCategoryTreeNode[] {
   return nodes.flatMap((node) => [node, ...flattenCategories(node.children)]);
 }
 
 function mapProducts(
-  products: Awaited<ReturnType<typeof getAdminProductList>>
+  products: Awaited<ReturnType<typeof getAdminProductList>>,
+  locale: Locale
 ): ProductCenterRow[] {
   return products.map((product) => ({
     id: product.id,
@@ -36,7 +39,7 @@ function mapProducts(
     detailEn: product.detailEn,
     detailEs: product.detailEs,
     detailPt: product.detailPt,
-    categoryName: product.category.nameZh,
+    categoryName: getLocalizedValue(product.category, 'name', locale),
     status: product.status,
     priceUsd: Number(product.priceUsd),
     coverImageUrl: getLocalImagePath(product.coverImageUrl) ?? '',
@@ -56,7 +59,8 @@ function mapProducts(
 
 function mapCategories(
   categories: AdminCategoryTreeNode[],
-  products: Awaited<ReturnType<typeof getAdminProductList>>
+  products: Awaited<ReturnType<typeof getAdminProductList>>,
+  locale: Locale
 ): ProductCenterCategory[] {
   const allCategories = flattenCategories(categories).filter(
     (category) => category.isActive
@@ -76,7 +80,7 @@ function mapCategories(
     slug: category.slug,
     sortOrder: category.sortOrder,
     iconImageUrl: getLocalImagePath(category.iconImageUrl),
-    nameZh: category.nameZh,
+    nameZh: getLocalizedValue(category, 'name', locale),
     nameEn: category.nameEn,
     nameEs: category.nameEs,
     namePt: category.namePt,
@@ -89,16 +93,33 @@ function mapCategories(
   }));
 }
 
+function getLocalizedValue(
+  source: Partial<Record<'nameZh' | 'nameEn' | 'nameEs' | 'namePt', string | null>>,
+  field: 'name',
+  locale: Locale
+) {
+  const valueByLocale = {
+    'zh-CN': source[`${field}Zh`],
+    en: source[`${field}En`],
+    es: source[`${field}Es`],
+    pt: source[`${field}Pt`]
+  }[locale];
+
+  return valueByLocale || source.nameZh || source.nameEn || '';
+}
+
 export default async function AdminProductsPage() {
-  const [products, categories] = await Promise.all([
+  const [products, categories, { locale, Admin }] = await Promise.all([
     getAdminProductList({}),
-    getAdminCategoryTree()
+    getAdminCategoryTree(),
+    getAdminDictionary()
   ]);
 
   return (
     <ProductCenter
-      categories={mapCategories(categories, products)}
-      products={mapProducts(products)}
+      categories={mapCategories(categories, products, locale)}
+      products={mapProducts(products, locale)}
+      copy={Admin.products}
     />
   );
 }

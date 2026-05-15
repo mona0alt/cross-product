@@ -1,5 +1,6 @@
 import React from 'react';
 import { ContactForm } from '@/components/storefront/contact-form';
+import { getRuntimeSystemSettings } from '@/features/admin/system-settings-actions';
 import { defaultLocale, isLocale, type Locale } from '@/lib/i18n/config';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
 
@@ -10,10 +11,13 @@ export default async function ContactPage({
 }) {
   const { locale: localeParam } = await params;
   const locale: Locale = isLocale(localeParam) ? localeParam : defaultLocale;
-  const messages = await getDictionary(locale);
+  const [messages, runtimeSettings] = await Promise.all([
+    getDictionary(locale),
+    getRuntimeSystemSettings()
+  ]);
   const { Storefront } = messages;
   const supportEmail = Storefront.footer.supportDescription;
-  const whatsAppNumber = process.env.WHATSAPP_NUMBER ?? '15551234567';
+  const whatsAppNumber = runtimeSettings.contact.whatsappNumber;
   const whatsAppHref = `https://wa.me/${whatsAppNumber.replace(/[^\d]/g, '')}`;
 
   return (

@@ -18,6 +18,8 @@ describe('catalog schema contract', () => {
   const schema = readFileSync('prisma/schema.prisma', 'utf8');
   const envExample = readFileSync('.env.example', 'utf8');
   const seed = readFileSync('prisma/seed.ts', 'utf8');
+  const getModelBlock = (modelName: string) =>
+    schema.match(new RegExp(`model ${modelName} \\{[\\s\\S]*?\\n\\}`))?.[0] ?? '';
 
   it('keeps the category multilingual fields', () => {
     expect(schema).toContain('model Category');
@@ -39,12 +41,16 @@ describe('catalog schema contract', () => {
   });
 
   it('keeps the banner and message lifecycle fields', () => {
+    const messageModel = getModelBlock('Message');
+
     expect(schema).toContain('targetType');
     expect(schema).toContain('targetId');
     expect(schema).toContain('targetUrl');
-    expect(schema).toContain('processedAt');
+    expect(messageModel).toContain('processedAt');
+    expect(messageModel).not.toContain('subject');
     expect(schema).toContain('unsubscribed');
-    expect(schema).not.toContain('subject');
+    expect(getModelBlock('MailTemplate')).toContain('subject');
+    expect(getModelBlock('MailCampaign')).toContain('subject');
   });
 
   it('keeps the expected env contract', () => {

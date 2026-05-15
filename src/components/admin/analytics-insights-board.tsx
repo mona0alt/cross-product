@@ -13,41 +13,81 @@ import {
 } from 'lucide-react';
 import { AdminCard } from './admin-card';
 
-const metrics = [
+type AnalyticsCopy = {
+  totalPv: string;
+  totalProducts: string;
+  successRate: string;
+  monthGrowth: string;
+  newThisMonth: string;
+  stableSystem: string;
+  topProducts: string;
+  exportTable: string;
+  productName: string;
+  marketShare: string;
+  quarterGrowth: string;
+  revenue: string;
+  assistantTitle: string;
+  assistantWelcome: string;
+  placeholder: string;
+  send: string;
+};
+
+const defaultAnalyticsCopy: AnalyticsCopy = {
+  totalPv: '总 PV',
+  totalProducts: '总商品数量',
+  successRate: '页面访问成功率',
+  monthGrowth: '较上月增长',
+  newThisMonth: '本月新增 256 件',
+  stableSystem: '系统运行稳定',
+  topProducts: '热门产品排名',
+  exportTable: '导出表格',
+  productName: '产品名称',
+  marketShare: '市场份额占比',
+  quarterGrowth: '季度增长',
+  revenue: '总营收贡献',
+  assistantTitle: 'AI 数据分析助手',
+  assistantWelcome: '你好，我是数据分析助手，可以帮你解读报表数据、分析趋势并提供优化建议。',
+  placeholder: '输入问题，按回车发送...',
+  send: '发送'
+};
+
+function getMetrics(copy: AnalyticsCopy) {
+  return [
   {
-    title: '总 PV',
+    title: copy.totalPv,
     value: '128,421',
     delta: '12.5%',
     deltaTone: 'emerald' as const,
-    note: '较上月增长',
+    note: copy.monthGrowth,
     icon: Eye,
     accent: 'bg-blue-500',
     iconBg: 'bg-blue-50',
     iconColor: 'text-blue-600'
   },
   {
-    title: '总商品数量',
+    title: copy.totalProducts,
     value: '8,632',
     delta: '3.2%',
     deltaTone: 'emerald' as const,
-    note: '本月新增 256 件',
+    note: copy.newThisMonth,
     icon: PackageCheck,
     accent: 'bg-emerald-500',
     iconBg: 'bg-emerald-50',
     iconColor: 'text-emerald-600'
   },
   {
-    title: '页面访问成功率',
+    title: copy.successRate,
     value: '99.8%',
     delta: '0.1%',
     deltaTone: 'emerald' as const,
-    note: '系统运行稳定',
+    note: copy.stableSystem,
     icon: Wifi,
     accent: 'bg-slate-700',
     iconBg: 'bg-slate-100',
     iconColor: 'text-slate-600'
   }
-];
+  ];
+}
 
 const productRows = [
   {
@@ -86,14 +126,19 @@ function deltaClasses(tone: 'emerald' | 'red') {
     : 'bg-emerald-50 text-emerald-600';
 }
 
-export function AnalyticsInsightsBoard() {
+export function AnalyticsInsightsBoard({
+  copy = defaultAnalyticsCopy
+}: {
+  copy?: AnalyticsCopy;
+}) {
   type Message = { id: string; role: 'assistant' | 'user'; content: string };
+  const metrics = getMetrics(copy);
 
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
       role: 'assistant',
-      content: '你好，我是数据分析助手，可以帮你解读报表数据、分析趋势并提供优化建议。'
+      content: copy.assistantWelcome
     }
   ]);
   const [inputValue, setInputValue] = useState('');
@@ -166,13 +211,13 @@ export function AnalyticsInsightsBoard() {
           <AdminCard className="lg:col-span-2 flex flex-col" delay={4}>
             <div className="flex items-center justify-between border-b border-admin-border pb-4">
               <h3 className="text-[15px] font-semibold text-admin-text-primary">
-                热门产品排名
+                {copy.topProducts}
               </h3>
               <button
                 type="button"
                 className="rounded-md border border-admin-border bg-admin-elevated px-2.5 py-1 text-[11px] font-semibold text-admin-text-secondary transition-colors hover:bg-admin-border"
               >
-                导出表格
+                {copy.exportTable}
               </button>
             </div>
             <div className="mt-4 flex-1 overflow-x-auto">
@@ -180,16 +225,16 @@ export function AnalyticsInsightsBoard() {
                 <thead>
                   <tr className="border-b border-admin-border">
                     <th className="pb-3 text-[10px] font-bold uppercase tracking-wider text-admin-text-muted">
-                      产品名称
+                      {copy.productName}
                     </th>
                     <th className="pb-3 text-[10px] font-bold uppercase tracking-wider text-admin-text-muted">
-                      市场份额占比
+                      {copy.marketShare}
                     </th>
                     <th className="pb-3 text-[10px] font-bold uppercase tracking-wider text-admin-text-muted">
-                      季度增长
+                      {copy.quarterGrowth}
                     </th>
                     <th className="pb-3 text-right text-[10px] font-bold uppercase tracking-wider text-admin-text-muted">
-                      总营收贡献
+                      {copy.revenue}
                     </th>
                   </tr>
                 </thead>
@@ -249,7 +294,7 @@ export function AnalyticsInsightsBoard() {
               <div className="flex items-center gap-2">
                 <Sparkles className="h-4 w-4 text-admin-accent" />
                 <h3 className="text-[15px] font-semibold text-admin-text-primary">
-                  AI 数据分析助手
+                  {copy.assistantTitle}
                 </h3>
               </div>
               <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-admin-accent">
@@ -285,7 +330,7 @@ export function AnalyticsInsightsBoard() {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="输入问题，按回车发送..."
+                  placeholder={copy.placeholder}
                   className="flex-1 rounded-lg border border-admin-border bg-admin-surface px-3 py-2 text-[13px] text-admin-text-primary placeholder:text-admin-text-muted focus:border-admin-accent focus:outline-none focus:ring-1 focus:ring-admin-accent"
                 />
                 <button
@@ -293,7 +338,7 @@ export function AnalyticsInsightsBoard() {
                   onClick={handleSend}
                   disabled={!inputValue.trim()}
                   className="rounded-lg bg-admin-accent p-2 text-white transition-colors hover:bg-admin-accent-hover disabled:cursor-not-allowed disabled:bg-admin-border"
-                  aria-label="发送"
+                  aria-label={copy.send}
                 >
                   <Send className="h-3.5 w-3.5" />
                 </button>

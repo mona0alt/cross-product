@@ -10,6 +10,32 @@ vi.mock('@/lib/auth', () => ({
   requireAdminSession
 }));
 
+vi.mock('@/features/admin/system-settings-actions', () => ({
+  getRuntimeSystemSettings: vi.fn().mockResolvedValue({
+    contact: {
+      whatsappNumber: '15551234567'
+    },
+    email: {
+      mailFrom: 'support@fbgm.com',
+      smtpHost: '',
+      smtpPort: 465,
+      smtpUser: '',
+      smtpPassword: ''
+    },
+    llm: {
+      provider: 'OpenAI compatible',
+      model: 'gpt-4o-mini',
+      apiBaseUrl: 'https://api.openai.com/v1',
+      apiKey: ''
+    },
+    upload: {
+      productSegment: 'products',
+      categorySegment: 'categories',
+      bannerSegment: 'banners'
+    }
+  })
+}));
+
 function formWithFile(file: File, scope?: string) {
   const formData = new FormData();
   formData.set('file', file);
