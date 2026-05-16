@@ -20,6 +20,46 @@ type MailAutomationSetting = {
   enabled: boolean;
 };
 
+type SubscriberAutomationCopy = {
+  automationRules: string;
+  automationBoardDescription: string;
+  triggerLabel: string;
+  triggerProductNew: string;
+  triggerRestock: string;
+  triggerManual: string;
+  frequencyLabel: string;
+  frequencyDaily: string;
+  frequencyWeekly: string;
+  frequencyUnlimited: string;
+  enableAutomation: string;
+  cancel: string;
+  saving: string;
+  saveRule: string;
+  rulesSaved: string;
+  rulesSaveError: string;
+  currentQueue: string;
+};
+
+const defaultAutomationCopy: SubscriberAutomationCopy = {
+  automationRules: '自动化发送规则',
+  automationBoardDescription: '配置邮件触发条件与发送频率，确保推送策略精准高效。',
+  triggerLabel: '触发条件',
+  triggerProductNew: '产品上新时触发',
+  triggerRestock: '库存补货时触发',
+  triggerManual: '手动触发',
+  frequencyLabel: '发送频率上限',
+  frequencyDaily: '最多每天 1 封',
+  frequencyWeekly: '最多每周 1 封',
+  frequencyUnlimited: '无限制',
+  enableAutomation: '启用自动化发送',
+  cancel: '取消',
+  saving: '保存中...',
+  saveRule: '保存规则',
+  rulesSaved: '规则已保存。',
+  rulesSaveError: '规则保存失败，请检查服务端日志。',
+  currentQueue: '当前队列'
+};
+
 const defaultAutomation: MailAutomationSetting = {
   trigger: 'product_new',
   frequencyCap: 'daily',
@@ -28,10 +68,12 @@ const defaultAutomation: MailAutomationSetting = {
 
 function AutomationRulesContent({
   data,
-  automation = defaultAutomation
+  automation = defaultAutomation,
+  copy = defaultAutomationCopy
 }: {
   data: SubscriberNotificationData;
   automation?: MailAutomationSetting;
+  copy?: SubscriberAutomationCopy;
 }) {
   const [draft, setDraft] = useState(automation);
   const [message, setMessage] = useState('');
@@ -54,9 +96,9 @@ function AutomationRulesContent({
         throw new Error('SAVE_AUTOMATION_FAILED');
       }
 
-      setMessage('规则已保存。');
+      setMessage(copy.rulesSaved);
     } catch {
-      setMessage('规则保存失败，请检查服务端日志。');
+      setMessage(copy.rulesSaveError);
     } finally {
       setIsSaving(false);
     }
@@ -67,7 +109,7 @@ function AutomationRulesContent({
       <div className="grid content-start gap-5 md:grid-cols-2 lg:grid-cols-1">
         <div className="space-y-2">
           <label className="block text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted">
-            触发条件
+            {copy.triggerLabel}
           </label>
           <select
             value={draft.trigger}
@@ -79,15 +121,15 @@ function AutomationRulesContent({
             }
             className="w-full rounded-xl border border-admin-border bg-white px-4 py-2.5 text-[13px] text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
           >
-            <option value="product_new">产品上新时触发</option>
-            <option value="restock">库存补货时触发</option>
-            <option value="manual">手动触发</option>
+            <option value="product_new">{copy.triggerProductNew}</option>
+            <option value="restock">{copy.triggerRestock}</option>
+            <option value="manual">{copy.triggerManual}</option>
           </select>
         </div>
 
         <div className="space-y-2">
           <label className="block text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted">
-            发送频率上限
+            {copy.frequencyLabel}
           </label>
           <select
             value={draft.frequencyCap}
@@ -99,9 +141,9 @@ function AutomationRulesContent({
             }
             className="w-full rounded-xl border border-admin-border bg-white px-4 py-2.5 text-[13px] text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
           >
-            <option value="daily">最多每天 1 封</option>
-            <option value="weekly">最多每周 1 封</option>
-            <option value="unlimited">无限制</option>
+            <option value="daily">{copy.frequencyDaily}</option>
+            <option value="weekly">{copy.frequencyWeekly}</option>
+            <option value="unlimited">{copy.frequencyUnlimited}</option>
           </select>
         </div>
 
@@ -117,7 +159,7 @@ function AutomationRulesContent({
             }
             className="h-4 w-4 rounded border-admin-border"
           />
-          启用自动化发送
+          {copy.enableAutomation}
         </label>
 
         <div className="flex justify-end gap-3 md:col-span-2 lg:col-span-1">
@@ -129,7 +171,7 @@ function AutomationRulesContent({
             }}
             className="min-h-11 rounded-xl border border-admin-border px-5 py-2.5 text-[13px] font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated"
           >
-            取消
+            {copy.cancel}
           </button>
           <button
             type="button"
@@ -137,7 +179,7 @@ function AutomationRulesContent({
             disabled={isSaving}
             className="min-h-11 rounded-xl bg-admin-text-primary px-5 py-2.5 text-[13px] font-medium text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isSaving ? '保存中...' : '保存规则'}
+            {isSaving ? copy.saving : copy.saveRule}
           </button>
         </div>
 
@@ -150,7 +192,7 @@ function AutomationRulesContent({
 
       <div className="min-h-[460px] rounded-2xl border border-admin-border bg-admin-elevated p-4">
         <p className="text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted">
-          当前队列
+          {copy.currentQueue}
         </p>
         <div className="mt-3 space-y-3">
           {data.campaigns.map((campaign) => (
@@ -179,27 +221,31 @@ function AutomationRulesContent({
 
 export function SubscriberAutomationRules({
   data,
-  automation
+  automation,
+  copy
 }: {
   data: SubscriberNotificationData;
   automation?: MailAutomationSetting;
+  copy?: SubscriberAutomationCopy;
 }) {
-  return <AutomationRulesContent data={data} automation={automation} />;
+  return <AutomationRulesContent data={data} automation={automation} copy={copy} />;
 }
 
 export function SubscriberNotificationBoard({
   data,
-  automation
+  automation,
+  copy = defaultAutomationCopy
 }: {
   data: SubscriberNotificationData;
   automation?: MailAutomationSetting;
+  copy?: SubscriberAutomationCopy;
 }) {
   return (
     <AdminTableShell
-      title="自动化发送规则"
-      description="配置邮件触发条件与发送频率，确保推送策略精准高效。"
+      title={copy.automationRules}
+      description={copy.automationBoardDescription}
     >
-      <AutomationRulesContent data={data} automation={automation} />
+      <AutomationRulesContent data={data} automation={automation} copy={copy} />
     </AdminTableShell>
   );
 }

@@ -46,7 +46,7 @@ describe('admin shell', () => {
       await AdminProtectedLayout({ children: <div>Child</div> })
     );
 
-    expect(html).toContain('/logo.jpg');
+    expect(html).toContain('/logo-options/fbgm_logo_uploaded_transparent.png');
     expect(html).toContain('数据分析');
     expect(html).toContain('商品管理');
     expect(html).toContain('系统设置');
@@ -54,12 +54,16 @@ describe('admin shell', () => {
     expect(html).not.toContain('分类管理');
     expect(html).not.toContain('href="/admin/banners"');
     expect(html).toContain('href="/admin/categories"');
+    expect(html).toContain('sticky top-0 z-30 flex h-14 items-center justify-between border-b border-admin-border bg-admin-bg px-6');
     expect(html).toContain('aria-haspopup="menu"');
     expect(html).toContain('aria-label="语言"');
     expect(html).toContain('rounded-xl border border-admin-border bg-white px-3 py-2');
     expect(html).not.toContain('<select');
     expect(html).toContain('admin');
-    expect(html).toContain('管理员');
+    expect(html).not.toContain('系统管理员');
+    expect(html).not.toContain('admin@enterprise.ai');
+    expect(html).not.toContain('管理员</span>');
+    expect(html).not.toContain('Administrador');
   });
 
   it('offsets the main content when the desktop sidebar is fixed', async () => {

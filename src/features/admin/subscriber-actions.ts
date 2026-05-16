@@ -2,7 +2,11 @@ import net from 'node:net';
 import tls from 'node:tls';
 import { z } from 'zod';
 
-import { getRuntimeSystemSettings } from '@/features/admin/system-settings-actions';
+import {
+  getRuntimeSystemSettings,
+  getSmtpTlsConnectionOptions,
+  isImplicitTlsSmtpPort
+} from '@/features/admin/system-settings-actions';
 import { requireAdminSession } from '@/lib/auth';
 import { db } from '@/lib/db';
 
@@ -79,9 +83,9 @@ type SmtpSocket = net.Socket | tls.TLSSocket;
 async function getSmtpConfig(): Promise<SmtpConfig | null> {
   const settings = await getRuntimeSystemSettings();
   const host = settings.email.smtpHost.trim();
-  const user = settings.email.smtpUser.trim();
+  const user = settings.email.mailFrom.trim();
   const pass = settings.email.smtpPassword.trim();
-  const from = settings.email.mailFrom.trim() || user;
+  const from = user;
   const port = settings.email.smtpPort;
 
   if (!host || !user || !pass || !from || !Number.isFinite(port)) {
@@ -94,7 +98,7 @@ async function getSmtpConfig(): Promise<SmtpConfig | null> {
     user,
     pass,
     from,
-    secure: port === 465
+    secure: isImplicitTlsSmtpPort(port)
   };
 }
 
@@ -112,6 +116,29 @@ function encodeHeader(value: string) {
 
 function escapeSmtpData(value: string) {
   return value.replace(/\r?\n/g, '\r\n').replace(/^\./gm, '..');
+}
+
+export function buildSmtpHeaders({
+  from,
+  to,
+  subject
+}: {
+  from: string;
+  to: string;
+  subject: string;
+}) {
+  const fromAddress = getEnvelopeAddress(from);
+  const toAddress = getEnvelopeAddress(to);
+
+  return [
+    `From: <${fromAddress}>`,
+    `Sender: <${fromAddress}>`,
+    `To: <${toAddress}>`,
+    `Subject: ${encodeHeader(subject)}`,
+    'MIME-Version: 1.0',
+    'Content-Type: text/plain; charset=utf-8',
+    'Content-Transfer-Encoding: 8bit'
+  ];
 }
 
 function readSmtpResponse(socket: SmtpSocket) {
@@ -185,7 +212,7 @@ function connectSmtp(config: SmtpConfig) {
       ? tls.connect({
           host: config.host,
           port: config.port,
-          servername: config.host
+          ...getSmtpTlsConnectionOptions(config.host)
         })
       : net.connect({
           host: config.host,
@@ -196,7 +223,7 @@ function connectSmtp(config: SmtpConfig) {
       reject(new Error('SMTP_CONNECT_TIMEOUT'));
     }, 15000);
 
-    socket.once('connect', () => {
+    socket.once(config.secure ? 'secureConnect' : 'connect', () => {
       clearTimeout(timer);
       resolve(socket);
     });
@@ -211,7 +238,7 @@ async function upgradeToTls(socket: net.Socket, config: SmtpConfig) {
   return new Promise<tls.TLSSocket>((resolve, reject) => {
     const tlsSocket = tls.connect({
       socket,
-      servername: config.host
+      ...getSmtpTlsConnectionOptions(config.host)
     });
 
     tlsSocket.once('secureConnect', () => resolve(tlsSocket));
@@ -239,14 +266,11 @@ async function sendSmtpMail(config: SmtpConfig, to: string, subject: string, tex
     await sendSmtpCommand(socket, `RCPT TO:<${to}>`, [250, 251]);
     await sendSmtpCommand(socket, 'DATA', 354);
 
-    const headers = [
-      `From: ${config.from}`,
-      `To: ${to}`,
-      `Subject: ${encodeHeader(subject)}`,
-      'MIME-Version: 1.0',
-      'Content-Type: text/plain; charset=utf-8',
-      'Content-Transfer-Encoding: 8bit'
-    ];
+    const headers = buildSmtpHeaders({
+      from: config.from,
+      to,
+      subject
+    });
 
     socket.write(`${headers.join('\r\n')}\r\n\r\n${escapeSmtpData(text)}\r\n.\r\n`);
     await expectSmtpResponse(socket, 250);
@@ -256,12 +280,12 @@ async function sendSmtpMail(config: SmtpConfig, to: string, subject: string, tex
   }
 }
 
-function formatDateTime(value: Date | string | null) {
+function formatDateTime(value: Date | string | null, locale = 'zh-CN') {
   if (!value) {
     return '';
   }
 
-  return new Intl.DateTimeFormat('zh-CN', {
+  return new Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -307,7 +331,7 @@ export function mapMailTemplate(template: MailTemplateRecord) {
   };
 }
 
-export function mapMailCampaign(campaign: MailCampaignRecord) {
+export function mapMailCampaign(campaign: MailCampaignRecord, locale = 'zh-CN') {
   return {
     id: campaign.id,
     templateId: campaign.templateId ?? '',
@@ -319,7 +343,7 @@ export function mapMailCampaign(campaign: MailCampaignRecord) {
     success: campaign.successCount,
     failed: campaign.failureCount,
     errorMessage: campaign.errorMessage,
-    sentAt: formatDateTime(campaign.sentAt ?? campaign.createdAt)
+    sentAt: formatDateTime(campaign.sentAt ?? campaign.createdAt, locale)
   };
 }
 

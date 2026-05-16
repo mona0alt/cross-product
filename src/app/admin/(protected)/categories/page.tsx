@@ -24,7 +24,6 @@ function localizeSystemSettings(
     'email.mailFrom': 'fromAddress',
     'email.smtpHost': 'smtpHost',
     'email.smtpPort': 'smtpPort',
-    'email.smtpUser': 'smtpUser',
     'email.smtpPassword': 'smtpPassword',
     'upload.productSegment': 'productSegment',
     'upload.categorySegment': 'categorySegment',

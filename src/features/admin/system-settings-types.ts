@@ -23,6 +23,31 @@ export type SystemSettingsViewModel = {
   groups: SystemSettingGroup[];
 };
 
+export type DatabaseConnectionTestResult = {
+  ok: boolean;
+  provider: string;
+  configured: boolean;
+  latencyMs: number;
+  checkedAt: string;
+  error?: 'DATABASE_URL_NOT_CONFIGURED' | 'DATABASE_CONNECTION_FAILED';
+};
+
+export type SmtpConnectionTestResult = {
+  ok: boolean;
+  host: string;
+  port: number;
+  configured: boolean;
+  secure: boolean;
+  latencyMs: number;
+  checkedAt: string;
+  error?:
+    | 'SMTP_NOT_CONFIGURED'
+    | 'SMTP_TLS_CERTIFICATE_FAILED'
+    | 'SMTP_AUTH_FAILED'
+    | 'SMTP_CONNECT_TIMEOUT'
+    | 'SMTP_CONNECTION_FAILED';
+};
+
 export type RuntimeSystemSettings = {
   contact: {
     whatsappNumber: string;
@@ -31,7 +56,6 @@ export type RuntimeSystemSettings = {
     mailFrom: string;
     smtpHost: string;
     smtpPort: number;
-    smtpUser: string;
     smtpPassword: string;
   };
   llm: {

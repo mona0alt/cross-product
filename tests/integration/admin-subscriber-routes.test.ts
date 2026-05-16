@@ -26,7 +26,6 @@ vi.mock('@/features/admin/system-settings-actions', () => ({
       mailFrom: '',
       smtpHost: '',
       smtpPort: 465,
-      smtpUser: '',
       smtpPassword: ''
     },
     llm: {
@@ -259,6 +258,26 @@ describe('admin subscriber routes', () => {
         status: '失败'
       }
     });
+  });
+
+  it('formats SMTP sender headers with explicit address wrappers', async () => {
+    const { buildSmtpHeaders } = await import('@/features/admin/subscriber-actions');
+
+    expect(
+      buildSmtpHeaders({
+        from: 'liudi_cust@163.com',
+        to: '573286954@qq.com',
+        subject: '测试主题'
+      })
+    ).toEqual([
+      'From: <liudi_cust@163.com>',
+      'Sender: <liudi_cust@163.com>',
+      'To: <573286954@qq.com>',
+      'Subject: =?UTF-8?B?5rWL6K+V5Li76aKY?=',
+      'MIME-Version: 1.0',
+      'Content-Type: text/plain; charset=utf-8',
+      'Content-Transfer-Encoding: 8bit'
+    ]);
   });
 
   it('deletes selected sent mail campaign records through an authenticated API route', async () => {

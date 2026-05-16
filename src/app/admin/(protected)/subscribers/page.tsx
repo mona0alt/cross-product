@@ -11,8 +11,8 @@ import { db } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-function formatNumber(value: number) {
-  return new Intl.NumberFormat('zh-CN').format(value);
+function formatNumber(value: number, locale: string) {
+  return new Intl.NumberFormat(locale).format(value);
 }
 
 function getOpenRate(campaigns: Array<{ recipientCount: number; successCount: number }>) {
@@ -46,8 +46,34 @@ function mapAutomationSetting(
   } as const;
 }
 
+function formatCopy(template: string, values: Record<string, string | number>) {
+  return Object.entries(values).reduce(
+    (text, [key, value]) => text.replaceAll(`{${key}}`, String(value)),
+    template
+  );
+}
+
+function getCampaignStatusLabel(
+  status: '成功' | '部分成功' | '失败' | '待发送',
+  copy: Awaited<ReturnType<typeof getAdminDictionary>>['Admin']['subscribers']
+) {
+  if (status === '成功') {
+    return copy.statusSuccess;
+  }
+
+  if (status === '部分成功') {
+    return copy.statusPartial;
+  }
+
+  if (status === '失败') {
+    return copy.statusFailed;
+  }
+
+  return copy.statusPending;
+}
+
 export default async function AdminSubscribersPage() {
-  const [subscribers, templates, campaigns, automationSetting, { Admin }] = await Promise.all([
+  const [subscribers, templates, campaigns, automationSetting, { locale, Admin }] = await Promise.all([
     db.subscriber.findMany({
       orderBy: { createdAt: 'desc' }
     }),
@@ -66,18 +92,20 @@ export default async function AdminSubscribersPage() {
 
   const subscriberRows = subscribers.map(mapSubscriberRow);
   const templateRows = templates.map(mapMailTemplate);
-  const sentRecords = campaigns.map(mapMailCampaign);
+  const sentRecords = campaigns.map((campaign) => mapMailCampaign(campaign, locale));
   const failedCount = campaigns.reduce((total, campaign) => total + campaign.failureCount, 0);
   const data = {
-    total: formatNumber(subscriberRows.length),
+    total: formatNumber(subscriberRows.length, locale),
     openRate: getOpenRate(campaigns),
-    failed: formatNumber(failedCount),
+    failed: formatNumber(failedCount, locale),
     campaigns: sentRecords.slice(0, 5).map((campaign) => ({
       title: campaign.templateName,
-      status: campaign.status,
-      detail: `收件 ${campaign.recipients} 位，成功 ${campaign.success} 封，失败 ${campaign.failed} 封${
-        campaign.errorMessage ? `，${campaign.errorMessage}` : ''
-      }`
+      status: getCampaignStatusLabel(campaign.status, Admin.subscribers),
+      detail: `${formatCopy(Admin.subscribers.campaignDetail, {
+        recipients: campaign.recipients,
+        success: campaign.success,
+        failed: campaign.failed
+      })}${campaign.errorMessage ? ` ${campaign.errorMessage}` : ''}`
     })),
     templates: templateRows
   };

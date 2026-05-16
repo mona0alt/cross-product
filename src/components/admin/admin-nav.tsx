@@ -34,14 +34,16 @@ const iconMap: Record<string, LucideIcon> = {
   Settings
 };
 
+const adminLogoSrc = '/logo-options/fbgm_logo_uploaded_transparent.png';
+
 export function AdminNav({ items }: { items: AdminNavItem[] }) {
   const pathname = usePathname() ?? '';
 
   return (
-    <aside className="flex h-full flex-col justify-between bg-white text-slate-700">
+    <aside className="flex h-full flex-col bg-white text-slate-700">
       <div>
         <div className="flex h-14 items-center justify-center border-b border-admin-border bg-white px-4">
-          <Image src="/logo.jpg" alt="FBGM" width={144} height={36} className="h-9 w-auto" unoptimized />
+          <Image src={adminLogoSrc} alt="FBGM" width={563} height={670} className="h-11 w-auto" unoptimized />
         </div>
 
         <nav className="mt-4">
@@ -70,11 +72,6 @@ export function AdminNav({ items }: { items: AdminNavItem[] }) {
             );
           })}
         </nav>
-      </div>
-
-      <div className="mb-6 border-t border-admin-border px-4 pt-4">
-        <p className="text-xs font-bold text-admin-text-primary">系统管理员</p>
-        <p className="text-[10px] text-admin-text-muted">admin@enterprise.ai</p>
       </div>
     </aside>
   );

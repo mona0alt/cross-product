@@ -10,6 +10,7 @@ import { SubscriberMailWorkspace } from '@/components/admin/subscriber-mail-work
 import { SubscriberTable } from '@/components/admin/subscriber-table';
 import { SystemSettingsPanel } from '@/components/admin/system-settings-panel';
 import { mockBackoffice } from '@/features/admin/mock-backoffice';
+import enMessages from '../../messages/en.json';
 
 function getElementHtmlByTestId(html: string, testId: string) {
   const start = html.indexOf(`data-testid="${testId}"`);
@@ -108,13 +109,54 @@ describe('admin workflow boards', () => {
     );
 
     expect(html).toContain('data-testid="system-setting-detail-panel"');
-    expect(html).toContain('rounded-[20px] border border-admin-border bg-admin-surface shadow-[0_12px_34px_rgba(15,23,42,0.04)]');
+    expect(html).toContain('data-testid="smtp-connection-test"');
+    expect(html).toContain('验证 SMTP');
+    expect(html).toContain('rounded-[20px] border border-admin-border bg-admin-bg shadow-[0_12px_34px_rgba(15,23,42,0.04)]');
     expect(html).toContain('data-testid="system-setting-config-list"');
     expect(html).toContain('divide-y divide-admin-border');
     expect(html).toContain('hover:bg-admin-elevated/70');
     expect(html).toContain('support@fbgm.com');
     expect(html).not.toContain('grid flex-1 auto-rows-fr gap-4');
     expect(html).not.toContain('min-w-0 rounded-xl border border-admin-border bg-white px-4 py-4');
+  });
+
+  it('renders a real database connection test action for database settings', () => {
+    const html = renderToStaticMarkup(
+      <SystemSettingsPanel
+        settings={{
+          groups: [
+            {
+              key: 'database',
+              title: '数据库配置',
+              description: '展示后台当前连接的数据源类型与连接状态。',
+              fields: [
+                {
+                  key: 'runtime.databaseProvider',
+                  label: '数据库类型',
+                  value: 'SQLite',
+                  inputType: 'text',
+                  configured: true,
+                  editable: false
+                },
+                {
+                  key: 'runtime.databaseUrl',
+                  label: '连接地址',
+                  value: '已配置',
+                  inputType: 'text',
+                  configured: true,
+                  editable: false,
+                  sensitive: true
+                }
+              ]
+            }
+          ]
+        }}
+      />
+    );
+
+    expect(html).toContain('data-testid="database-connection-test"');
+    expect(html).toContain('测试连接');
+    expect(html).toContain('data-testid="database-connection-test-status"');
   });
 
   it('renders support messages as paginated list rows instead of cards', () => {
@@ -447,6 +489,79 @@ describe('admin workflow boards', () => {
     expect(panelHtml).toContain('aria-label="选择邮件记录 发送记录 1"');
     expect(panelHtml).toContain('aria-label="删除邮件记录 发送记录 1"');
     expect(panelHtml).toContain('批量删除');
+  });
+
+  it('localizes the mail management workspaces with subscriber copy', () => {
+    const englishCopy = enMessages.Admin.subscribers;
+    const sentRecords = [
+      {
+        id: 'sent-1',
+        templateId: 'new-arrival',
+        templateName: 'New arrival notice',
+        sentAt: '05/15/2026, 09:30',
+        recipients: 2,
+        success: 1,
+        failed: 1,
+        status: '部分成功' as const,
+        errorMessage: 'SMTP connection rejected'
+      }
+    ];
+
+    const mailHtml = renderToStaticMarkup(
+      <SubscriberMailWorkspace
+        data={mockBackoffice.subscribers}
+        subscribers={[
+          {
+            id: 'subscriber-1',
+            email: 'subscriber1@example.com',
+            status: 'active',
+            createdAt: '2025-04-01'
+          }
+        ]}
+        initialTab="mail"
+        sentRecords={sentRecords}
+        copy={englishCopy}
+      />
+    );
+    const sentHtml = renderToStaticMarkup(
+      <SubscriberMailWorkspace
+        data={mockBackoffice.subscribers}
+        subscribers={[]}
+        initialTab="sent"
+        sentRecords={sentRecords}
+        copy={englishCopy}
+      />
+    );
+    const automationHtml = renderToStaticMarkup(
+      <SubscriberMailWorkspace
+        data={mockBackoffice.subscribers}
+        subscribers={[]}
+        initialTab="automation"
+        copy={englishCopy}
+      />
+    );
+
+    expect(mailHtml).toContain('Mail management');
+    expect(mailHtml).toContain('Template library');
+    expect(mailHtml).toContain('Send to all subscribers');
+    expect(mailHtml).toContain('1 subscriber');
+    expect(mailHtml).toContain('Partial success');
+    expect(mailHtml).not.toContain('模板库');
+    expect(mailHtml).not.toContain('发送给全部订阅者');
+    expect(mailHtml).not.toContain('失败日志');
+
+    expect(sentHtml).toContain('Sent at');
+    expect(sentHtml).toContain('Success 1 · Failed 1');
+    expect(sentHtml).toContain('Select mail record New arrival notice');
+    expect(sentHtml).toContain('8 per page');
+    expect(sentHtml).not.toContain('发送时间');
+    expect(sentHtml).not.toContain('第 1 / 1 页');
+
+    expect(automationHtml).toContain('Trigger');
+    expect(automationHtml).toContain('Save rule');
+    expect(automationHtml).toContain('Workspace panel');
+    expect(automationHtml).not.toContain('触发条件');
+    expect(automationHtml).not.toContain('邮件订阅工作区');
   });
 
   it('renders the subscriber tab with the shared workspace layout', () => {

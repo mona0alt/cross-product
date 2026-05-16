@@ -16,12 +16,11 @@ export function AdminShellHeader({
   locale: Locale;
   copy: {
     language: string;
-    role: string;
     logout: string;
   };
 }) {
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-admin-border bg-white px-6">
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-admin-border bg-admin-bg px-6">
       <div className="ml-auto flex items-center gap-4">
         <div className="flex items-center gap-1 border-r border-admin-border pr-4 text-admin-text-muted">
           <button type="button" className="rounded-full p-2 transition-colors hover:bg-slate-100">
@@ -52,9 +51,6 @@ export function AdminShellHeader({
           <div className="flex flex-col">
             <span className="text-[13px] font-bold leading-none text-admin-text-primary">
               {admin.username}
-            </span>
-            <span className="mt-1 text-[9px] font-bold uppercase tracking-[0.15em] text-admin-text-muted">
-              {copy.role}
             </span>
           </div>
 

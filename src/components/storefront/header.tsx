@@ -7,7 +7,7 @@ import { LanguageSwitcher } from '@/components/storefront/language-switcher';
 import type { Locale } from '@/lib/i18n/config';
 import type { StorefrontCategoryGroup } from '@/features/catalog/types';
 
-const storefrontLogoSrc = '/logo-options/fbgm_logo_transparent_white_text_clean.png';
+const storefrontLogoSrc = '/logo-options/fbgm_logo_uploaded_transparent.png';
 
 function PhoneIcon({ className }: { className?: string }) {
   return (
@@ -149,7 +149,7 @@ export function StorefrontHeader({
           {/* Logo */}
           <Link href={`/${locale}`} className="flex-shrink-0">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={storefrontLogoSrc} alt="FBGM" className="h-10 w-auto" />
+            <img src={storefrontLogoSrc} alt="FBGM" className="h-12 w-auto" />
           </Link>
 
           <nav className="hidden self-stretch flex-1 items-center justify-center gap-5 lg:flex">

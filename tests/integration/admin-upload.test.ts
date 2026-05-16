@@ -19,7 +19,6 @@ vi.mock('@/features/admin/system-settings-actions', () => ({
       mailFrom: 'support@fbgm.com',
       smtpHost: '',
       smtpPort: 465,
-      smtpUser: '',
       smtpPassword: ''
     },
     llm: {

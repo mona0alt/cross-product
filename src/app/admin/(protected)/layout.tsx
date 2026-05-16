@@ -55,7 +55,6 @@ export default async function AdminProtectedLayout({
           locale={locale}
           copy={{
             language: Admin.common.language,
-            role: Admin.shell.role,
             logout: Admin.shell.logout
           }}
         />

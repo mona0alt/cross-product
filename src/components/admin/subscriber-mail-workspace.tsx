@@ -64,23 +64,181 @@ type TabKey = 'automation' | 'mail' | 'sent' | 'subscribers';
 type InitialTabKey = TabKey | 'templates' | 'campaign';
 
 type SubscriberWorkspaceCopy = SubscriberTableCopy & {
+  managementTitle: string;
+  managementAriaLabel: string;
+  workspacePanelKicker: string;
+  workspaceBadge: string;
   automationRules: string;
   automationDetail: string;
+  automationBoardDescription: string;
+  triggerLabel: string;
+  triggerProductNew: string;
+  triggerRestock: string;
+  triggerManual: string;
+  frequencyLabel: string;
+  frequencyDaily: string;
+  frequencyWeekly: string;
+  frequencyUnlimited: string;
+  enableAutomation: string;
+  saveRule: string;
+  rulesSaved: string;
+  rulesSaveError: string;
+  currentQueue: string;
   mailWorkspace: string;
   mailDetail: string;
+  sendToAll: string;
+  sending: string;
+  templateKicker: string;
+  templateLibrary: string;
+  processing: string;
+  addTemplate: string;
+  templateSearchLabel: string;
+  templateSearchPlaceholder: string;
+  selectTemplateLabel: string;
+  deleteTemplateLabel: string;
+  noTemplates: string;
+  editorTitle: string;
+  editorDescription: string;
+  estimatedRecipients: string;
+  recipientCount: string;
+  successRate: string;
+  deliveryStatus: string;
+  templateName: string;
+  templateSubject: string;
+  templateBody: string;
+  variablesLabel: string;
+  variablesValue: string;
+  deleteTemplate: string;
+  saveTemplate: string;
+  send: string;
+  newTemplateName: string;
+  newTemplateSubject: string;
+  newTemplateBody: string;
+  templateCreated: string;
+  templateCreateError: string;
+  templateRequiredError: string;
+  templateSaved: string;
+  templateSaveError: string;
+  templateDeleted: string;
+  templateDeleteError: string;
+  sendUnavailable: string;
+  sendCompleted: string;
+  sendError: string;
   sentMail: string;
   sentDetail: string;
+  sentSummary: string;
+  selectAllSentLabel: string;
+  sentAt: string;
+  success: string;
+  failed: string;
+  status: string;
+  actions: string;
+  sentSuccessRate: string;
+  sentSuccessValue: string;
+  sentFailedValue: string;
+  selectSentRecordLabel: string;
+  deleteSentRecordLabel: string;
+  noSentMail: string;
+  sentDeleted: string;
+  sentDeleteError: string;
+  bulkDelete: string;
+  bulkDeleteWithCount: string;
+  sentPagination: string;
+  failureLog: string;
+  statusSuccess: string;
+  statusPartial: string;
+  statusFailed: string;
+  statusPending: string;
   subscriberList: string;
   subscriberDetail: string;
 };
 
 const defaultSubscriberWorkspaceCopy: SubscriberWorkspaceCopy = {
+  managementTitle: '邮件管理',
+  managementAriaLabel: '邮件订阅管理',
+  workspacePanelKicker: 'Workspace Panel',
+  workspaceBadge: '邮件订阅工作区',
   automationRules: '自动化发送规则',
   automationDetail: '触发与频控',
+  automationBoardDescription: '配置邮件触发条件与发送频率，确保推送策略精准高效。',
+  triggerLabel: '触发条件',
+  triggerProductNew: '产品上新时触发',
+  triggerRestock: '库存补货时触发',
+  triggerManual: '手动触发',
+  frequencyLabel: '发送频率上限',
+  frequencyDaily: '最多每天 1 封',
+  frequencyWeekly: '最多每周 1 封',
+  frequencyUnlimited: '无限制',
+  enableAutomation: '启用自动化发送',
+  saveRule: '保存规则',
+  rulesSaved: '规则已保存。',
+  rulesSaveError: '规则保存失败，请检查服务端日志。',
+  currentQueue: '当前队列',
   mailWorkspace: '邮件模板与群发',
   mailDetail: '编辑与发送',
+  sendToAll: '发送给全部订阅者',
+  sending: '发送中...',
+  templateKicker: '邮件模板管理',
+  templateLibrary: '模板库',
+  processing: '处理中...',
+  addTemplate: '新增模板',
+  templateSearchLabel: '搜索邮件模板',
+  templateSearchPlaceholder: '搜索模板',
+  selectTemplateLabel: '选择并编辑模板 {name}',
+  deleteTemplateLabel: '删除模板 {name}',
+  noTemplates: '无匹配模板',
+  editorTitle: '模板展示与编辑',
+  editorDescription: '选择左侧模板后在此维护内容，并用于群发控制。',
+  estimatedRecipients: '预计收件人',
+  recipientCount: '{count} 位订阅者',
+  successRate: '成功率',
+  deliveryStatus: '发送状态',
+  templateName: '模板名称',
+  templateSubject: '模板主题',
+  templateBody: '模板正文',
+  variablesLabel: '变量：{variables}',
+  variablesValue: '{{subscriberName}}、{{productName}}、{{categoryName}}、{{month}}',
+  deleteTemplate: '删除模板',
+  saveTemplate: '保存模板',
+  send: '发送',
+  newTemplateName: '新邮件模板',
+  newTemplateSubject: '未命名主题',
+  newTemplateBody: '请输入邮件正文。',
+  templateCreated: '模板已创建。',
+  templateCreateError: '模板创建失败，请稍后重试。',
+  templateRequiredError: '模板名称、主题和正文不能为空。',
+  templateSaved: '模板已保存。',
+  templateSaveError: '模板保存失败，请稍后重试。',
+  templateDeleted: '模板已删除。',
+  templateDeleteError: '模板删除失败，请稍后重试。',
+  sendUnavailable: '没有可发送的模板或订阅者。',
+  sendCompleted: '发送任务已完成，成功 {success} 封，失败 {failed} 封。',
+  sendError: '发送任务创建失败，请检查 SMTP 配置和服务端日志。',
   sentMail: '已发送邮件',
   sentDetail: '发送记录',
+  sentSummary: '成功 {success} 封 · 失败 {failed} 封',
+  selectAllSentLabel: '全选当前页邮件记录',
+  sentAt: '发送时间',
+  success: '成功',
+  failed: '失败',
+  status: '状态',
+  actions: '操作',
+  sentSuccessRate: '成功率 {rate}',
+  sentSuccessValue: '成功 {count}',
+  sentFailedValue: '失败 {count}',
+  selectSentRecordLabel: '选择邮件记录 {name}',
+  deleteSentRecordLabel: '删除邮件记录 {name}',
+  noSentMail: '暂无已发送邮件。',
+  sentDeleted: '已删除 {count} 条发送记录。',
+  sentDeleteError: '删除失败，请稍后重试。',
+  bulkDelete: '批量删除',
+  bulkDeleteWithCount: '批量删除 ({count})',
+  sentPagination: '每页 {pageSize} 封 · 共 {total} 封 · 第 {page} / {totalPages} 页',
+  failureLog: '失败日志',
+  statusSuccess: '成功',
+  statusPartial: '部分成功',
+  statusFailed: '失败',
+  statusPending: '待发送',
   subscriberList: '订阅者列表',
   subscriberDetail: '列表与分页',
   searchPlaceholder: '搜索邮箱...',
@@ -176,17 +334,43 @@ function getSuccessRate(record: SentMailRecord) {
 
 const SENT_MAIL_PAGE_SIZE = 8;
 
+function formatCopy(template: string, values: Record<string, string | number>) {
+  return Object.entries(values).reduce(
+    (text, [key, value]) => text.replaceAll(`{${key}}`, String(value)),
+    template
+  );
+}
+
+function getStatusLabel(status: SentMailRecord['status'] | '待发送', copy: SubscriberWorkspaceCopy) {
+  if (status === '成功') {
+    return copy.statusSuccess;
+  }
+
+  if (status === '部分成功') {
+    return copy.statusPartial;
+  }
+
+  if (status === '失败') {
+    return copy.statusFailed;
+  }
+
+  return copy.statusPending;
+}
+
 function StatusWithFailureLog({
   status,
-  errorMessage
+  errorMessage,
+  copy
 }: {
   status: SentMailRecord['status'] | '待发送';
   errorMessage?: string | null;
+  copy: SubscriberWorkspaceCopy;
 }) {
   const hasFailureLog = Boolean(errorMessage && status !== '成功' && status !== '待发送');
+  const label = getStatusLabel(status, copy);
 
   if (!hasFailureLog) {
-    return <StatusBadge label={status} tone={getSentMailTone(status)} />;
+    return <StatusBadge label={label} tone={getSentMailTone(status)} />;
   }
 
   return (
@@ -195,9 +379,9 @@ function StatusWithFailureLog({
       title={errorMessage ?? undefined}
       tabIndex={0}
     >
-      <StatusBadge label={status} tone={getSentMailTone(status)} />
+      <StatusBadge label={label} tone={getSentMailTone(status)} />
       <span className="pointer-events-none absolute right-0 top-full z-30 mt-2 w-72 rounded-xl border border-admin-danger/20 bg-white px-3 py-2 text-left text-[11px] leading-5 text-admin-text-secondary opacity-0 shadow-[0_16px_40px_rgba(15,23,42,0.18)] transition-opacity group-hover:opacity-100 group-focus:opacity-100">
-        <span className="block font-semibold text-admin-danger">失败日志</span>
+        <span className="block font-semibold text-admin-danger">{copy.failureLog}</span>
         <span className="mt-1 block break-words">{errorMessage}</span>
       </span>
     </span>
@@ -208,12 +392,14 @@ function MailTemplateCampaignWorkspace({
   initialTemplates,
   subscribers,
   sentRecords,
-  setSentRecords
+  setSentRecords,
+  copy
 }: {
   initialTemplates: ReadonlyArray<MailTemplateRow>;
   subscribers: SubscriberRow[];
   sentRecords: SentMailRecord[];
   setSentRecords: React.Dispatch<React.SetStateAction<SentMailRecord[]>>;
+  copy: SubscriberWorkspaceCopy;
 }) {
   const [templates, setTemplates] = useState(() => [...initialTemplates]);
   const [selectedTemplateId, setSelectedTemplateId] = useState(templates[0]?.id ?? '');
@@ -274,9 +460,9 @@ function MailTemplateCampaignWorkspace({
           'content-type': 'application/json'
         },
         body: JSON.stringify({
-          name: '新邮件模板',
-          subject: '未命名主题',
-          body: '请输入邮件正文。'
+          name: copy.newTemplateName,
+          subject: copy.newTemplateSubject,
+          body: copy.newTemplateBody
         })
       });
 
@@ -295,9 +481,9 @@ function MailTemplateCampaignWorkspace({
       setTemplateName(newTemplate.name);
       setSubject(newTemplate.subject);
       setBody(newTemplate.body);
-      setSendStatus('模板已创建。');
+      setSendStatus(copy.templateCreated);
     } catch {
-      setSendStatus('模板创建失败，请稍后重试。');
+      setSendStatus(copy.templateCreateError);
     } finally {
       setIsSaving(false);
     }
@@ -305,7 +491,7 @@ function MailTemplateCampaignWorkspace({
 
   async function handleSaveTemplate() {
     if (!selectedTemplate || !templateName.trim() || !subject.trim() || !body.trim()) {
-      setSendStatus('模板名称、主题和正文不能为空。');
+      setSendStatus(copy.templateRequiredError);
       return;
     }
 
@@ -355,9 +541,9 @@ function MailTemplateCampaignWorkspace({
             : record
         )
       );
-      setSendStatus('模板已保存。');
+      setSendStatus(copy.templateSaved);
     } catch {
-      setSendStatus('模板保存失败，请稍后重试。');
+      setSendStatus(copy.templateSaveError);
     } finally {
       setIsSaving(false);
     }
@@ -393,9 +579,9 @@ function MailTemplateCampaignWorkspace({
     setTemplateName(nextTemplate?.name ?? '');
     setSubject(nextTemplate?.subject ?? '');
     setBody(nextTemplate?.body ?? '');
-      setSendStatus('模板已删除。');
+      setSendStatus(copy.templateDeleted);
     } catch {
-      setSendStatus('模板删除失败，请稍后重试。');
+      setSendStatus(copy.templateDeleteError);
     } finally {
       setIsSaving(false);
     }
@@ -403,7 +589,7 @@ function MailTemplateCampaignWorkspace({
 
   async function handleSendAll() {
     if (!previewTemplate || subscribers.length === 0) {
-      setSendStatus('没有可发送的模板或订阅者。');
+      setSendStatus(copy.sendUnavailable);
       return;
     }
 
@@ -433,10 +619,13 @@ function MailTemplateCampaignWorkspace({
 
       setSentRecords((currentRecords) => [payload.campaign, ...currentRecords]);
       setSendStatus(
-        `发送任务已完成，成功 ${payload.campaign.success} 封，失败 ${payload.campaign.failed} 封。`
+        formatCopy(copy.sendCompleted, {
+          success: payload.campaign.success,
+          failed: payload.campaign.failed
+        })
       );
     } catch {
-      setSendStatus('发送任务创建失败，请检查 SMTP 配置和服务端日志。');
+      setSendStatus(copy.sendError);
     } finally {
       setIsSending(false);
     }
@@ -451,7 +640,7 @@ function MailTemplateCampaignWorkspace({
         className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-admin-text-primary px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-black"
       >
         <Send className="h-4 w-4" aria-hidden="true" />
-        {isSending ? '发送中...' : '发送给全部订阅者'}
+        {isSending ? copy.sending : copy.sendToAll}
       </button>
     </div>
   );
@@ -463,7 +652,7 @@ function MailTemplateCampaignWorkspace({
       className="flex h-full min-h-0 flex-1 flex-col"
     >
       <AdminTableShell
-        title="邮件模板与群发"
+        title={copy.mailWorkspace}
         kicker={null}
         toolbar={toolbar}
         fullHeight
@@ -475,9 +664,9 @@ function MailTemplateCampaignWorkspace({
           >
             <div className="flex items-center justify-between gap-3 border-b border-admin-border px-5 py-5">
               <div>
-                <p className="admin-kicker">邮件模板管理</p>
+                <p className="admin-kicker">{copy.templateKicker}</p>
                 <h4 className="mt-1 text-base font-semibold text-admin-text-primary">
-                  模板库
+                  {copy.templateLibrary}
                 </h4>
               </div>
               <button
@@ -487,12 +676,12 @@ function MailTemplateCampaignWorkspace({
                 className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-admin-text-primary px-4 text-[13px] font-medium text-white transition-colors hover:bg-black"
               >
                 <Plus className="h-4 w-4" aria-hidden="true" />
-                {isSaving ? '处理中...' : '新增模板'}
+                {isSaving ? copy.processing : copy.addTemplate}
               </button>
             </div>
             <div className="border-b border-admin-border p-3">
               <label htmlFor="mail-template-search" className="sr-only">
-                搜索邮件模板
+                {copy.templateSearchLabel}
               </label>
               <div className="flex min-h-10 items-center gap-2 rounded-xl border border-admin-border bg-white px-3 focus-within:border-admin-accent focus-within:ring-2 focus-within:ring-admin-accent/20">
                 <Search className="h-4 w-4 shrink-0 text-admin-text-muted" aria-hidden="true" />
@@ -500,7 +689,7 @@ function MailTemplateCampaignWorkspace({
                   id="mail-template-search"
                   value={templateQuery}
                   onChange={(event) => setTemplateQuery(event.target.value)}
-                  placeholder="搜索模板"
+                  placeholder={copy.templateSearchPlaceholder}
                   className="h-9 min-w-0 flex-1 bg-transparent text-[13px] text-admin-text-primary outline-none placeholder:text-admin-text-muted"
                 />
               </div>
@@ -521,7 +710,7 @@ function MailTemplateCampaignWorkspace({
                     <button
                       type="button"
                       onClick={() => loadTemplate(template.id)}
-                      aria-label={`选择并编辑模板 ${template.name}`}
+                      aria-label={formatCopy(copy.selectTemplateLabel, { name: template.name })}
                       className="flex min-w-0 items-start gap-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin-accent"
                     >
                       <FileText className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
@@ -538,7 +727,7 @@ function MailTemplateCampaignWorkspace({
                       type="button"
                       onClick={() => handleDeleteTemplate(template.id)}
                       disabled={isSaving}
-                      aria-label={`删除模板 ${template.name}`}
+                      aria-label={formatCopy(copy.deleteTemplateLabel, { name: template.name })}
                       className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-admin-text-muted transition-colors hover:bg-white hover:text-admin-danger focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin-accent"
                     >
                       <Trash2 className="h-4 w-4" aria-hidden="true" />
@@ -548,7 +737,7 @@ function MailTemplateCampaignWorkspace({
               })}
               {filteredTemplates.length === 0 ? (
                 <p className="rounded-xl border border-dashed border-admin-border px-3 py-6 text-center text-xs text-admin-text-muted">
-                  无匹配模板
+                  {copy.noTemplates}
                 </p>
               ) : null}
             </div>
@@ -561,25 +750,25 @@ function MailTemplateCampaignWorkspace({
             >
               <div className="border-b border-admin-border bg-admin-elevated px-4 py-3">
                 <h4 className="text-base font-semibold text-admin-text-primary">
-                  模板展示与编辑
+                  {copy.editorTitle}
                 </h4>
                 <p className="mt-1 text-xs text-admin-text-secondary">
-                  选择左侧模板后在此维护内容，并用于群发控制。
+                  {copy.editorDescription}
                 </p>
               </div>
 
               <div className="grid grid-cols-3 border-b border-admin-border px-4 py-3">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted">
-                    预计收件人
+                    {copy.estimatedRecipients}
                   </p>
                   <p className="mt-1 text-sm font-semibold text-admin-text-primary">
-                    {subscribers.length} 位订阅者
+                    {formatCopy(copy.recipientCount, { count: subscribers.length })}
                   </p>
                 </div>
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted">
-                    成功率
+                    {copy.successRate}
                   </p>
                   <p className="mt-1 text-sm font-semibold text-admin-text-primary">
                     {overallSuccessRate}
@@ -587,12 +776,13 @@ function MailTemplateCampaignWorkspace({
                 </div>
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted">
-                    发送状态
+                    {copy.deliveryStatus}
                   </p>
                   <div className="mt-1">
                     <StatusWithFailureLog
                       status={deliveryStatus}
                       errorMessage={latestSelectedRecord?.errorMessage}
+                      copy={copy}
                     />
                   </div>
                 </div>
@@ -608,7 +798,7 @@ function MailTemplateCampaignWorkspace({
                       htmlFor="mail-template-name"
                       className="block text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted"
                     >
-                      模板名称
+                      {copy.templateName}
                     </label>
                     <input
                       id="mail-template-name"
@@ -625,7 +815,7 @@ function MailTemplateCampaignWorkspace({
                       htmlFor="mail-template-subject"
                       className="block text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted"
                     >
-                      模板主题
+                      {copy.templateSubject}
                     </label>
                     <input
                       id="mail-template-subject"
@@ -644,7 +834,7 @@ function MailTemplateCampaignWorkspace({
                     htmlFor="mail-template-body"
                     className="block text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted"
                   >
-                    模板正文
+                    {copy.templateBody}
                   </label>
                   <textarea
                     id="mail-template-body"
@@ -658,7 +848,9 @@ function MailTemplateCampaignWorkspace({
                 </div>
 
                 <p className="rounded-xl border border-admin-border bg-admin-elevated px-4 py-3 text-xs leading-5 text-admin-text-secondary">
-                  变量：{'{{subscriberName}}'}、{'{{productName}}'}、{'{{categoryName}}'}、{'{{month}}'}
+                  {formatCopy(copy.variablesLabel, {
+                    variables: copy.variablesValue
+                  })}
                 </p>
               </div>
 
@@ -676,7 +868,7 @@ function MailTemplateCampaignWorkspace({
                   className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-red-200 px-4 py-2 text-[13px] font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Trash2 className="h-4 w-4" aria-hidden="true" />
-                  删除模板
+                  {copy.deleteTemplate}
                 </button>
                 <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
                   <button
@@ -686,7 +878,7 @@ function MailTemplateCampaignWorkspace({
                     className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-admin-text-primary px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Save className="h-4 w-4" aria-hidden="true" />
-                    {isSaving ? '保存中...' : '保存模板'}
+                    {isSaving ? copy.saving : copy.saveTemplate}
                   </button>
                   <button
                     type="button"
@@ -695,7 +887,7 @@ function MailTemplateCampaignWorkspace({
                     className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-admin-border px-4 py-2 text-[13px] font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Send className="h-4 w-4" aria-hidden="true" />
-                    {isSending ? '发送中...' : '发送'}
+                    {isSending ? copy.sending : copy.send}
                   </button>
                 </div>
               </div>
@@ -709,10 +901,12 @@ function MailTemplateCampaignWorkspace({
 
 function SentMailHistoryWorkspace({
   sentRecords,
-  setSentRecords
+  setSentRecords,
+  copy
 }: {
   sentRecords: SentMailRecord[];
   setSentRecords: React.Dispatch<React.SetStateAction<SentMailRecord[]>>;
+  copy: SubscriberWorkspaceCopy;
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -783,9 +977,9 @@ function SentMailHistoryWorkspace({
 
       setSentRecords((records) => records.filter((record) => !uniqueIds.includes(record.id)));
       setSelectedIds((ids) => ids.filter((id) => !uniqueIds.includes(id)));
-      setActionStatus(`已删除 ${uniqueIds.length} 条发送记录。`);
+      setActionStatus(formatCopy(copy.sentDeleted, { count: uniqueIds.length }));
     } catch {
-      setActionStatus('删除失败，请稍后重试。');
+      setActionStatus(copy.sentDeleteError);
     } finally {
       setIsDeleting(false);
     }
@@ -800,7 +994,11 @@ function SentMailHistoryWorkspace({
         className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-red-200 px-4 py-2 text-[13px] font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <Trash2 className="h-4 w-4" aria-hidden="true" />
-        {isDeleting ? '删除中...' : `批量删除${hasSelected ? ` (${selectedIds.length})` : ''}`}
+        {isDeleting
+          ? `${copy.deleting}...`
+          : hasSelected
+            ? formatCopy(copy.bulkDeleteWithCount, { count: selectedIds.length })
+            : copy.bulkDelete}
       </button>
     </div>
   );
@@ -812,8 +1010,11 @@ function SentMailHistoryWorkspace({
       className="flex h-full min-h-0 flex-1 flex-col"
     >
       <AdminTableShell
-        title="已发送邮件"
-        description={`成功 ${totalSuccess} 封 · 失败 ${totalFailed} 封`}
+        title={copy.sentMail}
+        description={formatCopy(copy.sentSummary, {
+          success: totalSuccess,
+          failed: totalFailed
+        })}
         kicker={null}
         toolbar={toolbar}
         fullHeight
@@ -826,15 +1027,15 @@ function SentMailHistoryWorkspace({
                 checked={allVisibleSelected}
                 onChange={toggleVisibleRecords}
                 disabled={visibleRecords.length === 0}
-                aria-label="全选当前页邮件记录"
+                aria-label={copy.selectAllSentLabel}
                 className="h-4 w-4 rounded border-admin-border text-admin-accent focus:ring-admin-accent"
               />
             </label>
-            <span>发送时间</span>
-            <span>成功</span>
-            <span>失败</span>
-            <span className="text-right">状态</span>
-            <span className="text-right">操作</span>
+            <span>{copy.sentAt}</span>
+            <span>{copy.success}</span>
+            <span>{copy.failed}</span>
+            <span className="text-right">{copy.status}</span>
+            <span className="text-right">{copy.actions}</span>
           </div>
           <div className="min-h-0 flex-1 divide-y divide-admin-border overflow-y-auto border-x border-admin-border bg-white">
             {visibleRecords.map((record) => (
@@ -847,7 +1048,9 @@ function SentMailHistoryWorkspace({
                     type="checkbox"
                     checked={selectedIds.includes(record.id)}
                     onChange={() => toggleRecord(record.id)}
-                    aria-label={`选择邮件记录 ${record.templateName}`}
+                    aria-label={formatCopy(copy.selectSentRecordLabel, {
+                      name: record.templateName
+                    })}
                     className="h-4 w-4 rounded border-admin-border text-admin-accent focus:ring-admin-accent"
                   />
                 </label>
@@ -856,15 +1059,22 @@ function SentMailHistoryWorkspace({
                     {record.templateName}
                   </p>
                   <p className="mt-1 text-[11px] text-admin-text-muted">
-                    {record.sentAt} · 成功率 {getSuccessRate(record)}
+                    {record.sentAt} · {formatCopy(copy.sentSuccessRate, {
+                      rate: getSuccessRate(record)
+                    })}
                   </p>
                 </div>
-                <p className="text-admin-text-secondary">成功 {record.success}</p>
-                <p className="text-admin-text-secondary">失败 {record.failed}</p>
+                <p className="text-admin-text-secondary">
+                  {formatCopy(copy.sentSuccessValue, { count: record.success })}
+                </p>
+                <p className="text-admin-text-secondary">
+                  {formatCopy(copy.sentFailedValue, { count: record.failed })}
+                </p>
                 <div className="flex justify-start lg:justify-end">
                   <StatusWithFailureLog
                     status={record.status}
                     errorMessage={record.errorMessage}
+                    copy={copy}
                   />
                 </div>
                 <div className="flex justify-start lg:justify-end">
@@ -872,7 +1082,9 @@ function SentMailHistoryWorkspace({
                     type="button"
                     onClick={() => deleteRecords([record.id])}
                     disabled={isDeleting}
-                    aria-label={`删除邮件记录 ${record.templateName}`}
+                    aria-label={formatCopy(copy.deleteSentRecordLabel, {
+                      name: record.templateName
+                    })}
                     className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-admin-text-muted transition-colors hover:bg-red-50 hover:text-admin-danger disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin-accent"
                   >
                     <Trash2 className="h-4 w-4" aria-hidden="true" />
@@ -882,7 +1094,7 @@ function SentMailHistoryWorkspace({
             ))}
             {sentRecords.length === 0 ? (
               <p className="m-4 rounded-xl border border-dashed border-admin-border bg-admin-elevated px-4 py-8 text-center text-xs text-admin-text-muted">
-                暂无已发送邮件。
+                {copy.noSentMail}
               </p>
             ) : null}
           </div>
@@ -900,11 +1112,11 @@ function SentMailHistoryWorkspace({
                 type="button"
                 onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
                 disabled={safePage === 1}
-                aria-label="上一页"
+                aria-label={copy.previousPage}
                 className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-admin-border px-3 text-xs font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated"
               >
                 <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
-                上一页
+                {copy.previousPage}
               </button>
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-admin-text-primary text-xs font-semibold text-white">
                 {safePage}
@@ -913,15 +1125,20 @@ function SentMailHistoryWorkspace({
                 type="button"
                 onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
                 disabled={safePage === totalPages}
-                aria-label="下一页"
+                aria-label={copy.nextPage}
                 className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-admin-border px-3 text-xs font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated"
               >
-                下一页
+                {copy.nextPage}
                 <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
               </button>
             </div>
             <p className="text-xs text-admin-text-secondary">
-              每页 {SENT_MAIL_PAGE_SIZE} 封 · 共 {sentRecords.length} 封 · 第 {safePage} / {totalPages} 页
+              {formatCopy(copy.sentPagination, {
+                pageSize: SENT_MAIL_PAGE_SIZE,
+                total: sentRecords.length,
+                page: safePage,
+                totalPages
+              })}
             </p>
           </div>
         </div>
@@ -960,12 +1177,12 @@ export function SubscriberMailWorkspace({
       <aside className="flex h-full min-h-0 flex-col rounded-[18px] border border-admin-border bg-admin-surface shadow-[0_16px_48px_rgba(15,23,42,0.05)]">
         <div className="border-b border-admin-border px-4 py-3">
           <h3 className="text-lg font-semibold text-admin-text-primary font-display">
-            邮件管理
+            {copy.managementTitle}
           </h3>
         </div>
         <div
           role="tablist"
-          aria-label="邮件订阅管理"
+          aria-label={copy.managementAriaLabel}
           className="grid min-h-0 flex-1 content-start gap-2 overflow-y-auto p-2"
         >
           {tabs.map((tab) => {
@@ -1021,6 +1238,7 @@ export function SubscriberMailWorkspace({
           <SentMailHistoryWorkspace
             sentRecords={sentRecords}
             setSentRecords={setSentRecords}
+            copy={copy}
           />
         </section>
       ) : activeTab === 'mail' ? (
@@ -1033,6 +1251,7 @@ export function SubscriberMailWorkspace({
             subscribers={subscribers}
             sentRecords={sentRecords}
             setSentRecords={setSentRecords}
+            copy={copy}
           />
         </section>
       ) : (
@@ -1042,7 +1261,7 @@ export function SubscriberMailWorkspace({
         >
           <div className="flex flex-col gap-3 border-b border-admin-border px-5 py-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="admin-kicker">Workspace Panel</p>
+              <p className="admin-kicker">{copy.workspacePanelKicker}</p>
               <h3 className="mt-1 text-xl font-semibold text-admin-text-primary font-display">
                 {activeTabMeta.label}
               </h3>
@@ -1051,12 +1270,12 @@ export function SubscriberMailWorkspace({
               </p>
             </div>
             <span className="inline-flex w-fit rounded-full bg-admin-elevated px-3 py-1 text-xs font-semibold text-admin-text-muted">
-              邮件订阅工作区
+              {copy.workspaceBadge}
             </span>
           </div>
 
           {activeTab === 'automation' ? (
-            <SubscriberAutomationRules data={data} automation={automation} />
+            <SubscriberAutomationRules data={data} automation={automation} copy={copy} />
           ) : null}
         </section>
       )}

@@ -1,9 +1,13 @@
 import { revalidatePath } from 'next/cache';
+import net from 'node:net';
+import tls from 'node:tls';
 
 import { requireAdminSession } from '@/lib/auth';
 import { db } from '@/lib/db';
 import type {
+  DatabaseConnectionTestResult,
   RuntimeSystemSettings,
+  SmtpConnectionTestResult,
   SystemSettingField,
   SystemSettingGroup,
   SystemSettingInputType,
@@ -20,6 +24,19 @@ type EditableSettingDefinition = {
   defaultValue: string;
   help?: string;
 };
+
+type SmtpSocket = net.Socket | tls.TLSSocket;
+
+export function getSmtpTlsConnectionOptions(host: string) {
+  return {
+    servername: host,
+    rejectUnauthorized: false
+  };
+}
+
+export function isImplicitTlsSmtpPort(port: number) {
+  return port === 465 || port === 994;
+}
 
 const editableSettingDefinitions: EditableSettingDefinition[] = [
   {
@@ -38,7 +55,7 @@ const editableSettingDefinitions: EditableSettingDefinition[] = [
     inputType: 'text',
     envKey: 'MAIL_FROM',
     defaultValue: 'support@fbgm.com',
-    help: '邮件群发时使用的 From 地址；为空时使用 SMTP 用户名。'
+    help: '邮件群发时使用的 From 地址，同时作为 SMTP 登录账号。'
   },
   {
     key: 'email.smtpHost',
@@ -55,14 +72,6 @@ const editableSettingDefinitions: EditableSettingDefinition[] = [
     inputType: 'number',
     envKey: 'SMTP_PORT',
     defaultValue: '465'
-  },
-  {
-    key: 'email.smtpUser',
-    groupKey: 'email',
-    label: 'SMTP 用户名',
-    inputType: 'text',
-    envKey: 'SMTP_USER',
-    defaultValue: ''
   },
   {
     key: 'email.smtpPassword',
@@ -256,7 +265,7 @@ function buildEditableField(
   };
 }
 
-function getDatabaseProvider(databaseUrl: string) {
+export function getDatabaseProvider(databaseUrl: string) {
   if (databaseUrl.startsWith('postgres')) {
     return 'PostgreSQL';
   }
@@ -314,6 +323,256 @@ export async function getAdminSystemSettingsViewModel(): Promise<SystemSettingsV
   };
 }
 
+export async function testCurrentDatabaseConnection(): Promise<DatabaseConnectionTestResult> {
+  const databaseUrl = process.env.DATABASE_URL?.trim() ?? '';
+  const startedAt = Date.now();
+  const baseResult = {
+    provider: getDatabaseProvider(databaseUrl),
+    configured: Boolean(databaseUrl)
+  };
+
+  if (!databaseUrl) {
+    return {
+      ...baseResult,
+      ok: false,
+      latencyMs: Date.now() - startedAt,
+      checkedAt: new Date().toISOString(),
+      error: 'DATABASE_URL_NOT_CONFIGURED'
+    };
+  }
+
+  try {
+    await db.$queryRaw`SELECT 1`;
+
+    return {
+      ...baseResult,
+      ok: true,
+      latencyMs: Date.now() - startedAt,
+      checkedAt: new Date().toISOString()
+    };
+  } catch {
+    return {
+      ...baseResult,
+      ok: false,
+      latencyMs: Date.now() - startedAt,
+      checkedAt: new Date().toISOString(),
+      error: 'DATABASE_CONNECTION_FAILED'
+    };
+  }
+}
+
+function readSmtpResponse(socket: SmtpSocket) {
+  return new Promise<{ code: number; message: string }>((resolve, reject) => {
+    let buffer = '';
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error('SMTP_RESPONSE_TIMEOUT'));
+    }, 15000);
+
+    function cleanup() {
+      clearTimeout(timer);
+      socket.off('data', onData);
+      socket.off('error', onError);
+    }
+
+    function onError(error: Error) {
+      cleanup();
+      reject(error);
+    }
+
+    function onData(chunk: Buffer) {
+      buffer += chunk.toString('utf8');
+      const lines = buffer.split(/\r?\n/).filter(Boolean);
+      const lastLine = lines.at(-1);
+      const match = lastLine?.match(/^(\d{3})\s/);
+
+      if (!match) {
+        return;
+      }
+
+      cleanup();
+      resolve({
+        code: Number(match[1]),
+        message: buffer.trim()
+      });
+    }
+
+    socket.on('data', onData);
+    socket.on('error', onError);
+  });
+}
+
+async function expectSmtpResponse(socket: SmtpSocket, expectedCodes: number | number[]) {
+  const expected = Array.isArray(expectedCodes) ? expectedCodes : [expectedCodes];
+  const response = await readSmtpResponse(socket);
+
+  if (!expected.includes(response.code)) {
+    throw new Error(response.message || `SMTP_UNEXPECTED_${response.code}`);
+  }
+
+  return response;
+}
+
+async function sendSmtpCommand(
+  socket: SmtpSocket,
+  command: string,
+  expectedCodes: number | number[]
+) {
+  socket.write(`${command}\r\n`);
+
+  return expectSmtpResponse(socket, expectedCodes);
+}
+
+function connectSmtp({
+  host,
+  port,
+  secure
+}: {
+  host: string;
+  port: number;
+  secure: boolean;
+}) {
+  return new Promise<SmtpSocket>((resolve, reject) => {
+    const socket = secure
+      ? tls.connect({
+          host,
+          port,
+          ...getSmtpTlsConnectionOptions(host)
+        })
+      : net.connect({
+          host,
+          port
+        });
+    const timer = setTimeout(() => {
+      socket.destroy();
+      reject(new Error('SMTP_CONNECT_TIMEOUT'));
+    }, 15000);
+
+    socket.once(secure ? 'secureConnect' : 'connect', () => {
+      clearTimeout(timer);
+      resolve(socket);
+    });
+    socket.once('error', (error) => {
+      clearTimeout(timer);
+      reject(error);
+    });
+  });
+}
+
+async function upgradeSmtpToTls(socket: net.Socket, host: string) {
+  return new Promise<tls.TLSSocket>((resolve, reject) => {
+    const tlsSocket = tls.connect({
+      socket,
+      ...getSmtpTlsConnectionOptions(host)
+    });
+
+    tlsSocket.once('secureConnect', () => resolve(tlsSocket));
+    tlsSocket.once('error', reject);
+  });
+}
+
+async function verifySmtpCredentials({
+  host,
+  port,
+  user,
+  pass,
+  secure
+}: {
+  host: string;
+  port: number;
+  user: string;
+  pass: string;
+  secure: boolean;
+}) {
+  let socket = await connectSmtp({ host, port, secure });
+
+  try {
+    await expectSmtpResponse(socket, 220);
+    await sendSmtpCommand(socket, 'EHLO localhost', 250);
+
+    if (!secure) {
+      await sendSmtpCommand(socket, 'STARTTLS', 220);
+      socket = await upgradeSmtpToTls(socket as net.Socket, host);
+      await sendSmtpCommand(socket, 'EHLO localhost', 250);
+    }
+
+    await sendSmtpCommand(socket, 'AUTH LOGIN', 334);
+    await sendSmtpCommand(socket, Buffer.from(user).toString('base64'), 334);
+    await sendSmtpCommand(socket, Buffer.from(pass).toString('base64'), 235);
+    socket.write('QUIT\r\n');
+  } finally {
+    socket.end();
+  }
+}
+
+export function getSmtpConnectionErrorCode(error: unknown): SmtpConnectionTestResult['error'] {
+  if (!(error instanceof Error)) {
+    return 'SMTP_CONNECTION_FAILED';
+  }
+
+  const message = error.message.toLowerCase();
+  const code = 'code' in error && typeof error.code === 'string' ? error.code : '';
+
+  if (code === 'UNABLE_TO_VERIFY_LEAF_SIGNATURE' || code.includes('CERT') || message.includes('certificate')) {
+    return 'SMTP_TLS_CERTIFICATE_FAILED';
+  }
+
+  if (message.includes('smtp_connect_timeout') || message.includes('timeout')) {
+    return 'SMTP_CONNECT_TIMEOUT';
+  }
+
+  if (message.startsWith('535') || message.includes('authentication') || message.includes('auth')) {
+    return 'SMTP_AUTH_FAILED';
+  }
+
+  return 'SMTP_CONNECTION_FAILED';
+}
+
+export async function testCurrentSmtpConnection(): Promise<SmtpConnectionTestResult> {
+  const settings = await getRuntimeSystemSettings();
+  const host = settings.email.smtpHost.trim();
+  const port = settings.email.smtpPort;
+  const user = settings.email.mailFrom.trim();
+  const pass = settings.email.smtpPassword.trim();
+  const secure = isImplicitTlsSmtpPort(port);
+  const startedAt = Date.now();
+  const baseResult = {
+    host,
+    port,
+    configured: Boolean(host && user && pass && Number.isFinite(port)),
+    secure
+  };
+
+  if (!baseResult.configured) {
+    return {
+      ...baseResult,
+      ok: false,
+      latencyMs: Date.now() - startedAt,
+      checkedAt: new Date().toISOString(),
+      error: 'SMTP_NOT_CONFIGURED'
+    };
+  }
+
+  try {
+    await verifySmtpCredentials({ host, port, user, pass, secure });
+
+    return {
+      ...baseResult,
+      ok: true,
+      latencyMs: Date.now() - startedAt,
+      checkedAt: new Date().toISOString()
+    };
+  } catch (error) {
+    return {
+      ...baseResult,
+      ok: false,
+      latencyMs: Date.now() - startedAt,
+      checkedAt: new Date().toISOString(),
+      error: getSmtpConnectionErrorCode(error)
+    };
+  }
+}
+
 export async function getRuntimeSystemSettings(): Promise<RuntimeSystemSettings> {
   const settings = await getPersistedSettingsMap();
 
@@ -327,15 +586,16 @@ export async function getRuntimeSystemSettings(): Promise<RuntimeSystemSettings>
     return getPersistedValue(settings, definition);
   };
 
+  const mailFrom = getValue('email.mailFrom');
+
   return {
     contact: {
       whatsappNumber: getValue('contact.whatsappNumber')
     },
     email: {
-      mailFrom: getValue('email.mailFrom'),
+      mailFrom,
       smtpHost: getValue('email.smtpHost'),
       smtpPort: Number(getValue('email.smtpPort') || 465),
-      smtpUser: getValue('email.smtpUser'),
       smtpPassword: getValue('email.smtpPassword')
     },
     llm: {
