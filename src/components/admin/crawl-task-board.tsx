@@ -12,16 +12,34 @@ type CrawlTaskData = {
   }>;
 };
 
+type CrawlTaskCopy = {
+  configTitle: string;
+  configDescription: string;
+  sourceTitle: string;
+  sourceDescription: string;
+  statusHealthy: string;
+};
+
+const defaultCrawlTaskCopy: CrawlTaskCopy = {
+  configTitle: '抓取系统配置',
+  configDescription: '按系统设置页骨架展示抓取入口与任务策略。',
+  sourceTitle: '源站任务配置',
+  sourceDescription: '保留现有 source site 信息，改为配置状态块。',
+  statusHealthy: '正常'
+};
+
 export function CrawlTaskBoard({
-  data
+  data,
+  copy = defaultCrawlTaskCopy
 }: {
   data: CrawlTaskData;
+  copy?: CrawlTaskCopy;
 }) {
   return (
     <section className="space-y-6">
       <AdminTableShell
-        title="抓取系统配置"
-        description="按系统设置页骨架展示抓取入口与任务策略。"
+        title={copy.configTitle}
+        description={copy.configDescription}
       >
         <div className="grid gap-4 p-6 md:grid-cols-2">
           <input
@@ -47,8 +65,8 @@ export function CrawlTaskBoard({
       </AdminTableShell>
 
       <AdminTableShell
-        title="源站任务配置"
-        description="保留现有 source site 信息，改为配置状态块。"
+        title={copy.sourceTitle}
+        description={copy.sourceDescription}
       >
         <div className="grid gap-3 p-6">
           {data.sourceSites.map((site) => (
@@ -57,7 +75,7 @@ export function CrawlTaskBoard({
                 <span className="font-semibold text-admin-text-primary">{site.label}</span>
                 <StatusBadge
                   label={site.status}
-                  tone={site.status === '正常' ? 'green' : 'amber'}
+                  tone={site.status === copy.statusHealthy ? 'green' : 'amber'}
                 />
               </div>
               <p className="mt-2 text-[13px] text-admin-text-secondary">{site.detail}</p>

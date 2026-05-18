@@ -6,6 +6,7 @@ import {
   ADMIN_IMAGE_UPLOAD_HINT,
   getAdminUploadErrorMessage,
   validateAdminUploadFile,
+  type AdminUploadErrorCopy,
   type AdminUploadStatusTone
 } from '@/features/admin/upload-rules';
 
@@ -13,6 +14,35 @@ type UploadScope = 'product' | 'banner' | 'category';
 type UploadStatus = {
   tone: AdminUploadStatusTone;
   message: string;
+};
+
+export type AdminImageUploadCopy = {
+  hint: string;
+  currentImage: string;
+  configuredImage: string;
+  emptyImage: string;
+  uploading: string;
+  uploaded: string;
+  uploadedToInput: string;
+  removeImage: string;
+  errors: AdminUploadErrorCopy;
+};
+
+const defaultAdminImageUploadCopy: AdminImageUploadCopy = {
+  hint: ADMIN_IMAGE_UPLOAD_HINT,
+  currentImage: '当前图片',
+  configuredImage: '本地图片已配置',
+  emptyImage: '暂未配置图片',
+  uploading: '正在上传图片...',
+  uploaded: '图片已上传。',
+  uploadedToInput: '图片已上传，地址已写入输入框。',
+  removeImage: '移除图片',
+  errors: {
+    missingFile: '请选择一张图片后再上传。',
+    fileTooLarge: '图片过大，单张图片不能超过 5MB。请压缩后重新上传。',
+    unsupportedFileType: '图片格式不支持。请上传 JPG、PNG、WebP 或 GIF。',
+    uploadFailed: '上传失败，请稍后重试。'
+  }
 };
 
 export function getAdminUploadedValue({
@@ -53,8 +83,9 @@ export function AdminImageUploadInput({
   multiline = false,
   showPreview = false,
   previewAlt,
-  clearLabel = '移除图片',
-  allowManualEntry = scope === 'banner'
+  clearLabel,
+  allowManualEntry = scope === 'banner',
+  uploadCopy = defaultAdminImageUploadCopy
 }: {
   name: string;
   label: string;
@@ -67,6 +98,7 @@ export function AdminImageUploadInput({
   previewAlt?: string;
   clearLabel?: string;
   allowManualEntry?: boolean;
+  uploadCopy?: AdminImageUploadCopy;
 }) {
   const [value, setValue] = useState(defaultValue ?? '');
   const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
@@ -121,7 +153,7 @@ export function AdminImageUploadInput({
     if (validationError) {
       setStatus({
         tone: 'error',
-        message: getAdminUploadErrorMessage(validationError)
+        message: getAdminUploadErrorMessage(validationError, uploadCopy.errors)
       });
       clearLocalPreviewUrl();
       return;
@@ -130,7 +162,7 @@ export function AdminImageUploadInput({
     const formData = new FormData();
     formData.set('file', file);
     formData.set('scope', scope);
-    setStatus({ tone: 'info', message: '正在上传图片...' });
+    setStatus({ tone: 'info', message: uploadCopy.uploading });
 
     const response = await fetch('/api/admin/uploads/product-images', {
       method: 'POST',
@@ -145,7 +177,10 @@ export function AdminImageUploadInput({
     if (!response.ok || !payload.url) {
       setStatus({
         tone: 'error',
-        message: getAdminUploadErrorMessage(payload.error ?? 'UPLOAD_FAILED')
+        message: getAdminUploadErrorMessage(
+          payload.error ?? 'UPLOAD_FAILED',
+          uploadCopy.errors
+        )
       });
       clearLocalPreviewUrl();
       return;
@@ -160,7 +195,7 @@ export function AdminImageUploadInput({
     );
     setStatus({
       tone: 'success',
-      message: scope === 'banner' ? '图片已上传，地址已写入输入框。' : '图片已上传。'
+      message: scope === 'banner' ? uploadCopy.uploadedToInput : uploadCopy.uploaded
     });
   }
 
@@ -211,7 +246,7 @@ export function AdminImageUploadInput({
       ) : (
         <input name={name} type="hidden" value={value} readOnly />
       )}
-      <p className="text-xs text-admin-text-muted">{ADMIN_IMAGE_UPLOAD_HINT}</p>
+      <p className="text-xs text-admin-text-muted">{uploadCopy.hint}</p>
       {showPreview ? (
         <div className="overflow-hidden rounded-xl border border-admin-border bg-admin-elevated">
           {previewSrc ? (
@@ -228,10 +263,10 @@ export function AdminImageUploadInput({
               <div className="flex min-w-0 flex-col justify-between gap-3">
                 <div>
                   <p className="text-xs font-semibold uppercase text-admin-text-muted">
-                    当前图片
+                    {uploadCopy.currentImage}
                   </p>
                   <p className="mt-1 text-sm text-admin-text-secondary">
-                    本地图片已配置
+                    {uploadCopy.configuredImage}
                   </p>
                 </div>
                 <button
@@ -242,13 +277,13 @@ export function AdminImageUploadInput({
                   }}
                   className="self-start rounded-lg border border-rose-200 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:border-rose-300 hover:bg-rose-50"
                 >
-                  {clearLabel}
+                  {clearLabel ?? uploadCopy.removeImage}
                 </button>
               </div>
             </div>
           ) : (
             <div className="flex min-h-[112px] items-center justify-center px-4 py-6 text-sm text-admin-text-muted">
-              暂未配置图片
+              {uploadCopy.emptyImage}
             </div>
           )}
         </div>

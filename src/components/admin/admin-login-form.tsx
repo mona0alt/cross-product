@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Lock, Shield, User } from 'lucide-react';
 
 type AdminLoginCopy = {
@@ -20,8 +20,13 @@ type AdminLoginCopy = {
 export function AdminLoginForm({ copy }: { copy: AdminLoginCopy }) {
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('');
+  const [isMounted, setIsMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -46,7 +51,7 @@ export function AdminLoginForm({ copy }: { copy: AdminLoginCopy }) {
         return;
       }
 
-      window.location.href = '/admin/analytics';
+      window.location.href = '/admin/products';
     } catch (err) {
       setError(copy.networkError);
       console.error('Login error:', err);
@@ -126,7 +131,7 @@ export function AdminLoginForm({ copy }: { copy: AdminLoginCopy }) {
           <button
             className="w-full rounded-lg bg-admin-accent px-4 py-3 text-sm font-medium text-white transition-all duration-200 hover:bg-admin-accent-hover disabled:cursor-not-allowed disabled:opacity-70 shadow-sm shadow-admin-accent/20"
             type="submit"
-            disabled={isSubmitting}
+            disabled={!isMounted || isSubmitting}
           >
             {isSubmitting ? copy.submitting : copy.submit}
           </button>

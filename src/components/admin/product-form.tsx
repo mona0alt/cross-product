@@ -2,7 +2,10 @@ import React from 'react';
 import { createProductFromForm, updateProductFromForm } from '@/features/admin/product-actions';
 import { AdminCard } from './admin-card';
 import { AdminButton } from './admin-button';
-import { AdminImageUploadInput } from './admin-image-upload-input';
+import {
+  AdminImageUploadInput,
+  type AdminImageUploadCopy
+} from './admin-image-upload-input';
 
 type CategoryOption = {
   id: string;
@@ -54,7 +57,50 @@ type ProductFormCopy = {
   saveDraft: string;
   preview: string;
   submit: string;
+  manualImportDescription: string;
+  manualImportSource: string;
+  selectCategory: string;
+  sortOrder: string;
+  localizedContentDescription: string;
+  nameZhLabel: string;
+  nameEnLabel: string;
+  nameEsLabel: string;
+  namePtLabel: string;
+  introZhLabel: string;
+  introEnLabel: string;
+  introEsLabel: string;
+  introPtLabel: string;
+  detailZhLabel: string;
+  detailEnLabel: string;
+  detailEsLabel: string;
+  detailPtLabel: string;
+  coverPreviewAlt: string;
+  removeCoverImage: string;
+  reviewNotesDescription: string;
+  uploadHint: string;
+  currentImage: string;
+  configuredImage: string;
+  emptyImage: string;
+  imageUploadInProgress: string;
+  imageUploaded: string;
+  imageUploadedToInput: string;
+  removeImage: string;
+  uploadErrors: AdminImageUploadCopy['errors'];
 };
+
+function getProductFormUploadCopy(copy: ProductFormCopy): AdminImageUploadCopy {
+  return {
+    hint: copy.uploadHint,
+    currentImage: copy.currentImage,
+    configuredImage: copy.configuredImage,
+    emptyImage: copy.emptyImage,
+    uploading: copy.imageUploadInProgress,
+    uploaded: copy.imageUploaded,
+    uploadedToInput: copy.imageUploadedToInput,
+    removeImage: copy.removeImage,
+    errors: copy.uploadErrors
+  };
+}
 
 export function ProductForm({
   mode,
@@ -90,8 +136,43 @@ export function ProductForm({
     recommended: '推荐商品',
     saveDraft: '保存草稿',
     preview: '提交审核前预览',
-    submit: mode === 'create' ? '提交审核' : '保存并重新审核'
+    submit: mode === 'create' ? '提交审核' : '保存并重新审核',
+    manualImportDescription: '手动录入商品也遵循统一审核规则。页面视觉重点放在信息完整度和提交流程，而不是直接发布。',
+    manualImportSource: '来源：手动导入',
+    selectCategory: '选择分类',
+    sortOrder: '排序',
+    localizedContentDescription: '中文优先录入，英文摘要建议作为审核前的必备字段。',
+    nameZhLabel: '中文名称',
+    nameEnLabel: '英文名称',
+    nameEsLabel: '西语名称',
+    namePtLabel: '葡语名称',
+    introZhLabel: '中文简介',
+    introEnLabel: '英文简介',
+    introEsLabel: '西语简介',
+    introPtLabel: '葡语简介',
+    detailZhLabel: '中文详情',
+    detailEnLabel: '英文详情',
+    detailEsLabel: '西语详情',
+    detailPtLabel: '葡语详情',
+    coverPreviewAlt: '商品封面',
+    removeCoverImage: '移除封面主图',
+    reviewNotesDescription: '系统会提示图片数量、英文摘要和重复风险。当前原型默认走“提交审核”而不是直接发布。',
+    uploadHint: '支持 JPG、PNG、WebP、GIF，单张不超过 5MB。',
+    currentImage: '当前图片',
+    configuredImage: '本地图片已配置',
+    emptyImage: '暂未配置图片',
+    imageUploadInProgress: '正在上传图片...',
+    imageUploaded: '图片已上传。',
+    imageUploadedToInput: '图片已上传，地址已写入输入框。',
+    removeImage: '移除图片',
+    uploadErrors: {
+      missingFile: '请选择一张图片后再上传。',
+      fileTooLarge: '图片过大，单张图片不能超过 5MB。请压缩后重新上传。',
+      unsupportedFileType: '图片格式不支持。请上传 JPG、PNG、WebP 或 GIF。',
+      uploadFailed: '上传失败，请稍后重试。'
+    }
   };
+  const uploadCopy = getProductFormUploadCopy(labels);
   const galleryUrls = [...(product?.images ?? [])]
     .sort((left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0))
     .map((image) => image.imageUrl)
@@ -115,7 +196,7 @@ export function ProductForm({
           {mode === 'create' ? labels.createTitle : labels.editTitle}
         </h2>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-admin-text-secondary">
-          手动录入商品也遵循统一审核规则。页面视觉重点放在信息完整度和提交流程，而不是直接发布。
+          {labels.manualImportDescription}
         </p>
       </AdminCard>
 
@@ -126,7 +207,7 @@ export function ProductForm({
             <h3 className={sectionTitleClass}>{labels.basicInfo}</h3>
           </div>
           <span className="rounded-full border border-admin-border bg-admin-elevated px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-admin-text-secondary">
-            来源：手动导入
+            {labels.manualImportSource}
           </span>
         </div>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
@@ -141,7 +222,7 @@ export function ProductForm({
           <div>
             <label className={labelClass}>{labels.category}</label>
             <select name="categoryId" defaultValue={product?.categoryId} className={inputClass}>
-              <option value="">选择分类</option>
+              <option value="">{labels.selectCategory}</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.label}
@@ -163,7 +244,7 @@ export function ProductForm({
             />
           </div>
           <div>
-            <label className={labelClass}>Sort Order</label>
+            <label className={labelClass}>{labels.sortOrder}</label>
             <input name="sortOrder" defaultValue={product?.sortOrder ?? 0} className={inputClass} type="number" />
           </div>
         </div>
@@ -174,19 +255,19 @@ export function ProductForm({
           <p className="admin-kicker">Localized Content</p>
           <h3 className={sectionTitleClass}>{labels.localizedContent}</h3>
           <p className="mt-2 text-sm text-admin-text-secondary">
-            中文优先录入，英文摘要建议作为审核前的必备字段。
+            {labels.localizedContentDescription}
           </p>
         </div>
         <div className="mt-5 grid gap-4 md:grid-cols-2">
           {[
-            ['nameZh', '中文名称', product?.nameZh],
-            ['nameEn', '英文名称', product?.nameEn],
-            ['nameEs', '西语名称', product?.nameEs],
-            ['namePt', '葡语名称', product?.namePt],
-            ['introZh', '中文简介', product?.introZh],
-            ['introEn', '英文简介', product?.introEn],
-            ['introEs', '西语简介', product?.introEs],
-            ['introPt', '葡语简介', product?.introPt]
+            ['nameZh', labels.nameZhLabel, product?.nameZh],
+            ['nameEn', labels.nameEnLabel, product?.nameEn],
+            ['nameEs', labels.nameEsLabel, product?.nameEs],
+            ['namePt', labels.namePtLabel, product?.namePt],
+            ['introZh', labels.introZhLabel, product?.introZh],
+            ['introEn', labels.introEnLabel, product?.introEn],
+            ['introEs', labels.introEsLabel, product?.introEs],
+            ['introPt', labels.introPtLabel, product?.introPt]
           ].map(([name, placeholder, value]) => (
             <div key={name}>
               <label className={labelClass}>{placeholder}</label>
@@ -196,10 +277,10 @@ export function ProductForm({
         </div>
         <div className="mt-4 grid gap-4">
           {[
-            ['detailZh', '中文详情', product?.detailZh],
-            ['detailEn', '英文详情', product?.detailEn],
-            ['detailEs', '西语详情', product?.detailEs],
-            ['detailPt', '葡语详情', product?.detailPt]
+            ['detailZh', labels.detailZhLabel, product?.detailZh],
+            ['detailEn', labels.detailEnLabel, product?.detailEn],
+            ['detailEs', labels.detailEsLabel, product?.detailEs],
+            ['detailPt', labels.detailPtLabel, product?.detailPt]
           ].map(([name, placeholder, value]) => (
             <div key={name}>
               <label className={labelClass}>{placeholder}</label>
@@ -227,8 +308,9 @@ export function ProductForm({
             defaultValue={product?.coverImageUrl}
             scope="product"
             showPreview
-            previewAlt={product?.nameZh ?? '商品封面'}
-            clearLabel="移除封面主图"
+            previewAlt={product?.nameZh ?? labels.coverPreviewAlt}
+            clearLabel={labels.removeCoverImage}
+            uploadCopy={uploadCopy}
           />
           <AdminImageUploadInput
             name="galleryImageUrls"
@@ -237,6 +319,7 @@ export function ProductForm({
             defaultValue={galleryUrls}
             scope="product"
             multiline
+            uploadCopy={uploadCopy}
           />
         </div>
       </AdminCard>
@@ -246,7 +329,7 @@ export function ProductForm({
           <p className="admin-kicker">Review Notes</p>
           <h3 className={sectionTitleClass}>{labels.reviewNotes}</h3>
           <p className="mt-2 text-sm leading-relaxed text-admin-text-secondary">
-            系统会提示图片数量、英文摘要和重复风险。当前原型默认走&ldquo;提交审核&rdquo;而不是直接发布。
+            {labels.reviewNotesDescription}
           </p>
         </div>
         <div className="mt-5 flex flex-wrap gap-4">

@@ -18,11 +18,6 @@ export default async function AdminProtectedLayout({
   ]);
   const navItems = [
     {
-      href: '/admin/analytics',
-      label: Admin.nav.analytics,
-      icon: 'BarChart3'
-    },
-    {
       href: '/admin/products',
       label: Admin.nav.products,
       icon: 'Package'

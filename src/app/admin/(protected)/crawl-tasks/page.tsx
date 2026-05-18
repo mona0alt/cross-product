@@ -3,16 +3,29 @@ import React from 'react';
 import { AdminSectionHeader } from '@/components/admin/admin-section-header';
 import { CrawlTaskBoard } from '@/components/admin/crawl-task-board';
 import { mockBackoffice } from '@/features/admin/mock-backoffice';
+import { getAdminDictionary } from '@/lib/admin-i18n';
 
-export default function AdminCrawlTasksPage() {
+export default async function AdminCrawlTasksPage() {
+  const { Admin } = await getAdminDictionary();
+  const data = {
+    ...mockBackoffice.crawlTasks,
+    headline: Admin.crawlTasks.headline,
+    summary: Admin.crawlTasks.summary,
+    sourceSites: mockBackoffice.crawlTasks.sourceSites.map((site, index) => ({
+      ...site,
+      status: Admin.crawlTasks.sourceSites[index]?.status ?? site.status,
+      detail: Admin.crawlTasks.sourceSites[index]?.detail ?? site.detail
+    }))
+  };
+
   return (
     <section className="space-y-6">
       <AdminSectionHeader
         label="Settings"
-        title="系统设置"
-        description="管理抓取系统配置、接口集成与源站任务策略。"
+        title={Admin.crawlTasks.title}
+        description={Admin.crawlTasks.description}
       />
-      <CrawlTaskBoard data={mockBackoffice.crawlTasks} />
+      <CrawlTaskBoard data={data} copy={Admin.crawlTasks} />
     </section>
   );
 }

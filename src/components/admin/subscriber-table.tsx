@@ -13,6 +13,10 @@ export type SubscriberRow = {
 };
 
 const PAGE_SIZE = 8;
+const SUBSCRIBER_TABLE_GRID_COLUMNS =
+  'grid-cols-[minmax(176px,0.82fr)_minmax(96px,0.32fr)_minmax(136px,0.44fr)_minmax(124px,0.4fr)_64px]';
+const SUBSCRIBER_TABLE_GRID_COLUMNS_LG =
+  'lg:grid-cols-[minmax(176px,0.82fr)_minmax(96px,0.32fr)_minmax(136px,0.44fr)_minmax(124px,0.4fr)_64px]';
 
 export type SubscriberTableCopy = {
   subscriberList: string;
@@ -349,21 +353,23 @@ export function SubscriberTable({
 
       <div
         data-testid="subscriber-list-card"
-        className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-admin-border bg-white"
+        className="flex min-h-0 flex-1 flex-col overflow-hidden"
       >
-        <div className="hidden shrink-0 grid-cols-[minmax(220px,1.5fr)_96px_144px_126px_44px] border-b border-admin-border bg-admin-elevated px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:grid">
+        <div
+          className={`hidden shrink-0 ${SUBSCRIBER_TABLE_GRID_COLUMNS} items-center gap-3 border border-admin-border bg-admin-elevated px-3 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:grid`}
+        >
           <span>{copy.columns.email}</span>
-          <span>{copy.columns.status}</span>
+          <span className="text-center">{copy.columns.status}</span>
           <span>{copy.columns.createdAt}</span>
           <span>{copy.columns.preference}</span>
-          <span className="text-right">{copy.columns.actions}</span>
+          <span className="text-center">{copy.columns.actions}</span>
         </div>
 
-        <ul className="min-h-0 flex-1 divide-y divide-admin-border overflow-y-auto">
+        <ul className="min-h-0 flex-1 divide-y divide-admin-border overflow-y-auto border-x border-admin-border bg-white">
           {visibleSubscribers.map((subscriber) => (
             <li
               key={subscriber.id}
-              className="grid min-h-[54px] gap-3 px-4 py-3 transition-colors hover:bg-admin-elevated lg:grid-cols-[minmax(220px,1.5fr)_96px_144px_126px_44px] lg:items-center"
+              className={`grid min-h-[54px] gap-3 px-3 py-3 transition-colors hover:bg-admin-elevated ${SUBSCRIBER_TABLE_GRID_COLUMNS_LG} lg:items-center`}
             >
               <div className="flex min-w-0 items-center gap-3">
                 <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-admin-elevated text-[11px] font-semibold text-admin-text-muted">
@@ -379,7 +385,7 @@ export function SubscriberTable({
                 </div>
               </div>
 
-              <div>
+              <div className="lg:flex lg:justify-center">
                 <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:hidden">
                   {copy.columns.status}
                 </p>
@@ -407,7 +413,7 @@ export function SubscriberTable({
                 </p>
               </div>
 
-              <div className="flex justify-start lg:justify-end">
+              <div className="flex justify-start lg:justify-center">
                 <button
                   type="button"
                   onClick={() => handleDeleteSubscriber(subscriber.id)}
@@ -431,16 +437,8 @@ export function SubscriberTable({
 
         <div
           data-testid="subscriber-list-pagination"
-          className="mt-auto flex flex-col gap-3 border-t border-admin-border px-4 py-3 md:flex-row md:items-center md:justify-between"
+          className="flex flex-col gap-3 rounded-b-2xl border border-admin-border bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
         >
-          <p className="text-xs text-admin-text-secondary">
-            {formatCopy(copy.pagination, {
-              pageSize: PAGE_SIZE,
-              visible: visibleSubscribers.length,
-              page: currentPage,
-              totalPages
-            })}
-          </p>
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -452,6 +450,9 @@ export function SubscriberTable({
               <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
               {copy.previousPage}
             </button>
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-admin-text-primary text-xs font-semibold text-white">
+              {currentPage}
+            </span>
             <button
               type="button"
               aria-label={copy.nextPage}
@@ -463,6 +464,14 @@ export function SubscriberTable({
               <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
           </div>
+          <p className="text-xs text-admin-text-secondary">
+            {formatCopy(copy.pagination, {
+              pageSize: PAGE_SIZE,
+              visible: visibleSubscribers.length,
+              page: currentPage,
+              totalPages
+            })}
+          </p>
         </div>
       </div>
     </div>

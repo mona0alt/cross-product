@@ -47,7 +47,8 @@ describe('admin shell', () => {
     );
 
     expect(html).toContain('/logo-options/fbgm_logo_uploaded_transparent.png');
-    expect(html).toContain('数据分析');
+    expect(html).not.toContain('数据分析');
+    expect(html).not.toContain('href="/admin/analytics"');
     expect(html).toContain('商品管理');
     expect(html).toContain('系统设置');
     expect(html).not.toContain('轮播图');

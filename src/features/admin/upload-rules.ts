@@ -17,18 +17,35 @@ export type AdminUploadValidationError =
 
 export type AdminUploadStatusTone = 'info' | 'success' | 'error';
 
-export function getAdminUploadErrorMessage(error: string | undefined) {
+export type AdminUploadErrorCopy = {
+  missingFile: string;
+  fileTooLarge: string;
+  unsupportedFileType: string;
+  uploadFailed: string;
+};
+
+const defaultAdminUploadErrorCopy: AdminUploadErrorCopy = {
+  missingFile: '请选择一张图片后再上传。',
+  fileTooLarge: '图片过大，单张图片不能超过 5MB。请压缩后重新上传。',
+  unsupportedFileType: '图片格式不支持。请上传 JPG、PNG、WebP 或 GIF。',
+  uploadFailed: '上传失败，请稍后重试。'
+};
+
+export function getAdminUploadErrorMessage(
+  error: string | undefined,
+  copy: AdminUploadErrorCopy = defaultAdminUploadErrorCopy
+) {
   switch (error) {
     case 'MISSING_FILE':
-      return '请选择一张图片后再上传。';
+      return copy.missingFile;
     case 'FILE_TOO_LARGE':
-      return '图片过大，单张图片不能超过 5MB。请压缩后重新上传。';
+      return copy.fileTooLarge;
     case 'UNSUPPORTED_FILE_TYPE':
-      return '图片格式不支持。请上传 JPG、PNG、WebP 或 GIF。';
+      return copy.unsupportedFileType;
     case 'UPLOAD_FAILED':
-      return '上传失败，请稍后重试。';
+      return copy.uploadFailed;
     default:
-      return error || '上传失败，请稍后重试。';
+      return error || copy.uploadFailed;
   }
 }
 

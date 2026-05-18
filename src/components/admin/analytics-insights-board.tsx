@@ -30,6 +30,14 @@ type AnalyticsCopy = {
   assistantWelcome: string;
   placeholder: string;
   send: string;
+  scanningStatus: string;
+  productRows: Array<{
+    title: string;
+    share: string;
+    growth: string;
+    revenue: string;
+    up: boolean;
+  }>;
 };
 
 const defaultAnalyticsCopy: AnalyticsCopy = {
@@ -48,7 +56,38 @@ const defaultAnalyticsCopy: AnalyticsCopy = {
   assistantTitle: 'AI 数据分析助手',
   assistantWelcome: '你好，我是数据分析助手，可以帮你解读报表数据、分析趋势并提供优化建议。',
   placeholder: '输入问题，按回车发送...',
-  send: '发送'
+  send: '发送',
+  scanningStatus: '实时扫描中',
+  productRows: [
+    {
+      title: '星河 Pro 手机',
+      share: '42%',
+      growth: '+15.2%',
+      revenue: '¥1,797,600',
+      up: true
+    },
+    {
+      title: '智能空气净化器',
+      share: '28%',
+      growth: '+8.4%',
+      revenue: '¥1,198,400',
+      up: true
+    },
+    {
+      title: '复古运动跑鞋',
+      share: '15%',
+      growth: '-2.1%',
+      revenue: '¥642,000',
+      up: false
+    },
+    {
+      title: '便携露营帐篷',
+      share: '10%',
+      growth: '+24.0%',
+      revenue: '¥428,000',
+      up: true
+    }
+  ]
 };
 
 function getMetrics(copy: AnalyticsCopy) {
@@ -88,37 +127,6 @@ function getMetrics(copy: AnalyticsCopy) {
   }
   ];
 }
-
-const productRows = [
-  {
-    title: '星河 Pro 手机',
-    share: '42%',
-    growth: '+15.2%',
-    revenue: '¥1,797,600',
-    up: true
-  },
-  {
-    title: '智能空气净化器',
-    share: '28%',
-    growth: '+8.4%',
-    revenue: '¥1,198,400',
-    up: true
-  },
-  {
-    title: '复古运动跑鞋',
-    share: '15%',
-    growth: '-2.1%',
-    revenue: '¥642,000',
-    up: false
-  },
-  {
-    title: '便携露营帐篷',
-    share: '10%',
-    growth: '+24.0%',
-    revenue: '¥428,000',
-    up: true
-  }
-];
 
 function deltaClasses(tone: 'emerald' | 'red') {
   return tone === 'red'
@@ -239,7 +247,7 @@ export function AnalyticsInsightsBoard({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-admin-border">
-                  {productRows.map((row) => (
+                  {copy.productRows.map((row) => (
                     <tr key={row.title} className="group transition-colors hover:bg-admin-elevated">
                       <td className="py-3">
                         <div className="flex items-center">
@@ -299,7 +307,7 @@ export function AnalyticsInsightsBoard({
               </div>
               <span className="flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-admin-accent">
                 <span className="h-1.5 w-1.5 rounded-full bg-admin-accent animate-pulse" />
-                实时扫描中
+                {copy.scanningStatus}
               </span>
             </div>
 

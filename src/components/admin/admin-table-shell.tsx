@@ -18,7 +18,7 @@ export function AdminTableShell({
   children: React.ReactNode;
 }) {
   const headerClassName = compact
-    ? 'flex flex-col gap-4 border-b border-admin-border px-5 py-4 lg:flex-row lg:items-center lg:justify-between'
+    ? 'flex min-h-[73px] flex-col gap-4 border-b border-admin-border px-5 py-4 lg:flex-row lg:items-center lg:justify-between'
     : 'flex flex-col gap-4 border-b border-admin-border px-6 py-5 lg:flex-row lg:items-end lg:justify-between';
   const shellClassName = fullHeight
     ? 'flex h-full min-h-0 flex-col rounded-[24px] border border-admin-border bg-admin-surface shadow-[0_16px_48px_rgba(15,23,42,0.05)]'

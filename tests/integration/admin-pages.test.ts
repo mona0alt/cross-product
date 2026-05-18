@@ -6,6 +6,11 @@ const getAdminProductList = vi.fn();
 const getAdminCategoryTree = vi.fn();
 const requireAdminSession = vi.fn();
 const cookiesMock = vi.fn();
+const redirectMock = vi.hoisted(() =>
+  vi.fn((path: string) => {
+    throw new Error(`NEXT_REDIRECT:${path}`);
+  })
+);
 const bannerFindMany = vi.fn();
 const messageFindMany = vi.fn();
 const subscriberFindMany = vi.fn();
@@ -39,6 +44,7 @@ vi.mock('next/navigation', async () => {
 
   return {
     ...actual,
+    redirect: redirectMock,
     useRouter: () => ({
       refresh: vi.fn()
     })
@@ -87,6 +93,7 @@ describe('admin pages', () => {
     mailAutomationSettingFindFirst.mockReset();
     systemSettingFindMany.mockReset();
     productFindUnique.mockReset();
+    redirectMock.mockClear();
     cookiesMock.mockReset();
     cookiesMock.mockResolvedValue({
       get: () => undefined
@@ -381,8 +388,7 @@ describe('admin pages', () => {
 
     const messagesHtml = renderToStaticMarkup(await MessagesPage());
     const subscribersHtml = renderToStaticMarkup(await SubscribersPage());
-    const crawlHtml = renderToStaticMarkup(CrawlTasksPage());
-    const analyticsHtml = renderToStaticMarkup(await AnalyticsPage());
+    const crawlHtml = renderToStaticMarkup(await CrawlTasksPage());
     const categoriesHtml = renderToStaticMarkup(await CategoriesPage());
 
     expect(messagesHtml).not.toContain('支持中心');
@@ -411,7 +417,8 @@ describe('admin pages', () => {
     expect(SubscribersPageModule.dynamic).toBe('force-dynamic');
     expect(subscribersHtml).not.toContain('总订阅数');
     expect(subscribersHtml).not.toContain('本周新增');
-    expect(subscribersHtml).toContain('自动化发送规则');
+    expect(subscribersHtml).not.toContain('自动化发送规则');
+    expect(subscribersHtml).not.toContain('触发条件');
     expect(subscribersHtml).toContain('邮件模板与群发');
     expect(subscribersHtml).toContain('已发送邮件');
     expect(subscribersHtml).toContain('订阅者列表');
@@ -422,21 +429,14 @@ describe('admin pages', () => {
     expect(subscriberFindMany).toHaveBeenCalled();
     expect(mailTemplateFindMany).toHaveBeenCalled();
     expect(mailCampaignFindMany).toHaveBeenCalled();
-    expect(mailAutomationSettingFindFirst).toHaveBeenCalled();
+    expect(mailAutomationSettingFindFirst).not.toHaveBeenCalled();
     expect(subscribersHtml).toContain('h-[calc(100vh-104px)]');
     expect(subscribersHtml).toContain('xl:grid-cols-[220px_minmax(0,1fr)]');
     expect(crawlHtml).toContain('系统设置');
     expect(crawlHtml).toContain('抓取系统配置');
     expect(crawlHtml).toContain('源站任务配置');
-    expect(analyticsHtml).toContain('总 PV');
-    expect(analyticsHtml).toContain('总商品数量');
-    expect(analyticsHtml).toContain('页面访问成功率');
-    expect(analyticsHtml).toContain('热门产品排名');
-    expect(analyticsHtml).toContain('星河 Pro 手机');
-    expect(analyticsHtml).toContain('AI 数据分析助手');
-    expect(analyticsHtml).not.toContain('企业级 AI 数据分析概览');
-    expect(analyticsHtml).not.toContain('用户转化漏斗 (Sankey 分析)');
-    expect(analyticsHtml).not.toContain('本周热门类目更偏便携型设备');
+    await expect(AnalyticsPage()).rejects.toThrow('NEXT_REDIRECT:/admin/products');
+    expect(redirectMock).toHaveBeenCalledWith('/admin/products');
     expect(categoriesHtml).toContain('配置类别');
     expect(categoriesHtml).toContain('配置项');
     expect(categoriesHtml).toContain('xl:grid-cols-[220px_minmax(0,1fr)]');
@@ -543,7 +543,6 @@ describe('admin pages', () => {
     const productsHtml = renderToStaticMarkup(await ProductsPage());
     const messagesHtml = renderToStaticMarkup(await MessagesPage());
     const subscribersHtml = renderToStaticMarkup(await SubscribersPage());
-    const analyticsHtml = renderToStaticMarkup(await AnalyticsPage());
     const categoriesHtml = renderToStaticMarkup(await CategoriesPage());
 
     expect(productsHtml).toContain('Products');
@@ -555,12 +554,12 @@ describe('admin pages', () => {
     expect(messagesHtml).toContain('Support inbox');
     expect(messagesHtml).toContain('Unread');
     expect(messagesHtml).not.toContain('客户留言');
-    expect(subscribersHtml).toContain('Automation rules');
+    expect(subscribersHtml).not.toContain('Automation rules');
+    expect(subscribersHtml).not.toContain('Trigger');
     expect(subscribersHtml).toContain('Subscribers');
     expect(subscribersHtml).not.toContain('自动化发送规则');
-    expect(analyticsHtml).toContain('Total products');
-    expect(analyticsHtml).toContain('Top product ranking');
-    expect(analyticsHtml).not.toContain('总商品数量');
+    await expect(AnalyticsPage()).rejects.toThrow('NEXT_REDIRECT:/admin/products');
+    expect(redirectMock).toHaveBeenCalledWith('/admin/products');
     expect(categoriesHtml).toContain('flex h-[calc(100vh-104px)] min-h-0 flex-col overflow-hidden');
     expect(categoriesHtml).toContain('grid h-full min-h-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)]');
     expect(categoriesHtml).not.toContain('>Categories<');

@@ -62,10 +62,7 @@ test('admin login and product draft form flow', async ({ page }) => {
   await page.getByPlaceholder('请输入密码').fill('ChangeMe123!');
   await page.getByRole('button', { name: '登录' }).click();
 
-  await expect(page).toHaveURL(/\/admin\/analytics$/);
-  await expect(page.getByRole('heading', { name: '热门产品排名' })).toBeVisible();
-
-  await page.goto('/admin/products');
+  await expect(page).toHaveURL(/\/admin\/products$/);
   await expect(page.getByRole('heading', { name: '商品管理' })).toBeVisible();
 
   await page.getByRole('button', { name: '新增商品' }).click();
@@ -80,7 +77,7 @@ test('admin system settings switches detail card by category', async ({ page }) 
   await page.getByRole('textbox', { name: /用户名/i }).fill('admin');
   await page.getByPlaceholder('请输入密码').fill('ChangeMe123!');
   await page.getByRole('button', { name: '登录' }).click();
-  await expect(page).toHaveURL(/\/admin\/analytics$/);
+  await expect(page).toHaveURL(/\/admin\/products$/);
 
   await page.goto('/admin/categories');
   await expect(page.getByRole('heading', { name: '配置类别' })).toBeVisible();
@@ -111,7 +108,7 @@ test('product drawer shows gallery image preview after upload', async ({ page })
   await page.getByRole('textbox', { name: /用户名/i }).fill('admin');
   await page.getByPlaceholder('请输入密码').fill('ChangeMe123!');
   await page.getByRole('button', { name: '登录' }).click();
-  await expect(page).toHaveURL(/\/admin\/analytics$/);
+  await expect(page).toHaveURL(/\/admin\/products$/);
 
   await page.goto('/admin/products');
   await page.getByRole('button', { name: /^编辑商品 / }).first().click();
@@ -149,7 +146,7 @@ test('product drawer shows a clear gallery upload error for oversized images', a
   await page.getByRole('textbox', { name: /用户名/i }).fill('admin');
   await page.getByPlaceholder('请输入密码').fill('ChangeMe123!');
   await page.getByRole('button', { name: '登录' }).click();
-  await expect(page).toHaveURL(/\/admin\/analytics$/);
+  await expect(page).toHaveURL(/\/admin\/products$/);
 
   await page.goto('/admin/products');
   await page.getByRole('button', { name: /^编辑商品 / }).first().click();
@@ -184,7 +181,7 @@ test('product drawer keeps gallery images after delete upload save and reopen', 
     await page.getByRole('textbox', { name: /用户名/i }).fill('admin');
     await page.getByPlaceholder('请输入密码').fill('ChangeMe123!');
     await page.getByRole('button', { name: '登录' }).click();
-    await expect(page).toHaveURL(/\/admin\/analytics$/);
+    await expect(page).toHaveURL(/\/admin\/products$/);
 
     await page.goto('/admin/products');
     const firstProductEditButton = page.getByRole('button', { name: /^编辑商品 / }).first();
@@ -228,7 +225,7 @@ test('product drawer persists a real uploaded gallery image after save and reope
     await page.getByRole('textbox', { name: /用户名/i }).fill('admin');
     await page.getByPlaceholder('请输入密码').fill('ChangeMe123!');
     await page.getByRole('button', { name: '登录' }).click();
-    await expect(page).toHaveURL(/\/admin\/analytics$/);
+    await expect(page).toHaveURL(/\/admin\/products$/);
 
     await page.goto('/admin/products');
     const firstProductEditButton = page.getByRole('button', { name: /^编辑商品 / }).first();
@@ -267,7 +264,7 @@ test('sky cleaner product editor renders the second gallery image', async ({ pag
   await page.getByRole('textbox', { name: /用户名/i }).fill('admin');
   await page.getByPlaceholder('请输入密码').fill('ChangeMe123!');
   await page.getByRole('button', { name: '登录' }).click();
-  await expect(page).toHaveURL(/\/admin\/analytics$/);
+  await expect(page).toHaveURL(/\/admin\/products$/);
 
   await page.goto('/admin/products');
   await page.getByRole('button', { name: '编辑商品 Sky Cleaner Pro 擦窗机器人' }).click();

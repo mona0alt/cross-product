@@ -33,10 +33,12 @@ import {
   deleteCategoryFormAction,
   updateCategoryFormAction
 } from '@/features/admin/category-actions';
-import { AdminImageUploadInput } from '@/components/admin/admin-image-upload-input';
+import {
+  AdminImageUploadInput,
+  type AdminImageUploadCopy
+} from '@/components/admin/admin-image-upload-input';
 import {
   ADMIN_IMAGE_ACCEPT,
-  ADMIN_IMAGE_UPLOAD_HINT,
   getAdminUploadErrorMessage,
   validateAdminUploadFile,
   type AdminUploadStatusTone
@@ -65,6 +67,7 @@ export type ProductCenterRow = {
   slug: string;
   productCode: string;
   categoryId: string;
+  localizedName?: string;
   nameZh: string;
   nameEn: string;
   nameEs: string;
@@ -145,6 +148,12 @@ export function getProductActionMenuState({
 }
 
 type ProductCenterCopy = {
+  localizedContent: string;
+  productCode: string;
+  category: string;
+  priceUsd: string;
+  coverImageUrl: string;
+  recommended: string;
   listTitle: string;
   categoryTitle: string;
   searchPlaceholder: string;
@@ -187,9 +196,98 @@ type ProductCenterCopy = {
   emptyProductsTitle: string;
   emptyCategoryProductsTitle: string;
   emptyProductsDescription: string;
+  selectProductLabel: string;
+  previewStorefront: string;
+  archiveProduct: string;
+  archiveProductLabel: string;
+  bulkRecommendedNotice: string;
+  bulkUnrecommendedNotice: string;
+  bulkArchivedNotice: string;
+  productArchivedNotice: string;
+  csvHeaders: string[];
+  categoryCreateTitle: string;
+  categoryEditTitle: string;
+  categoryCreateDescription: string;
+  categoryEditDescription: string;
+  closeCategoryCreate: string;
+  closeCategoryEdit: string;
+  parentCategory: string;
+  rootCategory: string;
+  sortOrder: string;
+  categoryHeroImage: string;
+  uploadHeroImage: string;
+  removeCategoryHeroImage: string;
+  categoryHeroPreviewAlt: string;
+  nameZhLabel: string;
+  nameEnLabel: string;
+  nameEsLabel: string;
+  namePtLabel: string;
+  descriptionZhLabel: string;
+  descriptionEnLabel: string;
+  descriptionEsLabel: string;
+  descriptionPtLabel: string;
+  categoryEnabled: string;
+  cancel: string;
+  saveCategory: string;
+  categoryCreatedNotice: string;
+  categorySavedNotice: string;
+  categorySaveError: string;
+  productCreateTitle: string;
+  productEditTitle: string;
+  productCreateDescription: string;
+  productEditDescription: string;
+  closeProductCreate: string;
+  closeProductEdit: string;
+  productCreatedNotice: string;
+  productSavedNotice: string;
+  productSaveError: string;
+  productMedia: string;
+  coverUpload: string;
+  coverPreviewAlt: string;
+  removeCoverImage: string;
+  productMediaUploadPending: string;
+  basicInfo: string;
+  statusLabel: string;
+  selectCategory: string;
+  productGalleryManager: string;
+  productGallerySubtitle: string;
+  uploadGallery: string;
+  galleryMaxError: string;
+  galleryUploading: string;
+  galleryUploaded: string;
+  deleteProductImageLabel: string;
+  productImageAlt: string;
+  localImageLabel: string;
+  emptyGallery: string;
+  introZhLabel: string;
+  introEnLabel: string;
+  introEsLabel: string;
+  introPtLabel: string;
+  detailZhLabel: string;
+  detailEnLabel: string;
+  detailEsLabel: string;
+  detailPtLabel: string;
+  saveChanges: string;
+  savingChanges: string;
+  imageUploading: string;
+  uploadHint: string;
+  currentImage: string;
+  configuredImage: string;
+  emptyImage: string;
+  imageUploadInProgress: string;
+  imageUploaded: string;
+  imageUploadedToInput: string;
+  removeImage: string;
+  uploadErrors: AdminImageUploadCopy['errors'];
 };
 
 const defaultProductCenterCopy: ProductCenterCopy = {
+  localizedContent: '多语言内容',
+  productCode: '商品编码',
+  category: '分类',
+  priceUsd: '价格 USD',
+  coverImageUrl: '封面主图',
+  recommended: '推荐商品',
   listTitle: '商品管理',
   categoryTitle: '产品类目',
   searchPlaceholder: '搜索商品...',
@@ -231,7 +329,95 @@ const defaultProductCenterCopy: ProductCenterCopy = {
   productCount: '{count} 个商品',
   emptyProductsTitle: '暂无商品',
   emptyCategoryProductsTitle: '该类目暂无商品',
-  emptyProductsDescription: '新增商品并发布后，前台商品展示会同步更新。'
+  emptyProductsDescription: '新增商品并发布后，前台商品展示会同步更新。',
+  selectProductLabel: '选择 {name}',
+  previewStorefront: '预览前台',
+  archiveProduct: '归档商品',
+  archiveProductLabel: '归档商品 {name}',
+  bulkRecommendedNotice: '已批量设为推荐商品。',
+  bulkUnrecommendedNotice: '已批量取消推荐。',
+  bulkArchivedNotice: '已批量归档商品。',
+  productArchivedNotice: '商品已归档。',
+  csvHeaders: ['商品名称', '英文名称', 'SKU', '类别', '状态', '价格USD', '推荐', 'Slug'],
+  categoryCreateTitle: '新建类目',
+  categoryEditTitle: '编辑类目',
+  categoryCreateDescription: '保存后留在商品管理页继续维护商品。',
+  categoryEditDescription: '修改类目信息后同步刷新商品管理页。',
+  closeCategoryCreate: '关闭新建类目',
+  closeCategoryEdit: '关闭编辑类目',
+  parentCategory: '父级类目',
+  rootCategory: '一级类目',
+  sortOrder: '排序',
+  categoryHeroImage: '类目主图',
+  uploadHeroImage: '上传主图',
+  removeCategoryHeroImage: '移除类目主图',
+  categoryHeroPreviewAlt: '类目主图',
+  nameZhLabel: '中文名称',
+  nameEnLabel: '英文名称',
+  nameEsLabel: '西语名称',
+  namePtLabel: '葡语名称',
+  descriptionZhLabel: '中文描述',
+  descriptionEnLabel: '英文描述',
+  descriptionEsLabel: '西语描述',
+  descriptionPtLabel: '葡语描述',
+  categoryEnabled: '启用类目',
+  cancel: '取消',
+  saveCategory: '保存类目',
+  categoryCreatedNotice: '类目已新增。',
+  categorySavedNotice: '类目已保存。',
+  categorySaveError: '保存失败，请检查表单。',
+  productCreateTitle: '新增商品',
+  productEditTitle: '编辑商品',
+  productCreateDescription: '填写商品信息后保存到后台。',
+  productEditDescription: '修改后保存，前台按发布状态展示。',
+  closeProductCreate: '关闭新增商品',
+  closeProductEdit: '关闭编辑商品',
+  productCreatedNotice: '商品已新增。',
+  productSavedNotice: '商品已保存。',
+  productSaveError: '保存失败，请检查表单。',
+  productMedia: '产品媒体',
+  coverUpload: '上传封面',
+  coverPreviewAlt: '商品封面主图',
+  removeCoverImage: '移除封面主图',
+  productMediaUploadPending: '图片仍在上传，完成后才能保存商品。',
+  basicInfo: '基础信息',
+  statusLabel: '状态',
+  selectCategory: '选择类别',
+  productGalleryManager: '商品图片管理',
+  productGallerySubtitle: '图库图片',
+  uploadGallery: '上传图库',
+  galleryMaxError: '图库最多支持 10 张图片。请先删除一张再上传。',
+  galleryUploading: '正在上传图库图片...',
+  galleryUploaded: '图库图片已上传。',
+  deleteProductImageLabel: '删除商品图片 {index}',
+  productImageAlt: '商品图片 {index}',
+  localImageLabel: '本地图片 {index}',
+  emptyGallery: '暂无图库图片',
+  introZhLabel: '中文简介',
+  introEnLabel: '英文简介',
+  introEsLabel: '西语简介',
+  introPtLabel: '葡语简介',
+  detailZhLabel: '中文详情',
+  detailEnLabel: '英文详情',
+  detailEsLabel: '西语详情',
+  detailPtLabel: '葡语详情',
+  saveChanges: '保存更改',
+  savingChanges: '保存中...',
+  imageUploading: '图片上传中...',
+  uploadHint: '支持 JPG、PNG、WebP、GIF，单张不超过 5MB。',
+  currentImage: '当前图片',
+  configuredImage: '本地图片已配置',
+  emptyImage: '暂未配置图片',
+  imageUploadInProgress: '正在上传图片...',
+  imageUploaded: '图片已上传。',
+  imageUploadedToInput: '图片已上传，地址已写入输入框。',
+  removeImage: '移除图片',
+  uploadErrors: {
+    missingFile: '请选择一张图片后再上传。',
+    fileTooLarge: '图片过大，单张图片不能超过 5MB。请压缩后重新上传。',
+    unsupportedFileType: '图片格式不支持。请上传 JPG、PNG、WebP 或 GIF。',
+    uploadFailed: '上传失败，请稍后重试。'
+  }
 };
 
 function formatCopy(template: string, values: Record<string, string | number>) {
@@ -239,6 +425,20 @@ function formatCopy(template: string, values: Record<string, string | number>) {
     (text, [key, value]) => text.replaceAll(`{${key}}`, String(value)),
     template
   );
+}
+
+function getProductImageUploadCopy(copy: ProductCenterCopy): AdminImageUploadCopy {
+  return {
+    hint: copy.uploadHint,
+    currentImage: copy.currentImage,
+    configuredImage: copy.configuredImage,
+    emptyImage: copy.emptyImage,
+    uploading: copy.imageUploadInProgress,
+    uploaded: copy.imageUploaded,
+    uploadedToInput: copy.imageUploadedToInput,
+    removeImage: copy.removeImage,
+    errors: copy.uploadErrors
+  };
 }
 
 export type ProductGalleryImageItem = {
@@ -299,18 +499,20 @@ export function getProductRowAfterFormSave(
 }
 
 export function getProductEditorSubmitState({
-  isUploadPending
+  isUploadPending,
+  copy = defaultProductCenterCopy
 }: {
   isUploadPending: boolean;
+  copy?: Pick<ProductCenterCopy, 'imageUploading' | 'saveChanges'>;
 }) {
   return isUploadPending
     ? {
         disabled: true,
-        label: '图片上传中...'
+        label: copy.imageUploading
       }
     : {
         disabled: false,
-        label: '保存更改'
+        label: copy.saveChanges
       };
 }
 
@@ -320,7 +522,9 @@ export async function saveCategoryEditorForm({
   router,
   onClose,
   onSaved,
-  isCreate
+  isCreate,
+  createdMessage = defaultProductCenterCopy.categoryCreatedNotice,
+  savedMessage = defaultProductCenterCopy.categorySavedNotice
 }: {
   formAction: (formData: FormData) => Promise<unknown>;
   formData: FormData;
@@ -330,9 +534,11 @@ export async function saveCategoryEditorForm({
   onClose: () => void;
   onSaved: (message: string) => void;
   isCreate: boolean;
+  createdMessage?: string;
+  savedMessage?: string;
 }) {
   await formAction(formData);
-  onSaved(isCreate ? '类目已新增。' : '类目已保存。');
+  onSaved(isCreate ? createdMessage : savedMessage);
   router.refresh();
   onClose();
 }
@@ -355,6 +561,7 @@ const productNameCollator = new Intl.Collator('en', {
 
 function getProductNameSortValue(product: ProductCenterRow) {
   return (
+    getProductDisplayName(product) ||
     product.nameEn.trim() ||
     product.nameZh.trim() ||
     product.slug.trim() ||
@@ -375,6 +582,29 @@ export function sortProductRowsByName(products: ProductCenterRow[]) {
 
     return productNameCollator.compare(left.productCode, right.productCode);
   });
+}
+
+function getProductDisplayName(product: ProductCenterRow) {
+  return (
+    product.localizedName?.trim() ||
+    product.nameZh.trim() ||
+    product.nameEn.trim() ||
+    product.nameEs.trim() ||
+    product.namePt.trim() ||
+    product.slug.trim() ||
+    product.productCode.trim()
+  );
+}
+
+function getProductSecondaryName(product: ProductCenterRow) {
+  const displayName = getProductDisplayName(product);
+  const secondaryName =
+    product.nameEn.trim() ||
+    product.nameZh.trim() ||
+    product.nameEs.trim() ||
+    product.namePt.trim();
+
+  return secondaryName && secondaryName !== displayName ? secondaryName : '';
 }
 
 export function ProductCenter({
@@ -605,10 +835,10 @@ export function ProductCenter({
     await bulkUpdateProductsFromListAction(selectedProductIds, operation);
     setNotice(
       operation === 'recommend'
-        ? '已批量设为推荐商品。'
+        ? copy.bulkRecommendedNotice
         : operation === 'unrecommend'
-        ? '已批量取消推荐。'
-        : '已批量归档商品。'
+        ? copy.bulkUnrecommendedNotice
+        : copy.bulkArchivedNotice
     );
     setOpenActionMenuProductId(null);
     setSelectedProductIds([]);
@@ -617,7 +847,7 @@ export function ProductCenter({
   const archiveProduct = async (productId: string) => {
     setOpenActionMenuProductId(null);
     await archiveProductFromListAction(productId);
-    setNotice('商品已归档。');
+    setNotice(copy.productArchivedNotice);
     setSelectedProductIds((current) => current.filter((id) => id !== productId));
   };
 
@@ -637,7 +867,7 @@ export function ProductCenter({
 
   const exportFilteredProducts = () => {
     const csvRows = [
-      ['商品名称', '英文名称', 'SKU', '类别', '状态', '价格USD', '推荐', 'Slug'],
+      copy.csvHeaders,
       ...filteredProducts.map((product) => [
         product.nameZh,
         product.nameEn,
@@ -645,7 +875,7 @@ export function ProductCenter({
         product.categoryName,
         product.status,
         String(product.priceUsd),
-        product.isRecommended ? '是' : '否',
+        product.isRecommended ? copy.yes : copy.no,
         product.slug
       ])
     ];
@@ -851,12 +1081,16 @@ export function ProductCenter({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-admin-border">
-                    {paginatedProducts.map((product) => (
+                    {paginatedProducts.map((product) => {
+                      const productDisplayName = getProductDisplayName(product);
+                      const productSecondaryName = getProductSecondaryName(product);
+
+                      return (
                       <tr key={product.id} className="bg-white transition hover:bg-blue-50/50">
                         <td className="px-4 py-3">
                           <input
                             type="checkbox"
-                            aria-label={`选择 ${product.nameZh}`}
+                            aria-label={formatCopy(copy.selectProductLabel, { name: productDisplayName })}
                             checked={selectedProductIds.includes(product.id)}
                             onChange={() => toggleProductSelection(product.id)}
                             className="h-4 w-4 rounded border-admin-border text-admin-accent"
@@ -868,15 +1102,17 @@ export function ProductCenter({
                             <div className="min-w-0">
                               <button
                                 type="button"
-                                aria-label={formatCopy(copy.editProductLabel, { name: product.nameZh })}
+                                aria-label={formatCopy(copy.editProductLabel, { name: productDisplayName })}
                                 onClick={() => openEditEditor(product.id)}
                                 className="block max-w-full truncate rounded text-left text-xs font-semibold text-admin-text-primary transition hover:text-admin-accent hover:underline focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
                               >
-                                {product.nameZh}
+                                {productDisplayName}
                               </button>
-                              <p className="truncate text-xs text-admin-text-muted">
-                                {product.nameEn}
-                              </p>
+                              {productSecondaryName ? (
+                                <p className="truncate text-xs text-admin-text-muted">
+                                  {productSecondaryName}
+                                </p>
+                              ) : null}
                             </div>
                           </div>
                         </td>
@@ -915,7 +1151,8 @@ export function ProductCenter({
                           </div>
                         </td>
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -986,6 +1223,7 @@ export function ProductCenter({
           );
         }}
         onSaved={(message) => setNotice(message)}
+        copy={copy}
       />
       <CategoryEditorDrawer
         categories={categories}
@@ -994,6 +1232,7 @@ export function ProductCenter({
         isOpen={isCategoryEditorOpen}
         onClose={() => setIsCategoryEditorOpen(false)}
         onSaved={(message) => setNotice(message)}
+        copy={copy}
       />
     </section>
   );
@@ -1016,7 +1255,7 @@ function ProductActionMenu({
     <div className="relative inline-flex" data-product-action-menu>
       <button
         type="button"
-        aria-label={formatCopy(copy.productActionLabel, { name: product.nameZh })}
+        aria-label={formatCopy(copy.productActionLabel, { name: getProductDisplayName(product) })}
         aria-expanded={isOpen}
         aria-haspopup="menu"
         onClick={onToggle}
@@ -1032,7 +1271,7 @@ function ProductActionMenu({
       {isOpen ? (
         <div
           role="menu"
-          aria-label={formatCopy(copy.productActionMenuLabel, { name: product.nameZh })}
+          aria-label={formatCopy(copy.productActionMenuLabel, { name: getProductDisplayName(product) })}
           className="absolute right-0 top-10 z-30 w-44 rounded-xl border border-admin-border bg-white p-1.5 text-left shadow-xl ring-1 ring-black/5"
         >
           <a
@@ -1043,17 +1282,17 @@ function ProductActionMenu({
             className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-admin-text-secondary transition hover:bg-admin-elevated hover:text-admin-text-primary focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
           >
             <Eye className="h-4 w-4 text-admin-text-muted" />
-            预览前台
+            {copy.previewStorefront}
           </a>
           <button
             type="button"
             role="menuitem"
-            aria-label={`归档商品 ${product.nameZh}`}
+            aria-label={formatCopy(copy.archiveProductLabel, { name: getProductDisplayName(product) })}
             onClick={onArchive}
             className="mt-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-rose-700 transition hover:bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-200"
           >
             <Archive className="h-4 w-4" />
-            归档商品
+            {copy.archiveProduct}
           </button>
         </div>
       ) : null}
@@ -1076,7 +1315,7 @@ function CategoryItem({
 }) {
   return (
     <div
-      className={`group flex items-center justify-between gap-2.5 rounded-lg border p-2.5 transition ${
+      className={`group flex items-center justify-between gap-2.5 rounded-lg border p-2.5 transition focus-within:ring-2 focus-within:ring-admin-accent/20 ${
         isSelected
           ? 'border-admin-accent/25 bg-blue-50 text-admin-accent'
           : category.isActive
@@ -1088,32 +1327,27 @@ function CategoryItem({
         type="button"
         aria-pressed={isSelected}
         onClick={() => onSelect(category.id)}
-        className="flex min-w-0 flex-1 items-center justify-between gap-2.5 text-left"
+        className="flex min-w-0 flex-1 self-stretch items-center gap-2.5 text-left focus:outline-none"
       >
-        <span className="flex min-w-0 items-center gap-2.5">
-          {category.iconImageUrl ? (
-            <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-lg border border-admin-border bg-white">
-              <NextImage
-                src={category.iconImageUrl}
-                alt={category.nameZh}
-                fill
-                sizes="32px"
-                className="object-cover"
-                unoptimized
-              />
-            </span>
-          ) : (
-            <FolderTree className="h-5 w-5 shrink-0" />
-          )}
-          <span className="min-w-0">
-            <span className="block truncate text-xs font-semibold">{category.nameZh}</span>
-            <span className="block truncate text-xs text-admin-text-muted">
-              {category.nameEn}
-            </span>
+        {category.iconImageUrl ? (
+          <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-lg border border-admin-border bg-white">
+            <NextImage
+              src={category.iconImageUrl}
+              alt={category.nameZh}
+              fill
+              sizes="32px"
+              className="object-cover"
+              unoptimized
+            />
           </span>
-        </span>
-        <span className="shrink-0 rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-admin-text-secondary ring-1 ring-admin-border">
-          {formatCopy(copy.productCount, { count: category.productCount })}
+        ) : (
+          <FolderTree className="h-5 w-5 shrink-0" />
+        )}
+        <span className="min-w-0">
+          <span className="block truncate text-xs font-semibold">{category.nameZh}</span>
+          <span className="block truncate text-xs text-admin-text-muted">
+            {category.nameEn}
+          </span>
         </span>
       </button>
       <div className="flex shrink-0 items-center gap-1">
@@ -1146,7 +1380,8 @@ function CategoryEditorDrawer({
   mode,
   isOpen,
   onClose,
-  onSaved
+  onSaved,
+  copy
 }: {
   categories: ProductCenterCategory[];
   category: ProductCenterCategory | null;
@@ -1154,6 +1389,7 @@ function CategoryEditorDrawer({
   isOpen: boolean;
   onClose: () => void;
   onSaved: (message: string) => void;
+  copy: ProductCenterCopy;
 }) {
   const router = useRouter();
   const [formError, setFormError] = useState('');
@@ -1176,10 +1412,12 @@ function CategoryEditorDrawer({
         router,
         onClose,
         onSaved,
-        isCreate
+        isCreate,
+        createdMessage: copy.categoryCreatedNotice,
+        savedMessage: copy.categorySavedNotice
       });
     } catch (error) {
-      setFormError(error instanceof Error ? error.message : '保存失败，请检查表单。');
+      setFormError(error instanceof Error ? error.message : copy.categorySaveError);
     }
   };
   const parentOptions = categories.filter((item) => item.id !== category?.id);
@@ -1194,15 +1432,15 @@ function CategoryEditorDrawer({
       <div className="flex items-center justify-between border-b border-admin-border bg-admin-elevated px-5 py-4">
         <div>
           <h3 id="category-editor-title" className="text-base font-bold text-admin-text-primary">
-            {isCreate ? '新建类目' : '编辑类目'}
+            {isCreate ? copy.categoryCreateTitle : copy.categoryEditTitle}
           </h3>
           <p className="mt-0.5 text-xs text-admin-text-muted">
-            {isCreate ? '保存后留在商品管理页继续维护商品。' : '修改类目信息后同步刷新商品管理页。'}
+            {isCreate ? copy.categoryCreateDescription : copy.categoryEditDescription}
           </p>
         </div>
         <button
           type="button"
-          aria-label={isCreate ? '关闭新建类目' : '关闭编辑类目'}
+          aria-label={isCreate ? copy.closeCategoryCreate : copy.closeCategoryEdit}
           onClick={onClose}
           className="flex h-8 w-8 items-center justify-center rounded-full text-admin-text-muted transition hover:bg-white hover:text-admin-text-primary"
         >
@@ -1213,13 +1451,13 @@ function CategoryEditorDrawer({
       <form action={handleFormAction} className="flex min-h-0 flex-1 flex-col">
         <div className="flex-1 space-y-5 overflow-y-auto p-5">
           <div className="grid gap-3 md:grid-cols-2">
-            <Field label="父级类目">
+            <Field label={copy.parentCategory}>
               <select
                 name="parentId"
                 defaultValue={category?.parentId ?? ''}
                 className={drawerInputClass}
               >
-                <option value="">一级类目</option>
+                <option value="">{copy.rootCategory}</option>
                 {parentOptions.map((item) => (
                   <option key={item.id} value={item.id}>
                     {item.nameZh}
@@ -1235,7 +1473,7 @@ function CategoryEditorDrawer({
                 placeholder="humanoid-robots"
               />
             </Field>
-            <Field label="排序">
+            <Field label={copy.sortOrder}>
               <input
                 name="sortOrder"
                 defaultValue={category?.sortOrder ?? 0}
@@ -1246,57 +1484,58 @@ function CategoryEditorDrawer({
             <div className="md:col-span-2">
               <AdminImageUploadInput
                 name="iconImageUrl"
-                label="类目主图"
-                uploadLabel="上传主图"
+                label={copy.categoryHeroImage}
+                uploadLabel={copy.uploadHeroImage}
                 defaultValue={category?.iconImageUrl ?? ''}
                 scope="category"
                 showPreview
-                previewAlt={category?.nameZh ?? '类目主图'}
-                clearLabel="移除类目主图"
+                previewAlt={category?.nameZh ?? copy.categoryHeroPreviewAlt}
+                clearLabel={copy.removeCategoryHeroImage}
+                uploadCopy={getProductImageUploadCopy(copy)}
               />
             </div>
-            <Field label="中文名称">
+            <Field label={copy.nameZhLabel}>
               <input name="nameZh" defaultValue={category?.nameZh ?? ''} className={drawerInputClass} />
             </Field>
-            <Field label="英文名称">
+            <Field label={copy.nameEnLabel}>
               <input name="nameEn" defaultValue={category?.nameEn ?? ''} className={drawerInputClass} />
             </Field>
-            <Field label="西语名称">
+            <Field label={copy.nameEsLabel}>
               <input
                 name="nameEs"
                 defaultValue={category?.nameEs ?? category?.nameEn ?? ''}
                 className={drawerInputClass}
               />
             </Field>
-            <Field label="葡语名称">
+            <Field label={copy.namePtLabel}>
               <input
                 name="namePt"
                 defaultValue={category?.namePt ?? category?.nameEn ?? ''}
                 className={drawerInputClass}
               />
             </Field>
-            <Field label="中文描述" className="md:col-span-2">
+            <Field label={copy.descriptionZhLabel} className="md:col-span-2">
               <textarea
                 name="descriptionZh"
                 defaultValue={category?.descriptionZh ?? ''}
                 className={`${drawerInputClass} min-h-[84px] resize-y`}
               />
             </Field>
-            <Field label="英文描述" className="md:col-span-2">
+            <Field label={copy.descriptionEnLabel} className="md:col-span-2">
               <textarea
                 name="descriptionEn"
                 defaultValue={category?.descriptionEn ?? ''}
                 className={`${drawerInputClass} min-h-[84px] resize-y`}
               />
             </Field>
-            <Field label="西语描述" className="md:col-span-2">
+            <Field label={copy.descriptionEsLabel} className="md:col-span-2">
               <textarea
                 name="descriptionEs"
                 defaultValue={category?.descriptionEs ?? ''}
                 className={`${drawerInputClass} min-h-[84px] resize-y`}
               />
             </Field>
-            <Field label="葡语描述" className="md:col-span-2">
+            <Field label={copy.descriptionPtLabel} className="md:col-span-2">
               <textarea
                 name="descriptionPt"
                 defaultValue={category?.descriptionPt ?? ''}
@@ -1310,7 +1549,7 @@ function CategoryEditorDrawer({
                 defaultChecked={category?.isActive ?? true}
                 className="h-4 w-4 rounded border-admin-border bg-admin-surface text-admin-accent focus:ring-admin-accent/30"
               />
-              启用类目
+              {copy.categoryEnabled}
             </label>
           </div>
         </div>
@@ -1324,14 +1563,14 @@ function CategoryEditorDrawer({
             onClick={onClose}
             className="rounded-lg border border-admin-border bg-white px-4 py-2 text-sm font-semibold text-admin-text-secondary transition hover:border-admin-border-strong"
           >
-            取消
+            {copy.cancel}
           </button>
           <button
             type="submit"
             className="inline-flex items-center gap-2 rounded-lg bg-admin-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-admin-accent-hover"
           >
             <Check className="h-4 w-4" />
-            保存类目
+            {copy.saveCategory}
           </button>
         </footer>
       </form>
@@ -1346,7 +1585,8 @@ function ProductEditorDrawer({
   isOpen,
   onClose,
   onProductSaved,
-  onSaved
+  onSaved,
+  copy
 }: {
   categories: ProductCenterCategory[];
   product: ProductCenterRow | null;
@@ -1355,6 +1595,7 @@ function ProductEditorDrawer({
   onClose: () => void;
   onProductSaved: (productId: string, formData: FormData) => void;
   onSaved: (message: string) => void;
+  copy: ProductCenterCopy;
 }) {
   if (!isOpen) {
     return null;
@@ -1368,6 +1609,7 @@ function ProductEditorDrawer({
       onClose={onClose}
       onProductSaved={onProductSaved}
       onSaved={onSaved}
+      copy={copy}
     />
   );
 }
@@ -1378,7 +1620,8 @@ function ProductEditorDrawerContent({
   mode,
   onClose,
   onProductSaved,
-  onSaved
+  onSaved,
+  copy
 }: {
   categories: ProductCenterCategory[];
   product: ProductCenterRow | null;
@@ -1386,6 +1629,7 @@ function ProductEditorDrawerContent({
   onClose: () => void;
   onProductSaved: (productId: string, formData: FormData) => void;
   onSaved: (message: string) => void;
+  copy: ProductCenterCopy;
 }) {
   const router = useRouter();
   const [formError, setFormError] = useState('');
@@ -1402,11 +1646,11 @@ function ProductEditorDrawerContent({
       if (!isCreate && product) {
         onProductSaved(product.id, formData);
       }
-      onSaved(isCreate ? '商品已新增。' : '商品已保存。');
+      onSaved(isCreate ? copy.productCreatedNotice : copy.productSavedNotice);
       router.refresh();
       onClose();
     } catch (error) {
-      setFormError(error instanceof Error ? error.message : '保存失败，请检查表单。');
+      setFormError(error instanceof Error ? error.message : copy.productSaveError);
     }
   };
   const galleryUrls = [...(product?.images ?? [])]
@@ -1435,15 +1679,15 @@ function ProductEditorDrawerContent({
       <div className="flex items-center justify-between border-b border-admin-border bg-admin-elevated px-5 py-4">
         <div>
           <h3 id="product-editor-title" className="text-base font-bold text-admin-text-primary">
-            {isCreate ? '新增商品' : '编辑商品'}
+            {isCreate ? copy.productCreateTitle : copy.productEditTitle}
           </h3>
           <p className="mt-0.5 text-xs text-admin-text-muted">
-            {isCreate ? '填写商品信息后保存到后台。' : '修改后保存，前台按发布状态展示。'}
+            {isCreate ? copy.productCreateDescription : copy.productEditDescription}
           </p>
         </div>
         <button
           type="button"
-          aria-label={isCreate ? '关闭新增商品' : '关闭编辑商品'}
+          aria-label={isCreate ? copy.closeProductCreate : copy.closeProductEdit}
           onClick={onClose}
           className="flex h-8 w-8 items-center justify-center rounded-full text-admin-text-muted transition hover:bg-white hover:text-admin-text-primary"
         >
@@ -1455,7 +1699,7 @@ function ProductEditorDrawerContent({
         <div className="flex-1 space-y-6 overflow-y-auto p-5">
           <section>
             <div className="mb-3 flex items-center justify-between">
-              <h4 className="text-xs font-bold uppercase text-admin-text-muted">产品媒体</h4>
+              <h4 className="text-xs font-bold uppercase text-admin-text-muted">{copy.productMedia}</h4>
               <span className="text-xs text-admin-text-muted">
                 {galleryUrls.length}/10
               </span>
@@ -1463,42 +1707,44 @@ function ProductEditorDrawerContent({
             <div className="space-y-4 rounded-xl border border-admin-border bg-admin-surface p-4">
               <AdminImageUploadInput
                 name="coverImageUrl"
-                label="封面主图"
-                uploadLabel="上传封面"
+                label={copy.coverImageUrl}
+                uploadLabel={copy.coverUpload}
                 defaultValue={product?.coverImageUrl ?? ''}
                 scope="product"
                 showPreview
-                previewAlt={product?.nameZh ?? '商品封面主图'}
-                clearLabel="移除封面主图"
+                previewAlt={product?.nameZh ?? copy.coverPreviewAlt}
+                clearLabel={copy.removeCoverImage}
+                uploadCopy={getProductImageUploadCopy(copy)}
               />
               <ProductGalleryImageManager
                 defaultUrls={galleryUrls}
                 onUploadPendingChange={setIsGalleryUploadPending}
+                copy={copy}
               />
             </div>
             {isGalleryUploadPending ? (
               <p role="status" className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-800">
-                图片仍在上传，完成后才能保存商品。
+                {copy.productMediaUploadPending}
               </p>
             ) : null}
           </section>
 
           <section className="space-y-4">
-            <h4 className="text-xs font-bold uppercase text-admin-text-muted">基础信息</h4>
+            <h4 className="text-xs font-bold uppercase text-admin-text-muted">{copy.basicInfo}</h4>
             <div className="grid gap-3 md:grid-cols-2">
-              <Field label="商品编码">
+              <Field label={copy.productCode}>
                 <input name="productCode" defaultValue={product?.productCode} className={drawerInputClass} />
               </Field>
               <Field label="Slug">
                 <input name="slug" defaultValue={product?.slug} className={drawerInputClass} />
               </Field>
-              <Field label="类别">
+              <Field label={copy.category}>
                 <select
                   name="categoryId"
                   defaultValue={product?.categoryId ?? ''}
                   className={drawerInputClass}
                 >
-                  <option value="">选择类别</option>
+                  <option value="">{copy.selectCategory}</option>
                   {categoryOptions.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.nameZh}
@@ -1506,14 +1752,14 @@ function ProductEditorDrawerContent({
                   ))}
                 </select>
               </Field>
-              <Field label="价格 USD">
+              <Field label={copy.priceUsd}>
                 <input
                   name="priceUsd"
                   defaultValue={product?.priceUsd ?? ''}
                   className={drawerInputClass}
                 />
               </Field>
-              <Field label="排序">
+              <Field label={copy.sortOrder}>
                 <input
                   name="sortOrder"
                   defaultValue={product?.sortOrder ?? 0}
@@ -1521,7 +1767,7 @@ function ProductEditorDrawerContent({
                   type="number"
                 />
               </Field>
-              <Field label="状态">
+              <Field label={copy.statusLabel}>
                 <select name="status" defaultValue={product?.status ?? 'draft'} className={drawerInputClass}>
                   <option value="draft">draft</option>
                   <option value="pending">pending</option>
@@ -1536,23 +1782,23 @@ function ProductEditorDrawerContent({
                   defaultChecked={product?.isRecommended ?? false}
                   className="h-4 w-4 rounded border-admin-border bg-admin-surface text-admin-accent focus:ring-admin-accent/30"
                 />
-                推荐商品
+                {copy.recommended}
               </label>
             </div>
           </section>
 
           <section className="space-y-4">
-            <h4 className="text-xs font-bold uppercase text-admin-text-muted">多语言内容</h4>
+            <h4 className="text-xs font-bold uppercase text-admin-text-muted">{copy.localizedContent}</h4>
             <div className="grid gap-3 md:grid-cols-2">
               {([
-                ['nameZh', '中文名称', product?.nameZh],
-                ['nameEn', '英文名称', product?.nameEn],
-                ['nameEs', '西语名称', product?.nameEs],
-                ['namePt', '葡语名称', product?.namePt],
-                ['introZh', '中文简介', product?.introZh],
-                ['introEn', '英文简介', product?.introEn],
-                ['introEs', '西语简介', product?.introEs],
-                ['introPt', '葡语简介', product?.introPt]
+                ['nameZh', copy.nameZhLabel, product?.nameZh],
+                ['nameEn', copy.nameEnLabel, product?.nameEn],
+                ['nameEs', copy.nameEsLabel, product?.nameEs],
+                ['namePt', copy.namePtLabel, product?.namePt],
+                ['introZh', copy.introZhLabel, product?.introZh],
+                ['introEn', copy.introEnLabel, product?.introEn],
+                ['introEs', copy.introEsLabel, product?.introEs],
+                ['introPt', copy.introPtLabel, product?.introPt]
               ] as Array<[string, string, string | undefined]>).map(([name, label, value]) => (
                 <Field key={name} label={label}>
                   <input name={name} defaultValue={value} className={drawerInputClass} />
@@ -1560,10 +1806,10 @@ function ProductEditorDrawerContent({
               ))}
             </div>
             {([
-              ['detailZh', '中文详情', product?.detailZh],
-              ['detailEn', '英文详情', product?.detailEn],
-              ['detailEs', '西语详情', product?.detailEs],
-              ['detailPt', '葡语详情', product?.detailPt]
+              ['detailZh', copy.detailZhLabel, product?.detailZh],
+              ['detailEn', copy.detailEnLabel, product?.detailEn],
+              ['detailEs', copy.detailEsLabel, product?.detailEs],
+              ['detailPt', copy.detailPtLabel, product?.detailPt]
             ] as Array<[string, string, string | undefined]>).map(([name, label, value]) => (
               <Field key={name} label={label}>
                 <textarea
@@ -1585,9 +1831,9 @@ function ProductEditorDrawerContent({
             onClick={onClose}
             className="rounded-lg border border-admin-border bg-white px-4 py-2 text-sm font-semibold text-admin-text-secondary transition hover:border-admin-border-strong"
           >
-            取消
+            {copy.cancel}
           </button>
-          <ProductEditorSubmitButton isUploadPending={isGalleryUploadPending} />
+          <ProductEditorSubmitButton isUploadPending={isGalleryUploadPending} copy={copy} />
         </footer>
       </form>
     </aside>
@@ -1596,10 +1842,12 @@ function ProductEditorDrawerContent({
 
 function ProductGalleryImageManager({
   defaultUrls,
-  onUploadPendingChange
+  onUploadPendingChange,
+  copy
 }: {
   defaultUrls: string[];
   onUploadPendingChange?: (isPending: boolean) => void;
+  copy: ProductCenterCopy;
 }) {
   const defaultUrlsKey = defaultUrls.join('\n');
   const [items, setItems] = useState<ProductGalleryImageItem[]>(
@@ -1663,7 +1911,7 @@ function ProductGalleryImageManager({
     if (!canAddMore) {
       setStatus({
         tone: 'error',
-        message: '图库最多支持 10 张图片。请先删除一张再上传。'
+        message: copy.galleryMaxError
       });
       return;
     }
@@ -1672,7 +1920,7 @@ function ProductGalleryImageManager({
     if (validationError) {
       setStatus({
         tone: 'error',
-        message: getAdminUploadErrorMessage(validationError)
+        message: getAdminUploadErrorMessage(validationError, copy.uploadErrors)
       });
       return;
     }
@@ -1688,7 +1936,7 @@ function ProductGalleryImageManager({
     const formData = new FormData();
     formData.set('file', file);
     formData.set('scope', 'product');
-    setStatus({ tone: 'info', message: '正在上传图库图片...' });
+    setStatus({ tone: 'info', message: copy.galleryUploading });
     onUploadPendingChange?.(true);
 
     try {
@@ -1704,7 +1952,10 @@ function ProductGalleryImageManager({
       if (!response.ok || !payload.url) {
         setStatus({
           tone: 'error',
-          message: getAdminUploadErrorMessage(payload.error ?? 'UPLOAD_FAILED')
+          message: getAdminUploadErrorMessage(
+            payload.error ?? 'UPLOAD_FAILED',
+            copy.uploadErrors
+          )
         });
         if (previewUrl) {
           revokePreviewUrl(previewUrl);
@@ -1726,7 +1977,7 @@ function ProductGalleryImageManager({
             : item
         );
       });
-      setStatus({ tone: 'success', message: '图库图片已上传。' });
+      setStatus({ tone: 'success', message: copy.galleryUploaded });
     } finally {
       onUploadPendingChange?.(false);
     }
@@ -1742,8 +1993,8 @@ function ProductGalleryImageManager({
       />
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h5 className="text-sm font-semibold text-admin-text-primary">商品图片管理</h5>
-          <p className="text-xs text-admin-text-muted">图库图片</p>
+          <h5 className="text-sm font-semibold text-admin-text-primary">{copy.productGalleryManager}</h5>
+          <p className="text-xs text-admin-text-muted">{copy.productGallerySubtitle}</p>
         </div>
         <button
           type="button"
@@ -1751,7 +2002,7 @@ function ProductGalleryImageManager({
           disabled={!canAddMore}
           className="rounded-lg border border-admin-border bg-white px-3 py-1.5 text-xs font-semibold text-admin-text-secondary transition hover:border-admin-border-strong hover:text-admin-text-primary disabled:cursor-not-allowed disabled:opacity-50"
         >
-          上传图库
+          {copy.uploadGallery}
         </button>
       </div>
       <input
@@ -1767,7 +2018,7 @@ function ProductGalleryImageManager({
           event.target.value = '';
         }}
       />
-      <p className="text-xs text-admin-text-muted">{ADMIN_IMAGE_UPLOAD_HINT}</p>
+      <p className="text-xs text-admin-text-muted">{copy.uploadHint}</p>
 
       {visibleItems.length > 0 ? (
         <div className="grid gap-3 sm:grid-cols-2">
@@ -1781,7 +2032,7 @@ function ProductGalleryImageManager({
                 <img
                   data-product-gallery-preview="true"
                   src={getProductGalleryPreviewSrc(item)}
-                  alt={`商品图片 ${index + 1}`}
+                  alt={formatCopy(copy.productImageAlt, { index: index + 1 })}
                   className="h-full w-full object-cover"
                 />
                 <span className="absolute left-2 top-2 rounded bg-slate-950/75 px-2 py-1 text-[10px] font-bold text-white">
@@ -1789,7 +2040,7 @@ function ProductGalleryImageManager({
                 </span>
                 <button
                   type="button"
-                  aria-label={`删除商品图片 ${index + 1}`}
+                  aria-label={formatCopy(copy.deleteProductImageLabel, { index: index + 1 })}
                   onClick={() => removeUrl(index)}
                   className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-lg bg-white/95 text-rose-700 shadow-sm transition hover:bg-rose-50"
                 >
@@ -1798,7 +2049,7 @@ function ProductGalleryImageManager({
               </div>
               <div className="p-2">
                 <p className="truncate text-xs font-medium text-admin-text-muted">
-                  本地图片 {index + 1}
+                  {formatCopy(copy.localImageLabel, { index: index + 1 })}
                 </p>
               </div>
             </div>
@@ -1807,7 +2058,7 @@ function ProductGalleryImageManager({
       ) : (
         <div className="flex min-h-[132px] flex-col items-center justify-center rounded-xl border border-dashed border-admin-border bg-white px-4 py-6 text-center text-sm text-admin-text-muted">
           <ImagePlus className="mb-2 h-5 w-5" />
-          暂无图库图片
+          {copy.emptyGallery}
         </div>
       )}
       {status ? (
@@ -1830,12 +2081,14 @@ function ProductGalleryImageManager({
 }
 
 function ProductEditorSubmitButton({
-  isUploadPending = false
+  isUploadPending = false,
+  copy
 }: {
   isUploadPending?: boolean;
+  copy: Pick<ProductCenterCopy, 'imageUploading' | 'saveChanges' | 'savingChanges'>;
 }) {
   const { pending } = useFormStatus();
-  const submitState = getProductEditorSubmitState({ isUploadPending });
+  const submitState = getProductEditorSubmitState({ isUploadPending, copy });
 
   return (
     <button
@@ -1844,7 +2097,7 @@ function ProductEditorSubmitButton({
       className="inline-flex items-center gap-2 rounded-lg bg-admin-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-admin-accent-hover disabled:cursor-wait disabled:opacity-70"
     >
       <Check className="h-4 w-4" />
-      {pending ? '保存中...' : submitState.label}
+      {pending ? copy.savingChanges : submitState.label}
     </button>
   );
 }
@@ -1897,7 +2150,7 @@ function ProductThumb({ product }: { product: ProductCenterRow }) {
       {product.coverImageUrl ? (
         <NextImage
           src={product.coverImageUrl}
-          alt={product.nameZh}
+          alt={getProductDisplayName(product)}
           fill
           sizes="44px"
           className="object-cover"

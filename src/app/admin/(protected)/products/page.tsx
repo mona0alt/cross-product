@@ -27,6 +27,7 @@ function mapProducts(
     slug: product.slug,
     productCode: product.productCode,
     categoryId: product.categoryId,
+    localizedName: getLocalizedValue(product, 'name', locale),
     nameZh: product.nameZh,
     nameEn: product.nameEn,
     nameEs: product.nameEs,

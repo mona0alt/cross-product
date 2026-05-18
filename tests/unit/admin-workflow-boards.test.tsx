@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { AnalyticsInsightsBoard } from '@/components/admin/analytics-insights-board';
 import { CrawlTaskBoard } from '@/components/admin/crawl-task-board';
 import { MessageTable } from '@/components/admin/message-table';
+import { ProductForm } from '@/components/admin/product-form';
 import { SubscriberNotificationBoard } from '@/components/admin/subscriber-notification-board';
 import { SubscriberMailWorkspace } from '@/components/admin/subscriber-mail-workspace';
 import { SubscriberTable } from '@/components/admin/subscriber-table';
@@ -57,6 +58,30 @@ describe('admin workflow boards', () => {
     expect(html).toContain('抓取系统配置');
     expect(html).toContain('源站任务配置');
     expect(html).toContain('robotmart.example');
+  });
+
+  it('localizes the crawl task board with admin crawl copy', () => {
+    const html = renderToStaticMarkup(
+      <CrawlTaskBoard
+        data={{
+          headline: enMessages.Admin.crawlTasks.headline,
+          summary: enMessages.Admin.crawlTasks.summary,
+          sourceSites: mockBackoffice.crawlTasks.sourceSites.map((site, index) => ({
+            ...site,
+            status: enMessages.Admin.crawlTasks.sourceSites[index]?.status ?? site.status,
+            detail: enMessages.Admin.crawlTasks.sourceSites[index]?.detail ?? site.detail
+          }))
+        }}
+        copy={enMessages.Admin.crawlTasks}
+      />
+    );
+
+    expect(html).toContain('Crawler system configuration');
+    expect(html).toContain('11 candidate products crawled today');
+    expect(html).toContain('Healthy');
+    expect(html).not.toContain('抓取系统配置');
+    expect(html).not.toContain('今天已抓取 11 个候选商品');
+    expect(html).not.toContain('正常');
   });
 
   it('renders system setting details as a simple configuration list', () => {
@@ -357,7 +382,7 @@ describe('admin workflow boards', () => {
     expect(html).not.toContain('模板正文');
   });
 
-  it('renders the mail subscription workspace with separate sent history tab', () => {
+  it('renders the mail subscription workspace with visible non-automation tabs', () => {
     const html = renderToStaticMarkup(
       <SubscriberMailWorkspace
         data={mockBackoffice.subscribers}
@@ -372,7 +397,9 @@ describe('admin workflow boards', () => {
       />
     );
 
-    expect(html).toContain('自动化发送规则');
+    expect(html).not.toContain('自动化发送规则');
+    expect(html).not.toContain('触发条件');
+    expect(html).not.toContain('保存规则');
     expect(html).toContain('邮件模板与群发');
     expect(html).toContain('已发送邮件');
     expect(html).toContain('订阅者列表');
@@ -453,7 +480,18 @@ describe('admin workflow boards', () => {
     expect(html).toContain('data-testid="mail-template-editor-panel"');
     expect(html).toContain('data-layout="full-page"');
     expect(html).not.toContain('维护模板内容与变量占位符，并向当前订阅者创建群发任务。');
-    expect(html).toContain('xl:grid-cols-[minmax(300px,0.66fr)_minmax(0,1.34fr)]');
+    expect(html).toContain('xl:grid-cols-[minmax(240px,0.42fr)_minmax(0,1.58fr)]');
+    expect(html).not.toContain('xl:grid-cols-[minmax(300px,0.66fr)_minmax(0,1.34fr)]');
+    expect(html).toContain('data-testid="mail-template-list" class="flex min-h-0 flex-col border border-admin-border bg-white"');
+    expect(html).toContain('data-testid="bulk-mail-campaign-list" class="flex min-h-0 flex-1 flex-col overflow-hidden border border-admin-border bg-white"');
+    expect(html).not.toContain('data-testid="mail-template-list" class="flex min-h-0 flex-col rounded-2xl');
+    expect(html).not.toContain('data-testid="bulk-mail-campaign-list" class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl');
+    expect(html).toContain('min-h-0 flex-1 divide-y divide-admin-border overflow-y-auto bg-white');
+    expect(html).toContain('grid min-h-[56px] grid-cols-[minmax(0,1fr)_32px] items-center gap-2 border-l-4 px-3 py-2 text-xs');
+    expect(html).not.toContain('grid min-h-[56px] grid-cols-[minmax(0,1fr)_32px] items-center gap-2 rounded-lg border px-3 py-2 text-xs');
+    expect(html).toContain('min-h-[180px] w-full resize-y rounded-xl border border-admin-border bg-white px-3 py-2.5 text-xs leading-5');
+    expect(html).toContain('grid grid-cols-3 gap-3 border-b border-admin-border px-4 py-2.5');
+    expect(html).not.toContain('min-h-[220px] w-full resize-y');
     expect(html).toContain('邮件模板');
     expect(html).toContain('模板名称');
     expect(html).toContain('模板主题');
@@ -530,7 +568,7 @@ describe('admin workflow boards', () => {
     expect(panelHtml).toContain('已发送邮件');
     expect(panelHtml).toContain('发送时间');
     expect(panelHtml).toContain('成功率');
-    expect(panelHtml).toContain('成功 1 封 · 失败 1 封');
+    expect(panelHtml).not.toContain('成功 1 封 · 失败 1 封');
     expect(panelHtml).toContain('SMTP connection rejected');
     expect(panelHtml).toContain('title="SMTP connection rejected"');
     expect(panelHtml).toContain('group-hover:opacity-100');
@@ -579,6 +617,15 @@ describe('admin workflow boards', () => {
     expect(panelHtml).toContain('aria-label="选择邮件记录 发送记录 1"');
     expect(panelHtml).toContain('aria-label="删除邮件记录 发送记录 1"');
     expect(panelHtml).toContain('批量删除');
+    expect(panelHtml).toContain(
+      'grid-cols-[36px_minmax(160px,0.76fr)_minmax(88px,0.28fr)_minmax(88px,0.28fr)_minmax(140px,0.44fr)_64px]'
+    );
+    expect(panelHtml).toContain('gap-3 px-3 py-3');
+    expect(panelHtml).toContain('text-center">状态</span>');
+    expect(panelHtml).toContain('lg:justify-center');
+    expect(panelHtml).not.toContain(
+      'grid-cols-[36px_minmax(148px,0.7fr)_minmax(96px,0.34fr)_minmax(96px,0.34fr)_minmax(152px,0.5fr)_72px]'
+    );
   });
 
   it('localizes the mail management workspaces with subscriber copy', () => {
@@ -622,7 +669,7 @@ describe('admin workflow boards', () => {
         copy={englishCopy}
       />
     );
-    const automationHtml = renderToStaticMarkup(
+    const hiddenAutomationHtml = renderToStaticMarkup(
       <SubscriberMailWorkspace
         data={mockBackoffice.subscribers}
         subscribers={[]}
@@ -641,22 +688,25 @@ describe('admin workflow boards', () => {
     expect(mailHtml).not.toContain('失败日志');
 
     expect(sentHtml).toContain('Sent at');
-    expect(sentHtml).toContain('Success 1 · Failed 1');
+    expect(sentHtml).not.toContain('Success 1 · Failed 1');
     expect(sentHtml).toContain('Select mail record New arrival notice');
     expect(sentHtml).toContain('8 per page');
     expect(sentHtml).not.toContain('发送时间');
     expect(sentHtml).not.toContain('第 1 / 1 页');
 
-    expect(automationHtml).toContain('Trigger');
-    expect(automationHtml).toContain('Save rule');
-    expect(automationHtml).not.toContain('Workspace panel');
-    expect(automationHtml).not.toContain('Mail subscription workspace');
-    expect(automationHtml).not.toContain('Triggers and caps');
-    expect(automationHtml).not.toContain('Edit and send');
-    expect(automationHtml).not.toContain('Send history');
-    expect(automationHtml).not.toContain('List and pagination');
-    expect(automationHtml).not.toContain('触发条件');
-    expect(automationHtml).not.toContain('邮件订阅工作区');
+    expect(hiddenAutomationHtml).toContain('Mail management');
+    expect(hiddenAutomationHtml).toContain('Template library');
+    expect(hiddenAutomationHtml).not.toContain('Automation rules');
+    expect(hiddenAutomationHtml).not.toContain('Trigger');
+    expect(hiddenAutomationHtml).not.toContain('Save rule');
+    expect(hiddenAutomationHtml).not.toContain('Workspace panel');
+    expect(hiddenAutomationHtml).not.toContain('Mail subscription workspace');
+    expect(hiddenAutomationHtml).not.toContain('Triggers and caps');
+    expect(hiddenAutomationHtml).not.toContain('Edit and send');
+    expect(hiddenAutomationHtml).not.toContain('Send history');
+    expect(hiddenAutomationHtml).not.toContain('List and pagination');
+    expect(hiddenAutomationHtml).not.toContain('触发条件');
+    expect(hiddenAutomationHtml).not.toContain('邮件订阅工作区');
   });
 
   it('renders the subscriber tab with the shared workspace layout', () => {
@@ -678,6 +728,7 @@ describe('admin workflow boards', () => {
     expect(html).toContain('data-testid="subscriber-mail-workspace-panel"');
     expect(html).not.toContain('Data View');
     expect(html).toContain('data-testid="subscriber-list-card"');
+    expect(html).toContain('flex min-h-[73px] flex-col gap-4 border-b border-admin-border px-5 py-4');
     expect(html).not.toContain('维护订阅邮箱、状态与触达偏好，支撑模板群发和自动化触达。');
     expect(html).toContain('grid h-full min-h-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)]');
     expect(html).toContain(
@@ -716,10 +767,21 @@ describe('admin workflow boards', () => {
     expect(html).toContain('aria-label="下一页"');
     expect(html).toContain('data-testid="subscriber-list-card"');
     expect(html).toContain('data-testid="subscriber-list-pagination"');
-    expect(html).toContain('data-testid="subscriber-list-pagination" class="mt-auto flex flex-col gap-3 border-t border-admin-border px-4 py-3');
+    expect(html).toContain('data-testid="subscriber-list-pagination" class="flex flex-col gap-3 rounded-b-2xl border border-admin-border bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between');
+    expect(html).toContain('inline-flex h-8 w-8 items-center justify-center rounded-lg bg-admin-text-primary text-xs font-semibold text-white">1</span>');
     expect(html).not.toContain('flex h-full min-h-0 flex-col rounded-[24px]');
     expect(html).toContain('flex h-full min-h-0 flex-col gap-4 p-4');
-    expect(html).toContain('flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-admin-border bg-white');
+    expect(html).toContain('flex min-h-0 flex-1 flex-col overflow-hidden');
+    expect(html).toContain(
+      'grid-cols-[minmax(176px,0.82fr)_minmax(96px,0.32fr)_minmax(136px,0.44fr)_minmax(124px,0.4fr)_64px]'
+    );
+    expect(html).toContain('gap-3 px-3 py-3');
+    expect(html).toContain('border-x border-admin-border bg-white');
+    expect(html).toContain('text-center">状态</span>');
+    expect(html).toContain('lg:flex lg:justify-center');
+    expect(html).not.toContain(
+      'grid-cols-[minmax(200px,1fr)_88px_minmax(128px,0.68fr)_minmax(116px,0.58fr)_56px]'
+    );
     expect(getElementHtmlByTestId(html, 'subscriber-list-card')).toContain(
       'data-testid="subscriber-list-pagination"'
     );
@@ -747,5 +809,59 @@ describe('admin workflow boards', () => {
     expect(html).toContain('你好，我是数据分析助手，可以帮你解读报表数据、分析趋势并提供优化建议。');
     expect(html).toContain('输入问题，按回车发送...');
     expect(html).not.toContain('本周热门类目更偏便携型设备');
+  });
+
+  it('localizes the product form pages with admin product copy', () => {
+    const html = renderToStaticMarkup(
+      <ProductForm
+        mode="create"
+        categories={[{ id: 'cat-1', label: 'Robots' }]}
+        copy={enMessages.Admin.products}
+        uploadLabel={enMessages.Admin.common.upload}
+      />
+    );
+
+    expect(html).toContain('Manual products follow the same review rules.');
+    expect(html).toContain('Source: manual import');
+    expect(html).toContain('<option value="">Select category</option>');
+    expect(html).toContain('Chinese name');
+    expect(html).toContain('System checks image count, English summary, and duplicate risk.');
+    expect(html).not.toContain('手动录入商品也遵循统一审核规则。');
+    expect(html).not.toContain('来源：手动导入');
+    expect(html).not.toContain('选择分类');
+    expect(html).not.toContain('中文优先录入');
+  });
+
+  it('localizes support message detail sidebar headings with admin message copy', () => {
+    const html = renderToStaticMarkup(
+      <MessageTable
+        messages={[
+          {
+            id: 'message-1',
+            name: 'Customer 1',
+            email: 'customer1@example.com',
+            content: 'Message body.',
+            status: 'new',
+            createdAt: '2026-05-01T09:00:00'
+          }
+        ]}
+        initialSelectedMessageId="message-1"
+        copy={enMessages.Admin.messages}
+      />
+    );
+
+    expect(html).toContain('Contact info');
+    expect(html).not.toContain('联系信息');
+  });
+
+  it('localizes analytics board dynamic labels and demo product rows', () => {
+    const html = renderToStaticMarkup(
+      <AnalyticsInsightsBoard copy={enMessages.Admin.analytics} />
+    );
+
+    expect(html).toContain('Live scanning');
+    expect(html).toContain('Galaxy Pro phone');
+    expect(html).not.toContain('实时扫描中');
+    expect(html).not.toContain('星河 Pro 手机');
   });
 });

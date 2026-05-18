@@ -26,26 +26,6 @@ function getOpenRate(campaigns: Array<{ recipientCount: number; successCount: nu
   return `${Math.round((totalSuccess / totalRecipients) * 100)}%`;
 }
 
-function mapAutomationSetting(
-  setting: {
-    trigger: string;
-    frequencyCap: string;
-    enabled: boolean;
-  } | null
-) {
-  return {
-    trigger:
-      setting?.trigger === 'restock' || setting?.trigger === 'manual'
-        ? setting.trigger
-        : 'product_new',
-    frequencyCap:
-      setting?.frequencyCap === 'weekly' || setting?.frequencyCap === 'unlimited'
-        ? setting.frequencyCap
-        : 'daily',
-    enabled: setting?.enabled ?? true
-  } as const;
-}
-
 function formatCopy(template: string, values: Record<string, string | number>) {
   return Object.entries(values).reduce(
     (text, [key, value]) => text.replaceAll(`{${key}}`, String(value)),
@@ -73,7 +53,7 @@ function getCampaignStatusLabel(
 }
 
 export default async function AdminSubscribersPage() {
-  const [subscribers, templates, campaigns, automationSetting, { locale, Admin }] = await Promise.all([
+  const [subscribers, templates, campaigns, { locale, Admin }] = await Promise.all([
     db.subscriber.findMany({
       orderBy: { createdAt: 'desc' }
     }),
@@ -83,9 +63,6 @@ export default async function AdminSubscribersPage() {
     db.mailCampaign.findMany({
       orderBy: { createdAt: 'desc' },
       take: 50
-    }),
-    db.mailAutomationSetting.findFirst({
-      where: { singletonKey: 'default' }
     }),
     getAdminDictionary()
   ]);
@@ -118,7 +95,6 @@ export default async function AdminSubscribersPage() {
           subscribers={subscriberRows}
           templates={templateRows}
           sentRecords={sentRecords}
-          automation={mapAutomationSetting(automationSetting)}
           initialTab="subscribers"
           copy={Admin.subscribers}
         />

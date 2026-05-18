@@ -11,9 +11,9 @@ import {
   Search,
   Send,
   Trash2,
-  Users
+  Users,
+  type LucideIcon
 } from 'lucide-react';
-import { SubscriberAutomationRules } from './subscriber-notification-board';
 import { SubscriberTable, type SubscriberRow, type SubscriberTableCopy } from './subscriber-table';
 import { AdminTableShell } from './admin-table-shell';
 import { StatusBadge } from './status-badge';
@@ -60,8 +60,8 @@ type MailAutomationSetting = {
   enabled: boolean;
 };
 
-type TabKey = 'automation' | 'mail' | 'sent' | 'subscribers';
-type InitialTabKey = TabKey | 'templates' | 'campaign';
+type TabKey = 'mail' | 'sent' | 'subscribers';
+type InitialTabKey = TabKey | 'automation' | 'templates' | 'campaign';
 
 type SubscriberWorkspaceCopy = SubscriberTableCopy & {
   managementTitle: string;
@@ -261,14 +261,9 @@ const defaultSubscriberWorkspaceCopy: SubscriberWorkspaceCopy = {
 function getTabs(copy: SubscriberWorkspaceCopy): ReadonlyArray<{
   key: TabKey;
   label: string;
-  icon: typeof Send;
+  icon: LucideIcon;
 }> {
   return [
-  {
-    key: 'automation',
-    label: copy.automationRules,
-    icon: Send
-  },
   {
     key: 'mail',
     label: copy.mailWorkspace,
@@ -285,6 +280,14 @@ function getTabs(copy: SubscriberWorkspaceCopy): ReadonlyArray<{
     icon: Users
   }
   ];
+}
+
+function normalizeInitialTab(initialTab: InitialTabKey): TabKey {
+  if (initialTab === 'sent' || initialTab === 'subscribers') {
+    return initialTab;
+  }
+
+  return 'mail';
 }
 
 function getSentMailTone(status: SentMailRecord['status']) {
@@ -312,6 +315,10 @@ function getSuccessRate(record: SentMailRecord) {
 }
 
 const SENT_MAIL_PAGE_SIZE = 8;
+const SENT_MAIL_HISTORY_GRID_COLUMNS =
+  'grid-cols-[36px_minmax(160px,0.76fr)_minmax(88px,0.28fr)_minmax(88px,0.28fr)_minmax(140px,0.44fr)_64px]';
+const SENT_MAIL_HISTORY_GRID_COLUMNS_LG =
+  'lg:grid-cols-[36px_minmax(160px,0.76fr)_minmax(88px,0.28fr)_minmax(88px,0.28fr)_minmax(140px,0.44fr)_64px]';
 
 function formatCopy(template: string, values: Record<string, string | number>) {
   return Object.entries(values).reduce(
@@ -616,7 +623,7 @@ function MailTemplateCampaignWorkspace({
         type="button"
         onClick={handleSendAll}
         disabled={!previewTemplate || subscribers.length === 0 || isSending}
-        className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-admin-text-primary px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-black"
+        className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg bg-admin-text-primary px-3.5 py-2 text-xs font-medium text-white transition-colors hover:bg-black"
       >
         <Send className="h-4 w-4" aria-hidden="true" />
         {isSending ? copy.sending : copy.sendToAll}
@@ -637,14 +644,14 @@ function MailTemplateCampaignWorkspace({
         toolbar={toolbar}
         fullHeight
       >
-        <div className="grid h-full min-h-0 gap-4 p-4 xl:grid-cols-[minmax(300px,0.66fr)_minmax(0,1.34fr)]">
+        <div className="grid h-full min-h-0 gap-3 p-4 xl:grid-cols-[minmax(240px,0.42fr)_minmax(0,1.58fr)]">
           <section
             data-testid="mail-template-list"
-            className="flex min-h-0 flex-col rounded-2xl border border-admin-border bg-white"
+            className="flex min-h-0 flex-col border border-admin-border bg-white"
           >
-            <div className="flex items-center justify-between gap-3 border-b border-admin-border px-4 py-4">
+            <div className="flex items-center justify-between gap-3 border-b border-admin-border px-4 py-3">
               <div>
-                <h4 className="text-base font-semibold text-admin-text-primary">
+                <h4 className="text-sm font-semibold text-admin-text-primary">
                   {copy.templateLibrary}
                 </h4>
               </div>
@@ -652,9 +659,9 @@ function MailTemplateCampaignWorkspace({
                 type="button"
                 onClick={handleCreateTemplate}
                 disabled={isSaving}
-                className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg bg-admin-text-primary px-3.5 text-[13px] font-medium text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex h-8 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-admin-text-primary px-3 text-xs font-medium text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <Plus className="h-4 w-4" aria-hidden="true" />
+                <Plus className="h-3.5 w-3.5" aria-hidden="true" />
                 {isSaving ? copy.processing : copy.addTemplate}
               </button>
             </div>
@@ -662,42 +669,42 @@ function MailTemplateCampaignWorkspace({
               <label htmlFor="mail-template-search" className="sr-only">
                 {copy.templateSearchLabel}
               </label>
-              <div className="flex min-h-10 items-center gap-2 rounded-xl border border-admin-border bg-white px-3 focus-within:border-admin-accent focus-within:ring-2 focus-within:ring-admin-accent/20">
-                <Search className="h-4 w-4 shrink-0 text-admin-text-muted" aria-hidden="true" />
+              <div className="flex min-h-9 items-center gap-2 rounded-xl border border-admin-border bg-white px-3 focus-within:border-admin-accent focus-within:ring-2 focus-within:ring-admin-accent/20">
+                <Search className="h-3.5 w-3.5 shrink-0 text-admin-text-muted" aria-hidden="true" />
                 <input
                   id="mail-template-search"
                   value={templateQuery}
                   onChange={(event) => setTemplateQuery(event.target.value)}
                   placeholder={copy.templateSearchPlaceholder}
-                  className="h-9 min-w-0 flex-1 bg-transparent text-[13px] text-admin-text-primary outline-none placeholder:text-admin-text-muted"
+                  className="h-8 min-w-0 flex-1 bg-transparent text-xs text-admin-text-primary outline-none placeholder:text-admin-text-muted"
                 />
               </div>
             </div>
-            <div className="grid min-h-0 flex-1 content-start gap-2 overflow-y-auto p-3">
+            <div className="min-h-0 flex-1 divide-y divide-admin-border overflow-y-auto bg-white">
               {filteredTemplates.map((template) => {
                 const isSelected = template.id === selectedTemplateId;
 
                 return (
                   <div
                     key={template.id}
-                    className={`grid min-h-[64px] grid-cols-[minmax(0,1fr)_36px] items-center gap-2 rounded-lg border px-3 py-2.5 transition-colors ${
+                    className={`grid min-h-[56px] grid-cols-[minmax(0,1fr)_32px] items-center gap-2 border-l-4 px-3 py-2 text-xs transition-colors ${
                       isSelected
                         ? 'border-admin-success bg-admin-success/10 text-admin-success'
-                        : 'border-admin-border bg-white text-admin-text-secondary hover:bg-admin-elevated'
+                        : 'border-transparent bg-white text-admin-text-secondary hover:bg-admin-elevated'
                     }`}
                   >
                     <button
                       type="button"
                       onClick={() => loadTemplate(template.id)}
                       aria-label={formatCopy(copy.selectTemplateLabel, { name: template.name })}
-                      className="flex min-w-0 items-start gap-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin-accent"
+                      className="flex min-w-0 items-start gap-2 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin-accent"
                     >
-                      <FileText className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                      <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                       <span className="min-w-0">
-                        <span className="block truncate text-[13px] font-semibold">
+                        <span className="block truncate text-xs font-semibold">
                           {template.name}
                         </span>
-                        <span className="mt-1 line-clamp-2 block text-[11px] leading-4 text-admin-text-muted">
+                        <span className="mt-1 line-clamp-2 block text-[10px] leading-4 text-admin-text-muted">
                           {template.subject}
                         </span>
                       </span>
@@ -707,9 +714,9 @@ function MailTemplateCampaignWorkspace({
                       onClick={() => handleDeleteTemplate(template.id)}
                       disabled={isSaving}
                       aria-label={formatCopy(copy.deleteTemplateLabel, { name: template.name })}
-                      className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-admin-text-muted transition-colors hover:bg-white hover:text-admin-danger focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin-accent"
+                      className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-admin-text-muted transition-colors hover:bg-white hover:text-admin-danger focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin-accent"
                     >
-                      <Trash2 className="h-4 w-4" aria-hidden="true" />
+                      <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
                     </button>
                   </div>
                 );
@@ -725,20 +732,20 @@ function MailTemplateCampaignWorkspace({
           <div className="flex min-h-0 flex-col">
             <section
               data-testid="bulk-mail-campaign-list"
-              className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-admin-border bg-white"
+              className="flex min-h-0 flex-1 flex-col overflow-hidden border border-admin-border bg-white"
             >
-              <div className="border-b border-admin-border bg-admin-elevated px-4 py-3">
-                <h4 className="text-base font-semibold text-admin-text-primary">
+              <div className="border-b border-admin-border bg-admin-elevated px-4 py-2.5">
+                <h4 className="text-sm font-semibold text-admin-text-primary">
                   {copy.editorTitle}
                 </h4>
               </div>
 
-              <div className="grid grid-cols-3 border-b border-admin-border px-4 py-3">
+              <div className="grid grid-cols-3 gap-3 border-b border-admin-border px-4 py-2.5">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted">
                     {copy.estimatedRecipients}
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-admin-text-primary">
+                  <p className="mt-1 text-xs font-semibold text-admin-text-primary">
                     {formatCopy(copy.recipientCount, { count: subscribers.length })}
                   </p>
                 </div>
@@ -746,7 +753,7 @@ function MailTemplateCampaignWorkspace({
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted">
                     {copy.successRate}
                   </p>
-                  <p className="mt-1 text-sm font-semibold text-admin-text-primary">
+                  <p className="mt-1 text-xs font-semibold text-admin-text-primary">
                     {overallSuccessRate}
                   </p>
                 </div>
@@ -766,13 +773,13 @@ function MailTemplateCampaignWorkspace({
 
               <div
                 data-testid="mail-template-editor-panel"
-                className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4"
+                className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-3"
               >
-                <div className="grid gap-4 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+                <div className="grid gap-3 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
                   <div className="space-y-2">
                     <label
                       htmlFor="mail-template-name"
-                      className="block text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted"
+                      className="block text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted"
                     >
                       {copy.templateName}
                     </label>
@@ -783,13 +790,13 @@ function MailTemplateCampaignWorkspace({
                         setTemplateName(event.target.value);
                         setSendStatus('');
                       }}
-                      className="w-full rounded-xl border border-admin-border bg-white px-4 py-2.5 text-[13px] text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+                      className="w-full rounded-xl border border-admin-border bg-white px-3 py-2 text-xs text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
                     />
                   </div>
                   <div className="space-y-2">
                     <label
                       htmlFor="mail-template-subject"
-                      className="block text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted"
+                      className="block text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted"
                     >
                       {copy.templateSubject}
                     </label>
@@ -800,7 +807,7 @@ function MailTemplateCampaignWorkspace({
                         setSubject(event.target.value);
                         setSendStatus('');
                       }}
-                      className="w-full rounded-xl border border-admin-border bg-white px-4 py-2.5 text-[13px] text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+                      className="w-full rounded-xl border border-admin-border bg-white px-3 py-2 text-xs text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
                     />
                   </div>
                 </div>
@@ -808,7 +815,7 @@ function MailTemplateCampaignWorkspace({
                 <div className="space-y-2">
                   <label
                     htmlFor="mail-template-body"
-                    className="block text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted"
+                    className="block text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted"
                   >
                     {copy.templateBody}
                   </label>
@@ -819,11 +826,11 @@ function MailTemplateCampaignWorkspace({
                       setBody(event.target.value);
                       setSendStatus('');
                     }}
-                    className="min-h-[220px] w-full resize-y rounded-xl border border-admin-border bg-white px-4 py-3 text-[13px] leading-6 text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+                    className="min-h-[180px] w-full resize-y rounded-xl border border-admin-border bg-white px-3 py-2.5 text-xs leading-5 text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
                   />
                 </div>
 
-                <p className="rounded-xl border border-admin-border bg-admin-elevated px-4 py-3 text-xs leading-5 text-admin-text-secondary">
+                <p className="rounded-xl border border-admin-border bg-admin-elevated px-3 py-2.5 text-[11px] leading-5 text-admin-text-secondary">
                   {formatCopy(copy.variablesLabel, {
                     variables: copy.variablesValue
                   })}
@@ -831,17 +838,17 @@ function MailTemplateCampaignWorkspace({
               </div>
 
               {sendStatus ? (
-                <p className="border-t border-admin-border px-4 py-3 text-xs leading-5 text-admin-text-secondary">
+                <p className="border-t border-admin-border px-4 py-2.5 text-xs leading-5 text-admin-text-secondary">
                   {sendStatus}
                 </p>
               ) : null}
 
-              <div className="flex flex-col-reverse gap-2 border-t border-admin-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex flex-col-reverse gap-2 border-t border-admin-border px-4 py-2.5 sm:flex-row sm:items-center sm:justify-between">
                 <button
                   type="button"
                   onClick={() => handleDeleteTemplate()}
                   disabled={!selectedTemplate || isSaving}
-                  className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-red-200 px-4 py-2 text-[13px] font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-red-200 px-3.5 py-2 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Trash2 className="h-4 w-4" aria-hidden="true" />
                   {copy.deleteTemplate}
@@ -851,7 +858,7 @@ function MailTemplateCampaignWorkspace({
                     type="button"
                     onClick={handleSaveTemplate}
                     disabled={!selectedTemplate || !templateName.trim() || isSaving}
-                    className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-admin-text-primary px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg bg-admin-text-primary px-3.5 py-2 text-xs font-medium text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Save className="h-4 w-4" aria-hidden="true" />
                     {isSaving ? copy.saving : copy.saveTemplate}
@@ -860,7 +867,7 @@ function MailTemplateCampaignWorkspace({
                     type="button"
                     onClick={handleSendAll}
                     disabled={!previewTemplate || subscribers.length === 0 || isSending}
-                    className="inline-flex min-h-10 items-center justify-center gap-2 rounded-xl border border-admin-border px-4 py-2 text-[13px] font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex min-h-9 items-center justify-center gap-2 rounded-lg border border-admin-border px-3.5 py-2 text-xs font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Send className="h-4 w-4" aria-hidden="true" />
                     {isSending ? copy.sending : copy.send}
@@ -888,8 +895,6 @@ function SentMailHistoryWorkspace({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [actionStatus, setActionStatus] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
-  const totalSuccess = sentRecords.reduce((total, record) => total + record.success, 0);
-  const totalFailed = sentRecords.reduce((total, record) => total + record.failed, 0);
   const totalPages = Math.max(1, Math.ceil(sentRecords.length / SENT_MAIL_PAGE_SIZE));
   const safePage = Math.min(currentPage, totalPages);
   const pageStart = (safePage - 1) * SENT_MAIL_PAGE_SIZE;
@@ -987,17 +992,15 @@ function SentMailHistoryWorkspace({
     >
       <AdminTableShell
         title={copy.sentMail}
-        description={formatCopy(copy.sentSummary, {
-          success: totalSuccess,
-          failed: totalFailed
-        })}
         kicker={null}
         compact
         toolbar={toolbar}
         fullHeight
       >
         <div className="flex h-full min-h-0 flex-col p-4">
-          <div className="hidden grid-cols-[40px_minmax(0,1fr)_96px_96px_96px_44px] items-center border border-admin-border bg-admin-elevated px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:grid">
+          <div
+            className={`hidden ${SENT_MAIL_HISTORY_GRID_COLUMNS} items-center gap-3 border border-admin-border bg-admin-elevated px-3 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:grid`}
+          >
             <label className="inline-flex h-8 w-8 items-center justify-center">
               <input
                 type="checkbox"
@@ -1011,14 +1014,14 @@ function SentMailHistoryWorkspace({
             <span>{copy.sentAt}</span>
             <span>{copy.success}</span>
             <span>{copy.failed}</span>
-            <span className="text-right">{copy.status}</span>
-            <span className="text-right">{copy.actions}</span>
+            <span className="text-center">{copy.status}</span>
+            <span className="text-center">{copy.actions}</span>
           </div>
           <div className="min-h-0 flex-1 divide-y divide-admin-border overflow-y-auto border-x border-admin-border bg-white">
             {visibleRecords.map((record) => (
               <div
                 key={record.id}
-                className="grid gap-3 px-4 py-3 text-xs transition-colors hover:bg-admin-elevated lg:grid-cols-[40px_minmax(0,1fr)_96px_96px_96px_44px] lg:items-center"
+                className={`grid gap-3 px-3 py-3 text-xs transition-colors hover:bg-admin-elevated ${SENT_MAIL_HISTORY_GRID_COLUMNS_LG} lg:items-center`}
               >
                 <label className="inline-flex h-8 w-8 items-center justify-center">
                   <input
@@ -1047,14 +1050,14 @@ function SentMailHistoryWorkspace({
                 <p className="text-admin-text-secondary">
                   {formatCopy(copy.sentFailedValue, { count: record.failed })}
                 </p>
-                <div className="flex justify-start lg:justify-end">
+                <div className="flex justify-start lg:justify-center">
                   <StatusWithFailureLog
                     status={record.status}
                     errorMessage={record.errorMessage}
                     copy={copy}
                   />
                 </div>
-                <div className="flex justify-start lg:justify-end">
+                <div className="flex justify-start lg:justify-center">
                   <button
                     type="button"
                     onClick={() => deleteRecords([record.id])}
@@ -1129,7 +1132,6 @@ export function SubscriberMailWorkspace({
   subscribers,
   templates = data.templates ?? [],
   sentRecords: initialSentRecords = [],
-  automation,
   initialTab = 'automation',
   copy = defaultSubscriberWorkspaceCopy
 }: {
@@ -1141,18 +1143,15 @@ export function SubscriberMailWorkspace({
   initialTab?: InitialTabKey;
   copy?: SubscriberWorkspaceCopy;
 }) {
-  const normalizedInitialTab = initialTab === 'templates' || initialTab === 'campaign'
-    ? 'mail'
-    : initialTab;
+  const normalizedInitialTab = normalizeInitialTab(initialTab);
   const tabs = getTabs(copy);
   const [activeTab, setActiveTab] = useState<TabKey>(normalizedInitialTab);
-  const activeTabMeta = tabs.find((tab) => tab.key === activeTab) ?? tabs[0];
   const [sentRecords, setSentRecords] = useState<SentMailRecord[]>(() => initialSentRecords);
 
   return (
     <div className="grid h-full min-h-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)]">
       <aside className="flex h-full min-h-0 flex-col rounded-[18px] border border-admin-border bg-admin-surface shadow-[0_16px_48px_rgba(15,23,42,0.05)]">
-        <div className="border-b border-admin-border px-5 py-4">
+        <div className="min-h-[73px] border-b border-admin-border px-5 py-4">
           <h3 className="mt-1 text-xl font-semibold text-admin-text-primary font-display">
             {copy.managementTitle}
           </h3>
@@ -1228,24 +1227,7 @@ export function SubscriberMailWorkspace({
             copy={copy}
           />
         </section>
-      ) : (
-        <section
-          data-testid="subscriber-mail-workspace-panel"
-          className="flex h-full min-h-0 flex-col rounded-[18px] border border-admin-border bg-admin-surface shadow-[0_16px_48px_rgba(15,23,42,0.05)]"
-        >
-          <div className="flex flex-col gap-3 border-b border-admin-border px-5 py-4 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h3 className="text-xl font-semibold text-admin-text-primary font-display">
-                {activeTabMeta.label}
-              </h3>
-            </div>
-          </div>
-
-          {activeTab === 'automation' ? (
-            <SubscriberAutomationRules data={data} automation={automation} copy={copy} />
-          ) : null}
-        </section>
-      )}
+      ) : null}
     </div>
   );
 }

@@ -14,6 +14,7 @@ import {
   getProductEditorSubmitState,
   getProductRowAfterFormSave
 } from '@/components/admin/product-center';
+import enMessages from '../../messages/en.json';
 
 vi.mock('next/navigation', async () => {
   const actual =
@@ -158,7 +159,10 @@ describe('ProductCenter', () => {
     expect(html).toContain('人形机器人');
     expect(html).toContain('Humanoid Robots');
     expect(html).toContain('无人机');
-    expect(html).toContain('1 个商品');
+    expect(html).not.toContain('>1 个商品</span>');
+    expect(html).toContain('aria-label="编辑类目 人形机器人"');
+    expect(html).toContain('aria-label="编辑类目 无人机"');
+    expect(html).toContain('lucide-pen-line');
     expect(html).not.toContain('智能穿戴设备');
     expect(html).not.toContain('影音娱乐');
     expect(html).not.toContain('管理产品');
@@ -559,5 +563,96 @@ describe('ProductCenter', () => {
     expect(html).toContain('/show/robot_humanoid.png');
     expect(html).toContain('移除类目主图');
     expect(html).toContain('保存类目');
+  });
+
+  it('localizes product management side drawers with the admin product copy', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        copy={enMessages.Admin.products}
+        defaultEditorOpen
+        defaultEditorMode="create"
+        defaultCategoryEditorOpen
+        defaultCategoryEditorMode="create"
+      />
+    );
+
+    expect(html).toContain('New product');
+    expect(html).toContain('Product media');
+    expect(html).toContain('Upload cover');
+    expect(html).toContain('Product image manager');
+    expect(html).toContain('Save changes');
+    expect(html).toContain('New category');
+    expect(html).toContain('Parent category');
+    expect(html).toContain('Save category');
+    expect(html).not.toContain('商品图片管理');
+    expect(html).not.toContain('保存类目');
+    expect(html).not.toContain('新建类目');
+    expect(html).not.toContain('新增商品');
+  });
+
+  it('localizes the product management category sidebar with the admin product copy', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        copy={enMessages.Admin.products}
+      />
+    );
+
+    expect(html).toContain('Product categories');
+    expect(html).toContain('aria-label="Add category"');
+    expect(html).toContain('title="Add category"');
+    expect(html).toContain('aria-label="Edit category 人形机器人"');
+    expect(html).toContain('aria-label="Edit category 无人机"');
+    expect(html).not.toContain('1 products');
+    expect(html).toContain('lucide-pen-line');
+    expect(html).not.toContain('产品类目');
+    expect(html).not.toContain('添加类目');
+    expect(html).not.toContain('1 个商品');
+  });
+
+  it('uses localized product names in the admin product table controls', () => {
+    const localizedProducts = products.map((product) => ({
+      ...product,
+      localizedName: product.nameEn
+    }));
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={localizedProducts}
+        copy={enMessages.Admin.products}
+        defaultOpenActionMenuProductId="product-1"
+      />
+    );
+
+    expect(html).toContain('aria-label="Edit product Alpha Humanoid"');
+    expect(html).toContain('aria-label="Select Alpha Humanoid"');
+    expect(html).toContain('aria-label="Product actions Alpha Humanoid"');
+    expect(html).toContain('aria-label="Product action menu Alpha Humanoid"');
+    expect(html).toContain('aria-label="Archive product Alpha Humanoid"');
+    expect(html).not.toContain('aria-label="Edit product Alpha Humanoid 服务机器人"');
+    expect(html).not.toContain('aria-label="Select Alpha Humanoid 服务机器人"');
+  });
+
+  it('localizes product image upload helper text with the admin product copy', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        copy={enMessages.Admin.products}
+        defaultSelectedProductId="product-1"
+        defaultEditorOpen
+        defaultEditorMode="edit"
+      />
+    );
+
+    expect(html).toContain('Supports JPG, PNG, WebP and GIF. Max 5MB each.');
+    expect(html).toContain('Current image');
+    expect(html).toContain('Local image configured');
+    expect(html).not.toContain('支持 JPG、PNG、WebP、GIF，单张不超过 5MB。');
+    expect(html).not.toContain('当前图片');
+    expect(html).not.toContain('本地图片已配置');
   });
 });

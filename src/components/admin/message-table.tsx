@@ -49,6 +49,7 @@ type MessageTableCopy = {
   deleteLabel: string;
   detailTitle: string;
   closeDetail: string;
+  contactInfo: string;
   sender: string;
   email: string;
   receivedAt: string;
@@ -83,6 +84,7 @@ const defaultMessageTableCopy: MessageTableCopy = {
   deleteLabel: '删除留言：{name}',
   detailTitle: '留言详情',
   closeDetail: '关闭留言详情',
+  contactInfo: '联系信息',
   sender: '联系人',
   email: '邮箱',
   receivedAt: '接收时间',
@@ -573,7 +575,7 @@ function MessageDetailSidebar({
 
       <div className="flex-1 space-y-5 overflow-y-auto p-5">
         <section className="space-y-3">
-          <h4 className="text-xs font-bold uppercase text-admin-text-muted">联系信息</h4>
+          <h4 className="text-xs font-bold uppercase text-admin-text-muted">{copy.contactInfo}</h4>
           <div className="grid gap-3 md:grid-cols-2">
             <DetailField label={copy.sender} value={message.name} />
             <DetailField label={copy.email} value={message.email} />

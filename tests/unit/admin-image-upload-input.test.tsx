@@ -43,4 +43,40 @@ describe('AdminImageUploadInput', () => {
     expect(html).toContain('data-admin-upload-preview="true"');
     expect(html).toContain('src="/uploads/products/cover.png"');
   });
+
+  it('renders upload helper and preview status text from the provided copy', () => {
+    const html = renderToStaticMarkup(
+      <AdminImageUploadInput
+        name="coverImageUrl"
+        label="Cover image"
+        uploadLabel="Upload cover"
+        defaultValue="/uploads/products/cover.png"
+        scope="product"
+        showPreview
+        uploadCopy={{
+          hint: 'Supports JPG, PNG, WebP, GIF. Max 5MB each.',
+          currentImage: 'Current image',
+          configuredImage: 'Local image configured',
+          emptyImage: 'No image configured',
+          uploading: 'Uploading image...',
+          uploaded: 'Image uploaded.',
+          uploadedToInput: 'Image uploaded and inserted.',
+          removeImage: 'Remove image',
+          errors: {
+            missingFile: 'Choose an image before uploading.',
+            fileTooLarge: 'Image is too large. Max 5MB.',
+            unsupportedFileType: 'Unsupported image format.',
+            uploadFailed: 'Upload failed. Try again later.'
+          }
+        }}
+      />
+    );
+
+    expect(html).toContain('Supports JPG, PNG, WebP, GIF. Max 5MB each.');
+    expect(html).toContain('Current image');
+    expect(html).toContain('Local image configured');
+    expect(html).not.toContain('支持 JPG、PNG、WebP、GIF，单张不超过 5MB。');
+    expect(html).not.toContain('当前图片');
+    expect(html).not.toContain('本地图片已配置');
+  });
 });
