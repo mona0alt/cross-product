@@ -54,10 +54,10 @@ describe('admin shell', () => {
     expect(html).not.toContain('分类管理');
     expect(html).not.toContain('href="/admin/banners"');
     expect(html).toContain('href="/admin/categories"');
-    expect(html).toContain('sticky top-0 z-30 flex h-14 items-center justify-between border-b border-admin-border bg-admin-bg px-6');
+    expect(html).toContain('sticky top-0 z-30 flex h-14 items-center justify-between border-b border-white/10 bg-[#07111f] px-6 text-white');
     expect(html).toContain('aria-haspopup="menu"');
     expect(html).toContain('aria-label="语言"');
-    expect(html).toContain('rounded-xl border border-admin-border bg-white px-3 py-2');
+    expect(html).toContain('rounded-xl border border-white/20 bg-[#07111f] px-3 py-2');
     expect(html).not.toContain('<select');
     expect(html).toContain('admin');
     expect(html).not.toContain('系统管理员');

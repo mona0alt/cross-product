@@ -46,7 +46,7 @@ export default async function AdminProtectedLayout({
 
   return (
     <div className="admin-body min-h-screen bg-admin-bg text-admin-text-primary font-body">
-      <div className="fixed left-0 top-0 z-40 h-screen w-60 border-r border-admin-border bg-white">
+      <div className="fixed left-0 top-0 z-40 h-screen w-60">
         <AdminNav items={navItems} />
       </div>
       <div className="ml-60 min-h-screen bg-admin-bg">

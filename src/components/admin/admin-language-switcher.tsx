@@ -71,11 +71,11 @@ export function AdminLanguageSwitcher({
         aria-expanded={isOpen}
         aria-haspopup="menu"
         onClick={() => setIsOpen((current) => !current)}
-        className="inline-flex h-9 items-center gap-2 rounded-xl border border-admin-border bg-white px-3 py-2 text-[12px] font-semibold text-admin-text-secondary shadow-sm transition hover:border-admin-border-strong hover:bg-admin-elevated focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+        className="inline-flex h-9 items-center gap-2 rounded-xl border border-white/20 bg-[#07111f] px-3 py-2 text-[12px] font-semibold text-white shadow-sm transition hover:border-white/35 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/25"
       >
         <span>{labels[locale]}</span>
         <ChevronDown
-          className={`h-3.5 w-3.5 text-admin-text-muted transition ${
+          className={`h-3.5 w-3.5 text-white/68 transition ${
             isOpen ? 'rotate-180' : ''
           }`}
         />
