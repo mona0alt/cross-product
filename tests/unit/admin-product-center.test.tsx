@@ -11,6 +11,8 @@ import {
   getProductFilterUpdate,
   getProductGalleryHiddenValue,
   getProductGalleryPreviewSrc,
+  getGeneratedProductSlug,
+  getProductEditorFormValidationError,
   getProductEditorSubmitState,
   getProductRowAfterFormSave
 } from '@/components/admin/product-center';
@@ -444,6 +446,19 @@ describe('ProductCenter', () => {
     });
   });
 
+  it('returns a field-level validation error before saving a product with no product code', () => {
+    const formData = new FormData();
+    formData.set('categoryId', 'cat-humanoid');
+    formData.set('productCode', ' ');
+
+    expect(getProductEditorFormValidationError(formData)).toBe('请填写商品编码。');
+  });
+
+  it('generates product URL paths from product codes and English names', () => {
+    expect(getGeneratedProductSlug('P-3001', 'Window Cleaner Pro')).toBe('p-3001');
+    expect(getGeneratedProductSlug('', 'Window Cleaner Pro')).toBe('window-cleaner-pro');
+  });
+
   it('keeps the product table fixed-size and paginates overflowing rows', () => {
     const html = renderToStaticMarkup(
       <ProductCenter
@@ -519,6 +534,9 @@ describe('ProductCenter', () => {
 
     expect(html).toContain('新增商品');
     expect(html).toContain('选择类别');
+    expect(html).toContain('商品网址路径');
+    expect(html).toContain('用于生成商品详情页网址');
+    expect(html).toContain('前台链接：/products/');
     expect(html).toContain('产品媒体');
     expect(html).toContain('暂无图库图片');
     expect(html).toContain('商品图片管理');
@@ -582,6 +600,12 @@ describe('ProductCenter', () => {
     expect(html).toContain('Product media');
     expect(html).toContain('Upload cover');
     expect(html).toContain('Product image manager');
+    expect(html).toContain('Product URL path');
+    expect(html).toContain('Used to generate the product detail page URL.');
+    expect(html).toContain('<option value="draft" selected="">Draft</option>');
+    expect(html).toContain('<option value="pending">Pending review</option>');
+    expect(html).toContain('<option value="published">Published</option>');
+    expect(html).toContain('<option value="archived">Archived</option>');
     expect(html).toContain('Save changes');
     expect(html).toContain('New category');
     expect(html).toContain('Parent category');

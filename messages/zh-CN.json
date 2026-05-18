@@ -233,7 +233,9 @@
       "media": "图片素材",
       "reviewNotes": "审核提示",
       "productCode": "商品编码",
-      "slug": "Slug",
+      "slug": "商品网址路径",
+      "slugHelp": "用于生成商品详情页网址。可自动生成，只能包含小写字母、数字和短横线。",
+      "slugPreview": "前台链接：/products/{slug}",
       "category": "分类",
       "priceUsd": "价格 USD",
       "coverImageUrl": "封面主图",
@@ -341,6 +343,12 @@
       "basicInfo": "基础信息",
       "statusLabel": "状态",
       "selectCategory": "选择类别",
+      "statusOptions": {
+        "draft": "草稿",
+        "pending": "待审核",
+        "published": "已发布",
+        "archived": "已归档"
+      },
       "productGalleryManager": "商品图片管理",
       "productGallerySubtitle": "图库图片",
       "uploadGallery": "上传图库",

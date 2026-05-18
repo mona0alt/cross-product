@@ -233,7 +233,9 @@
       "media": "Media",
       "reviewNotes": "Review notes",
       "productCode": "Product code",
-      "slug": "Slug",
+      "slug": "Product URL path",
+      "slugHelp": "Used to generate the product detail page URL. It can be auto-generated and supports lowercase letters, numbers and hyphens.",
+      "slugPreview": "Storefront URL: /products/{slug}",
       "category": "Category",
       "priceUsd": "Price USD",
       "coverImageUrl": "Cover image",
@@ -341,6 +343,12 @@
       "basicInfo": "Basic info",
       "statusLabel": "Status",
       "selectCategory": "Select category",
+      "statusOptions": {
+        "draft": "Draft",
+        "pending": "Pending review",
+        "published": "Published",
+        "archived": "Archived"
+      },
       "productGalleryManager": "Product image manager",
       "productGallerySubtitle": "Gallery images",
       "uploadGallery": "Upload gallery",

@@ -2,6 +2,7 @@ import React from 'react';
 import { createProductFromForm, updateProductFromForm } from '@/features/admin/product-actions';
 import { AdminCard } from './admin-card';
 import { AdminButton } from './admin-button';
+import { AdminSelect } from './admin-select';
 import {
   AdminImageUploadInput,
   type AdminImageUploadCopy
@@ -60,6 +61,7 @@ type ProductFormCopy = {
   manualImportDescription: string;
   manualImportSource: string;
   selectCategory: string;
+  statusOptions: Record<'draft' | 'pending' | 'published' | 'archived', string>;
   sortOrder: string;
   localizedContentDescription: string;
   nameZhLabel: string;
@@ -140,6 +142,12 @@ export function ProductForm({
     manualImportDescription: '手动录入商品也遵循统一审核规则。页面视觉重点放在信息完整度和提交流程，而不是直接发布。',
     manualImportSource: '来源：手动导入',
     selectCategory: '选择分类',
+    statusOptions: {
+      draft: '草稿',
+      pending: '待审核',
+      published: '已发布',
+      archived: '已归档'
+    },
     sortOrder: '排序',
     localizedContentDescription: '中文优先录入，英文摘要建议作为审核前的必备字段。',
     nameZhLabel: '中文名称',
@@ -173,6 +181,19 @@ export function ProductForm({
     }
   };
   const uploadCopy = getProductFormUploadCopy(labels);
+  const categoryOptions = [
+    { value: '', label: labels.selectCategory },
+    ...categories.map((category) => ({
+      value: category.id,
+      label: category.label
+    }))
+  ];
+  const statusOptions = [
+    { value: 'draft', label: labels.statusOptions.draft },
+    { value: 'pending', label: labels.statusOptions.pending },
+    { value: 'published', label: labels.statusOptions.published },
+    { value: 'archived', label: labels.statusOptions.archived }
+  ];
   const galleryUrls = [...(product?.images ?? [])]
     .sort((left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0))
     .map((image) => image.imageUrl)
@@ -221,14 +242,11 @@ export function ProductForm({
           </div>
           <div>
             <label className={labelClass}>{labels.category}</label>
-            <select name="categoryId" defaultValue={product?.categoryId} className={inputClass}>
-              <option value="">{labels.selectCategory}</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.label}
-                </option>
-              ))}
-            </select>
+            <AdminSelect
+              name="categoryId"
+              defaultValue={product?.categoryId ?? ''}
+              options={categoryOptions}
+            />
           </div>
           <div>
             <label className={labelClass}>{labels.priceUsd}</label>
@@ -333,12 +351,12 @@ export function ProductForm({
           </p>
         </div>
         <div className="mt-5 flex flex-wrap gap-4">
-          <select name="status" defaultValue={product?.status ?? 'draft'} className={inputClass}>
-            <option value="draft">draft</option>
-            <option value="pending">pending</option>
-            <option value="published">published</option>
-            <option value="archived">archived</option>
-          </select>
+          <AdminSelect
+            name="status"
+            defaultValue={product?.status ?? 'draft'}
+            options={statusOptions}
+            className="min-w-[220px]"
+          />
           <label className="flex items-center gap-2 rounded-lg border border-admin-border bg-admin-surface px-4 py-2.5 text-sm text-admin-text-secondary cursor-pointer hover:border-admin-border-strong">
             <input
               name="isRecommended"

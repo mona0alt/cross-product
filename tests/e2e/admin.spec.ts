@@ -70,6 +70,19 @@ test('admin login and product draft form flow', async ({ page }) => {
   await expect(page.getByText('基础信息')).toBeVisible();
   await expect(page.getByText('产品媒体')).toBeVisible();
   await expect(page.getByRole('button', { name: '保存更改' })).toBeVisible();
+
+  const drawer = page.getByRole('dialog', { name: '新增商品' });
+  await expect(drawer.getByText('商品网址路径')).toBeVisible();
+  await expect(drawer.getByText('用于生成商品详情页网址')).toBeVisible();
+  await drawer.locator('input[name="productCode"]').fill('P-9999');
+  await expect(drawer.locator('input[name="slug"]')).toHaveValue('p-9999');
+  await drawer.locator('input[name="productCode"]').fill('');
+  await drawer.locator('select[name="categoryId"]').selectOption({ index: 1 });
+  await drawer.locator('input[name="slug"]').fill('draft-form-should-stay');
+  await drawer.getByRole('button', { name: '保存更改' }).click();
+
+  await expect(drawer.getByText('请填写商品编码。')).toBeVisible();
+  await expect(drawer.locator('input[name="slug"]')).toHaveValue('draft-form-should-stay');
 });
 
 test('admin system settings switches detail card by category', async ({ page }) => {

@@ -233,7 +233,9 @@
       "media": "Imagens",
       "reviewNotes": "Notas de revisão",
       "productCode": "Código do produto",
-      "slug": "Slug",
+      "slug": "Caminho da URL do produto",
+      "slugHelp": "Usado para gerar a URL da página de detalhes. Pode ser gerado automaticamente e aceita letras minúsculas, números e hifens.",
+      "slugPreview": "URL da loja: /products/{slug}",
       "category": "Categoria",
       "priceUsd": "Preço USD",
       "coverImageUrl": "Imagem principal",
@@ -341,6 +343,12 @@
       "basicInfo": "Informações básicas",
       "statusLabel": "Status",
       "selectCategory": "Selecionar categoria",
+      "statusOptions": {
+        "draft": "Rascunho",
+        "pending": "Aguardando revisão",
+        "published": "Publicado",
+        "archived": "Arquivado"
+      },
       "productGalleryManager": "Gerenciador de imagens",
       "productGallerySubtitle": "Imagens da galeria",
       "uploadGallery": "Enviar galeria",

@@ -19,10 +19,12 @@ test('desktop category dropdown stays open while moving pointer into the panel',
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/en');
 
-  const categoryLink = page.locator('header nav a[href*="/en/products?category="]').first();
+  const categoryLink = page
+    .locator('header nav > div:has([data-testid="desktop-mega-menu"]) > a[href*="/en/products?category="]')
+    .first();
+  const dropdown = categoryLink.locator('xpath=following-sibling::*[@data-testid="desktop-mega-menu"]').first();
   await categoryLink.hover();
 
-  const dropdown = page.getByTestId('desktop-mega-menu').first();
   await expect(dropdown).toHaveCSS('opacity', '1');
   await expect(dropdown).toHaveCSS('pointer-events', 'auto');
 
@@ -41,4 +43,56 @@ test('desktop category dropdown stays open while moving pointer into the panel',
 
   await expect(dropdown).toHaveCSS('opacity', '1');
   await expect(dropdown).toHaveCSS('pointer-events', 'auto');
+});
+
+test('desktop category navigation is clamped between logo and contact controls', async ({ page }) => {
+  for (const width of [1024, 1440, 1800, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/zh-CN');
+
+    const header = page.locator('header').first();
+    const logo = header.locator('a:has(img)').first();
+    const nav = header.locator('nav').first();
+    const navLinks = nav.locator('a[href*="/zh-CN/products?category="]');
+    const emailLink = header.locator('a[href^="mailto:"]').first();
+    const languageTrigger = header.getByTestId('language-switcher-trigger');
+
+    await expect(navLinks.first()).toBeVisible();
+    await expect(emailLink).toBeVisible();
+    await expect(languageTrigger).toBeVisible();
+
+    const logoBox = await logo.boundingBox();
+    const navBox = await nav.boundingBox();
+    const firstCategoryBox = await navLinks.first().boundingBox();
+    const secondCategoryBox = await navLinks.nth(1).boundingBox();
+    const lastCategoryBox = await navLinks.last().boundingBox();
+    const emailBox = await emailLink.boundingBox();
+    const languageBox = await languageTrigger.boundingBox();
+
+    expect(logoBox).not.toBeNull();
+    expect(navBox).not.toBeNull();
+    expect(firstCategoryBox).not.toBeNull();
+    expect(secondCategoryBox).not.toBeNull();
+    expect(lastCategoryBox).not.toBeNull();
+    expect(emailBox).not.toBeNull();
+    expect(languageBox).not.toBeNull();
+
+    if (!logoBox || !navBox || !firstCategoryBox || !secondCategoryBox || !lastCategoryBox || !emailBox || !languageBox) {
+      return;
+    }
+
+    const minimumGap = 0;
+    const maximumGap = width === 1024 ? 24 : 32;
+    const logoToFirstCategoryGap = firstCategoryBox.x - (logoBox.x + logoBox.width);
+    const lastCategoryToEmailGap = emailBox.x - (lastCategoryBox.x + lastCategoryBox.width);
+
+    expect(logoToFirstCategoryGap, `logo to first category gap at ${width}px`).toBeGreaterThanOrEqual(minimumGap);
+    expect(logoToFirstCategoryGap, `logo to first category gap at ${width}px`).toBeLessThanOrEqual(maximumGap);
+    expect(lastCategoryToEmailGap, `last category to email gap at ${width}px`).toBeGreaterThanOrEqual(minimumGap);
+    expect(lastCategoryToEmailGap, `last category to email gap at ${width}px`).toBeLessThanOrEqual(maximumGap);
+    expect(navBox.x, `nav left at ${width}px`).toBeGreaterThanOrEqual(logoBox.x + logoBox.width);
+    expect(navBox.x + navBox.width, `nav right at ${width}px`).toBeLessThanOrEqual(emailBox.x);
+    expect(secondCategoryBox.x - (firstCategoryBox.x + firstCategoryBox.width), `category gap at ${width}px`)
+      .toBeLessThanOrEqual(width === 1024 ? 6 : 8);
+  }
 });

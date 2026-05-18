@@ -539,8 +539,11 @@ describe('admin pages', () => {
       (await import('@/app/admin/(protected)/analytics/page')).default;
     const CategoriesPage =
       (await import('@/app/admin/(protected)/categories/page')).default;
+    const NewProductPage =
+      (await import('@/app/admin/(protected)/products/new/page')).default;
 
     const productsHtml = renderToStaticMarkup(await ProductsPage());
+    const newProductHtml = renderToStaticMarkup(await NewProductPage());
     const messagesHtml = renderToStaticMarkup(await MessagesPage());
     const subscribersHtml = renderToStaticMarkup(await SubscribersPage());
     const categoriesHtml = renderToStaticMarkup(await CategoriesPage());
@@ -551,6 +554,9 @@ describe('admin pages', () => {
     expect(productsHtml).toContain('Humanoid Robots');
     expect(productsHtml).not.toContain('商品管理');
     expect(productsHtml).not.toContain('产品类目');
+    expect(newProductHtml).toContain('Humanoid Robots');
+    expect(newProductHtml).toContain('<option value="draft" selected="">Draft</option>');
+    expect(newProductHtml).not.toContain('<option value="cat-humanoid">人形机器人</option>');
     expect(messagesHtml).toContain('Support inbox');
     expect(messagesHtml).toContain('Unread');
     expect(messagesHtml).not.toContain('客户留言');

@@ -824,6 +824,10 @@ describe('admin workflow boards', () => {
     expect(html).toContain('Manual products follow the same review rules.');
     expect(html).toContain('Source: manual import');
     expect(html).toContain('<option value="">Select category</option>');
+    expect(html).toContain('<option value="draft" selected="">Draft</option>');
+    expect(html).toContain('<option value="pending">Pending review</option>');
+    expect(html).toContain('<option value="published">Published</option>');
+    expect(html).toContain('<option value="archived">Archived</option>');
     expect(html).toContain('Chinese name');
     expect(html).toContain('System checks image count, English summary, and duplicate risk.');
     expect(html).not.toContain('手动录入商品也遵循统一审核规则。');

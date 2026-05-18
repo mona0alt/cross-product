@@ -7,17 +7,36 @@ import { getAdminCategoryTree } from '@/features/catalog/queries';
 import { getLocalImagePath } from '@/features/catalog/local-image-paths';
 import { getAdminDictionary } from '@/lib/admin-i18n';
 import { db } from '@/lib/db';
+import type { Locale } from '@/lib/i18n/config';
+
+function getLocalizedCategoryName(
+  node: Awaited<ReturnType<typeof getAdminCategoryTree>>[number],
+  locale: Locale
+) {
+  return (
+    {
+      'zh-CN': node.nameZh,
+      en: node.nameEn,
+      es: node.nameEs,
+      pt: node.namePt
+    }[locale] ||
+    node.nameZh ||
+    node.nameEn
+  );
+}
 
 function flattenCategories(
   nodes: Awaited<ReturnType<typeof getAdminCategoryTree>>,
+  locale: Locale,
   prefix = ''
 ): Array<{ id: string; label: string }> {
   return nodes.flatMap((node) => {
-    const label = prefix ? `${prefix} / ${node.nameZh}` : node.nameZh;
+    const name = getLocalizedCategoryName(node, locale);
+    const label = prefix ? `${prefix} / ${name}` : name;
 
     return [
       { id: node.id, label },
-      ...flattenCategories(node.children, label)
+      ...flattenCategories(node.children, locale, label)
     ];
   });
 }
@@ -28,7 +47,7 @@ export default async function AdminEditProductPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [categories, product, { Admin }] = await Promise.all([
+  const [categories, product, { locale, Admin }] = await Promise.all([
     getAdminCategoryTree(),
     db.product.findUnique({
       where: { id },
@@ -52,7 +71,7 @@ export default async function AdminEditProductPage({
       />
       <ProductForm
         mode="edit"
-        categories={flattenCategories(categories)}
+        categories={flattenCategories(categories, locale)}
         product={{
           ...product,
           priceUsd: product.priceUsd.toString(),

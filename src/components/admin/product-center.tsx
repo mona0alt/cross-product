@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useFormStatus } from 'react-dom';
 import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
@@ -22,6 +21,7 @@ import {
   Trash2,
   X
 } from 'lucide-react';
+import { AdminSelect, type AdminSelectOption } from '@/components/admin/admin-select';
 import {
   archiveProductFromListAction,
   bulkUpdateProductsFromListAction,
@@ -150,6 +150,9 @@ export function getProductActionMenuState({
 type ProductCenterCopy = {
   localizedContent: string;
   productCode: string;
+  slug: string;
+  slugHelp: string;
+  slugPreview: string;
   category: string;
   priceUsd: string;
   coverImageUrl: string;
@@ -249,6 +252,7 @@ type ProductCenterCopy = {
   basicInfo: string;
   statusLabel: string;
   selectCategory: string;
+  statusOptions: Record<'draft' | 'pending' | 'published' | 'archived', string>;
   productGalleryManager: string;
   productGallerySubtitle: string;
   uploadGallery: string;
@@ -284,6 +288,9 @@ type ProductCenterCopy = {
 const defaultProductCenterCopy: ProductCenterCopy = {
   localizedContent: '多语言内容',
   productCode: '商品编码',
+  slug: '商品网址路径',
+  slugHelp: '用于生成商品详情页网址。可自动生成，只能包含小写字母、数字和短横线。',
+  slugPreview: '前台链接：/products/{slug}',
   category: '分类',
   priceUsd: '价格 USD',
   coverImageUrl: '封面主图',
@@ -383,6 +390,12 @@ const defaultProductCenterCopy: ProductCenterCopy = {
   basicInfo: '基础信息',
   statusLabel: '状态',
   selectCategory: '选择类别',
+  statusOptions: {
+    draft: '草稿',
+    pending: '待审核',
+    published: '已发布',
+    archived: '已归档'
+  },
   productGalleryManager: '商品图片管理',
   productGallerySubtitle: '图库图片',
   uploadGallery: '上传图库',
@@ -470,6 +483,73 @@ function getFormStringValue(formData: FormData, key: string) {
   const value = formData.get(key);
 
   return typeof value === 'string' ? value.trim() : '';
+}
+
+const requiredProductEditorFields = [
+  ['categoryId', 'category'],
+  ['productCode', 'productCode'],
+  ['slug', 'slug'],
+  ['coverImageUrl', 'coverImageUrl'],
+  ['nameZh', 'nameZhLabel'],
+  ['nameEn', 'nameEnLabel'],
+  ['nameEs', 'nameEsLabel'],
+  ['namePt', 'namePtLabel'],
+  ['introZh', 'introZhLabel'],
+  ['introEn', 'introEnLabel'],
+  ['introEs', 'introEsLabel'],
+  ['introPt', 'introPtLabel'],
+  ['detailZh', 'detailZhLabel'],
+  ['detailEn', 'detailEnLabel'],
+  ['detailEs', 'detailEsLabel'],
+  ['detailPt', 'detailPtLabel']
+] as const;
+
+export function getProductEditorFormValidationError(
+  formData: FormData,
+  copy: Pick<
+    ProductCenterCopy,
+    | 'category'
+    | 'productCode'
+    | 'coverImageUrl'
+    | 'nameZhLabel'
+    | 'nameEnLabel'
+    | 'nameEsLabel'
+    | 'namePtLabel'
+    | 'introZhLabel'
+    | 'introEnLabel'
+    | 'introEsLabel'
+    | 'introPtLabel'
+    | 'detailZhLabel'
+    | 'detailEnLabel'
+    | 'detailEsLabel'
+    | 'detailPtLabel'
+  > & { slug?: string } = defaultProductCenterCopy
+) {
+  const labels = {
+    ...copy,
+    slug: copy.slug ?? 'Slug'
+  };
+  const missingField = requiredProductEditorFields.find(
+    ([fieldName]) => !getFormStringValue(formData, fieldName)
+  );
+
+  if (!missingField) {
+    return '';
+  }
+
+  return `请填写${labels[missingField[1]]}。`;
+}
+
+export function getGeneratedProductSlug(productCode: string, nameEn: string) {
+  const source = productCode.trim() || nameEn.trim();
+
+  return source
+    .normalize('NFKD')
+    .toLowerCase()
+    .replace(/['"]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .replace(/-{2,}/g, '-');
 }
 
 function getGalleryUrlsFromFormData(formData: FormData) {
@@ -1421,6 +1501,13 @@ function CategoryEditorDrawer({
     }
   };
   const parentOptions = categories.filter((item) => item.id !== category?.id);
+  const parentCategoryOptions: AdminSelectOption[] = [
+    { value: '', label: copy.rootCategory },
+    ...parentOptions.map((item) => ({
+      value: item.id,
+      label: item.nameZh
+    }))
+  ];
 
   return (
     <aside
@@ -1452,18 +1539,12 @@ function CategoryEditorDrawer({
         <div className="flex-1 space-y-5 overflow-y-auto p-5">
           <div className="grid gap-3 md:grid-cols-2">
             <Field label={copy.parentCategory}>
-              <select
+              <AdminSelect
                 name="parentId"
                 defaultValue={category?.parentId ?? ''}
-                className={drawerInputClass}
-              >
-                <option value="">{copy.rootCategory}</option>
-                {parentOptions.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.nameZh}
-                  </option>
-                ))}
-              </select>
+                options={parentCategoryOptions}
+                compact
+              />
             </Field>
             <Field label="Slug">
               <input
@@ -1634,14 +1715,53 @@ function ProductEditorDrawerContent({
   const router = useRouter();
   const [formError, setFormError] = useState('');
   const [isGalleryUploadPending, setIsGalleryUploadPending] = useState(false);
+  const [isProductSaving, setIsProductSaving] = useState(false);
   const isCreate = mode === 'create';
+  const [slugValue, setSlugValue] = useState(product?.slug ?? '');
+  const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(false);
   const formAction =
     !isCreate && product
       ? updateProductFormAction.bind(null, product.id)
       : createProductFormAction;
-  const handleFormAction = async (formData: FormData) => {
+  useEffect(() => {
+    setSlugValue(product?.slug ?? '');
+    setIsSlugManuallyEdited(false);
+  }, [isCreate, product?.id, product?.slug]);
+
+  const updateGeneratedSlug = (form: HTMLFormElement | null) => {
+    if (!isCreate || isSlugManuallyEdited || !form) {
+      return;
+    }
+
+    const productCode = form.elements.namedItem('productCode');
+    const nameEn = form.elements.namedItem('nameEn');
+
+    setSlugValue(
+      getGeneratedProductSlug(
+        productCode instanceof HTMLInputElement ? productCode.value : '',
+        nameEn instanceof HTMLInputElement ? nameEn.value : ''
+      )
+    );
+  };
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (isProductSaving) {
+      return;
+    }
+
+    const formData = new FormData(event.currentTarget);
+
     try {
       setFormError('');
+      const validationError = getProductEditorFormValidationError(formData, copy);
+
+      if (validationError) {
+        setFormError(validationError);
+        return;
+      }
+
+      setIsProductSaving(true);
       await formAction(formData);
       if (!isCreate && product) {
         onProductSaved(product.id, formData);
@@ -1651,6 +1771,8 @@ function ProductEditorDrawerContent({
       onClose();
     } catch (error) {
       setFormError(error instanceof Error ? error.message : copy.productSaveError);
+    } finally {
+      setIsProductSaving(false);
     }
   };
   const galleryUrls = [...(product?.images ?? [])]
@@ -1668,6 +1790,19 @@ function ProductEditorDrawerContent({
           ...categories
         ]
       : categories;
+  const productCategoryOptions: AdminSelectOption[] = [
+    { value: '', label: copy.selectCategory },
+    ...categoryOptions.map((category) => ({
+      value: category.id,
+      label: category.nameZh
+    }))
+  ];
+  const productStatusOptions: AdminSelectOption[] = [
+    { value: 'draft', label: copy.statusOptions.draft },
+    { value: 'pending', label: copy.statusOptions.pending },
+    { value: 'published', label: copy.statusOptions.published },
+    { value: 'archived', label: copy.statusOptions.archived }
+  ];
 
   return (
     <aside
@@ -1695,7 +1830,7 @@ function ProductEditorDrawerContent({
         </button>
       </div>
 
-      <form action={handleFormAction} className="flex min-h-0 flex-1 flex-col">
+      <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
         <div className="flex-1 space-y-6 overflow-y-auto p-5">
           <section>
             <div className="mb-3 flex items-center justify-between">
@@ -1733,24 +1868,38 @@ function ProductEditorDrawerContent({
             <h4 className="text-xs font-bold uppercase text-admin-text-muted">{copy.basicInfo}</h4>
             <div className="grid gap-3 md:grid-cols-2">
               <Field label={copy.productCode}>
-                <input name="productCode" defaultValue={product?.productCode} className={drawerInputClass} />
+                <input
+                  name="productCode"
+                  defaultValue={product?.productCode}
+                  className={drawerInputClass}
+                  onChange={(event) => updateGeneratedSlug(event.currentTarget.form)}
+                />
               </Field>
-              <Field label="Slug">
-                <input name="slug" defaultValue={product?.slug} className={drawerInputClass} />
+              <Field label={copy.slug}>
+                <input
+                  name="slug"
+                  value={slugValue}
+                  onChange={(event) => {
+                    setSlugValue(event.currentTarget.value);
+                    setIsSlugManuallyEdited(true);
+                  }}
+                  className={drawerInputClass}
+                  placeholder="product-url-path"
+                />
+                <p className="text-xs font-normal normal-case text-admin-text-muted">
+                  {copy.slugHelp}
+                </p>
+                <p className="truncate text-xs font-normal normal-case text-admin-text-muted">
+                  {formatCopy(copy.slugPreview, { slug: slugValue || '' })}
+                </p>
               </Field>
               <Field label={copy.category}>
-                <select
+                <AdminSelect
                   name="categoryId"
                   defaultValue={product?.categoryId ?? ''}
-                  className={drawerInputClass}
-                >
-                  <option value="">{copy.selectCategory}</option>
-                  {categoryOptions.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.nameZh}
-                    </option>
-                  ))}
-                </select>
+                  options={productCategoryOptions}
+                  compact
+                />
               </Field>
               <Field label={copy.priceUsd}>
                 <input
@@ -1768,12 +1917,12 @@ function ProductEditorDrawerContent({
                 />
               </Field>
               <Field label={copy.statusLabel}>
-                <select name="status" defaultValue={product?.status ?? 'draft'} className={drawerInputClass}>
-                  <option value="draft">draft</option>
-                  <option value="pending">pending</option>
-                  <option value="published">published</option>
-                  <option value="archived">archived</option>
-                </select>
+                <AdminSelect
+                  name="status"
+                  defaultValue={product?.status ?? 'draft'}
+                  options={productStatusOptions}
+                  compact
+                />
               </Field>
               <label className="flex items-center gap-2 rounded-lg border border-admin-border bg-admin-surface px-4 py-2.5 text-sm text-admin-text-secondary md:col-span-2">
                 <input
@@ -1801,7 +1950,16 @@ function ProductEditorDrawerContent({
                 ['introPt', copy.introPtLabel, product?.introPt]
               ] as Array<[string, string, string | undefined]>).map(([name, label, value]) => (
                 <Field key={name} label={label}>
-                  <input name={name} defaultValue={value} className={drawerInputClass} />
+                  <input
+                    name={name}
+                    defaultValue={value}
+                    className={drawerInputClass}
+                    onChange={
+                      name === 'nameEn'
+                        ? (event) => updateGeneratedSlug(event.currentTarget.form)
+                        : undefined
+                    }
+                  />
                 </Field>
               ))}
             </div>
@@ -1833,7 +1991,11 @@ function ProductEditorDrawerContent({
           >
             {copy.cancel}
           </button>
-          <ProductEditorSubmitButton isUploadPending={isGalleryUploadPending} copy={copy} />
+          <ProductEditorSubmitButton
+            isSaving={isProductSaving}
+            isUploadPending={isGalleryUploadPending}
+            copy={copy}
+          />
         </footer>
       </form>
     </aside>
@@ -2081,23 +2243,24 @@ function ProductGalleryImageManager({
 }
 
 function ProductEditorSubmitButton({
+  isSaving = false,
   isUploadPending = false,
   copy
 }: {
+  isSaving?: boolean;
   isUploadPending?: boolean;
   copy: Pick<ProductCenterCopy, 'imageUploading' | 'saveChanges' | 'savingChanges'>;
 }) {
-  const { pending } = useFormStatus();
   const submitState = getProductEditorSubmitState({ isUploadPending, copy });
 
   return (
     <button
       type="submit"
-      disabled={pending || submitState.disabled}
+      disabled={isSaving || submitState.disabled}
       className="inline-flex items-center gap-2 rounded-lg bg-admin-accent px-4 py-2 text-sm font-semibold text-white transition hover:bg-admin-accent-hover disabled:cursor-wait disabled:opacity-70"
     >
       <Check className="h-4 w-4" />
-      {pending ? copy.savingChanges : submitState.label}
+      {isSaving ? copy.savingChanges : submitState.label}
     </button>
   );
 }
@@ -2115,12 +2278,12 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <label className={`block space-y-2 ${className}`}>
+    <div className={`block space-y-2 ${className}`}>
       <span className="text-xs font-semibold uppercase text-admin-text-secondary">
         {label}
       </span>
       {children}
-    </label>
+    </div>
   );
 }
 

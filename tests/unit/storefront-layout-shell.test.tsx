@@ -8,11 +8,13 @@ import { StorefrontHeader } from '@/components/storefront/header';
 vi.mock('@/components/storefront/language-switcher', () => ({
   LanguageSwitcher: ({
     currentLocale,
-    label
+    label,
+    compactDesktop
   }: {
     currentLocale: string;
     label: string;
-  }) => <div>{`${label}:${currentLocale}`}</div>
+    compactDesktop?: boolean;
+  }) => <div data-compact-desktop={compactDesktop ? 'true' : undefined}>{`${label}:${currentLocale}`}</div>
 }));
 
 describe('storefront layout shell', () => {
@@ -88,6 +90,7 @@ describe('storefront layout shell', () => {
     expect(html).not.toContain('bg-[#f0f6fd]');
     expect(html).toContain('href="mailto:support@fbgm.com"');
     expect(html).toContain('support@fbgm.com');
+    expect(html).not.toContain('<span>support@fbgm.com</span>');
     expect(html).not.toContain('Phone sales +1 555 123 4567');
     expect(html).not.toContain('Blog');
     expect(html).not.toContain('Studio MK');
@@ -469,6 +472,84 @@ describe('storefront layout shell', () => {
     expect(html).toContain('Robot Dogs');
     expect(html).toContain('Industrial Arms');
     expect(html).toContain('/en/products?category=industrial-arms');
+  });
+
+  it('keeps crowded desktop categories on one row by compacting secondary header controls', () => {
+    const categoryGroups = Array.from({ length: 12 }, (_, index) => ({
+      id: `group-${index + 1}`,
+      slug: `robot-category-${index + 1}`,
+      iconImageUrl: null,
+      name: `Robot Category ${index + 1}`,
+      description: `Robot category ${index + 1}`,
+      children: []
+    }));
+
+    const html = renderToStaticMarkup(
+      <StorefrontHeader
+        locale="en"
+        whatsAppNumber="+1 555 123 4567"
+        contactEmail="support@fbgm.com"
+        categoryGroups={categoryGroups}
+        copy={{
+          brand: 'Cross',
+          nav: {
+            home: 'Home',
+            products: 'Products',
+            contact: 'Contact',
+            subscribe: 'Subscribe'
+          },
+          searchPlaceholder: 'Search products',
+          portal: 'Portal',
+          whatsApp: 'WhatsApp',
+          languageLabel: 'Language',
+          topLinks: {
+            blog: 'Blog',
+            studio: 'Studio MK',
+            professionals: 'MK Pros'
+          },
+          phoneSales: 'Phone sales',
+          utilityBar: {
+            support: 'Support',
+            service: 'Customer Service'
+          },
+          quickActions: {
+            trackOrder: 'Track order',
+            stores: 'Stores',
+            helpCenter: 'Help Center',
+            account: 'My account'
+          },
+          featuredNav: {
+            inspiration: 'Inspiration',
+            outlet: 'Outlet'
+          },
+          categoryPromo: {
+            viewAll: 'View all',
+            offerTitle: 'Offers',
+            offerLink: 'Last chance',
+            featuredTitle: 'Featured',
+            featuredDescription: 'Discover best sellers'
+          }
+        }}
+      />
+    );
+
+    expect(html).toContain('grid-cols-[auto_minmax(0,1fr)_auto]');
+    expect(html).toContain('lg:grid-cols-[auto_minmax(0,auto)_auto]');
+    expect(html).toContain('w-full');
+    expect(html).toContain('lg:w-fit');
+    expect(html).toContain('lg:px-5');
+    expect(html).not.toContain('mk-container flex min-h-[76px]');
+    expect(html).toContain('flex-nowrap');
+    expect(html).not.toContain('flex-wrap');
+    expect(html).toContain('min-w-0');
+    expect(html).toContain('shrink-0');
+    expect(html).toContain('shrink');
+    expect(html).toContain('whitespace-nowrap');
+    expect(html).toContain('h-8');
+    expect(html).toContain('lg:inline-flex');
+    expect(html).toContain('lg:flex');
+    expect(html).toContain('data-compact-desktop="true"');
+    expect(html).toContain('Robot Category 12');
   });
 
   it('renders the dark enterprise footer sections', () => {

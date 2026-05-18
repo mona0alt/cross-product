@@ -121,6 +121,14 @@ img {
   display: none;
 }
 
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 .mk-carousel-item {
   flex-shrink: 0;
   scroll-snap-align: start;

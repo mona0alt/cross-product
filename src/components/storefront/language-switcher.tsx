@@ -53,11 +53,13 @@ function GlobeIcon({ className }: { className?: string }) {
 export function LanguageSwitcher({
   currentLocale,
   label,
-  tone = 'light'
+  tone = 'light',
+  compactDesktop = false
 }: {
   currentLocale: Locale;
   label: string;
   tone?: 'light' | 'dark';
+  compactDesktop?: boolean;
 }) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
@@ -92,6 +94,14 @@ export function LanguageSwitcher({
   }, [isOpen]);
 
   if (tone === 'dark') {
+    const triggerClassName = compactDesktop
+      ? 'flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-[#07111f] px-0 text-[13px] font-semibold normal-case tracking-[0.02em] text-white outline-none transition hover:border-white/35 hover:bg-white/10 focus:border-white/45 group-hover:border-white/35 group-hover:bg-white/10 min-[1800px]:w-auto min-[1800px]:min-w-[112px] min-[1800px]:justify-between min-[1800px]:gap-2 min-[1800px]:px-3'
+      : 'flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-[#07111f] px-0 text-[13px] font-semibold normal-case tracking-[0.02em] text-white outline-none transition hover:border-white/35 hover:bg-white/10 focus:border-white/45 group-hover:border-white/35 group-hover:bg-white/10 xl:w-auto xl:min-w-[112px] xl:justify-between xl:gap-2 xl:px-3';
+    const labelClassName = compactDesktop ? 'hidden min-[1800px]:inline' : 'hidden xl:inline';
+    const chevronClassName = compactDesktop
+      ? `hidden h-4 w-4 text-white/62 transition min-[1800px]:block ${isOpen ? 'rotate-180' : ''}`
+      : `hidden h-4 w-4 text-white/62 transition xl:block ${isOpen ? 'rotate-180' : ''}`;
+
     return (
       <div ref={wrapperRef} className="group relative flex items-center">
         <button
@@ -100,14 +110,14 @@ export function LanguageSwitcher({
           aria-expanded={isOpen}
           aria-label={label}
           data-testid="language-switcher-trigger"
-          className="flex h-10 min-w-[112px] items-center justify-between gap-2 rounded-full border border-white/20 bg-[#07111f] px-3 text-[13px] font-semibold normal-case tracking-[0.02em] text-white outline-none transition hover:border-white/35 hover:bg-white/10 focus:border-white/45 group-hover:border-white/35 group-hover:bg-white/10"
+          className={triggerClassName}
           onClick={() => setIsOpen((value) => !value)}
         >
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-0 xl:gap-2">
             <GlobeIcon className="h-[18px] w-[18px] text-white/72" />
-            <span>{localeLabels[currentLocale]}</span>
+            <span className={labelClassName}>{localeLabels[currentLocale]}</span>
           </span>
-          <ChevronIcon className={`h-4 w-4 text-white/62 transition ${isOpen ? 'rotate-180' : ''}`} />
+          <ChevronIcon className={chevronClassName} />
         </button>
         <div
           role="listbox"
