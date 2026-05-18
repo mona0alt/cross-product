@@ -19,14 +19,10 @@ const initialActionState: SystemSettingsActionState = {};
 type SystemSettingsCopy = {
   configured: string;
   unconfigured: string;
-  categoryKicker: string;
   categoryTitle: string;
-  categoryDescription: string;
   navLabel: string;
   itemCount: string;
-  detailKicker: string;
   detailTitle: string;
-  detailDescription: string;
   activeSummary: string;
   currentStatus: string;
   saveSuccess: string;
@@ -53,14 +49,10 @@ type SystemSettingsCopy = {
 const defaultSystemSettingsCopy: SystemSettingsCopy = {
   configured: '已配置',
   unconfigured: '未配置',
-  categoryKicker: 'Settings',
   categoryTitle: '配置类别',
-  categoryDescription: '按运行模块编辑真实配置，敏感项只显示配置状态。',
   navLabel: '系统设置配置类别',
   itemCount: '{count} 个配置项',
-  detailKicker: 'Configuration',
   detailTitle: '配置项',
-  detailDescription: '保存后写入数据库，前台联系入口、邮件发送和上传服务会读取这些配置。',
   activeSummary: '{title} · {count} 项',
   currentStatus: '当前状态：{status}',
   saveSuccess: '配置已保存',
@@ -233,28 +225,27 @@ export function SystemSettingsPanel({
   }
 
   return (
-    <div className="grid min-h-[calc(100vh-104px)] gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
-      <aside className="flex min-h-0 flex-col rounded-[20px] border border-admin-border bg-admin-bg shadow-[0_12px_34px_rgba(15,23,42,0.04)]">
-        <div className="border-b border-admin-border px-4 py-4">
-          <p className="admin-kicker">{copy.categoryKicker}</p>
-          <h3 className="mt-1 text-lg font-semibold text-admin-text-primary font-display">
+    <div className="grid h-full min-h-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)]">
+      <aside className="flex h-full min-h-0 flex-col rounded-[18px] border border-admin-border bg-admin-surface shadow-[0_16px_48px_rgba(15,23,42,0.05)]">
+        <div className="border-b border-admin-border px-4 py-3">
+          <h3 className="text-lg font-semibold text-admin-text-primary font-display">
             {copy.categoryTitle}
           </h3>
-          <p className="mt-1.5 text-xs leading-5 text-admin-text-secondary">
-            {copy.categoryDescription}
-          </p>
         </div>
-        <nav className="grid flex-1 content-start gap-1.5 p-2.5" aria-label={copy.navLabel}>
+        <nav
+          className="grid min-h-0 flex-1 content-start gap-2 overflow-y-auto p-2"
+          aria-label={copy.navLabel}
+        >
           {groups.map((group) => (
             <button
               type="button"
               key={group.key}
               aria-pressed={activeGroup?.key === group.key}
               onClick={() => setActiveKey(group.key)}
-              className={`flex min-h-12 w-full flex-col justify-center rounded-xl px-3.5 py-2.5 text-left transition hover:bg-admin-elevated focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin-accent ${
+              className={`flex min-h-12 w-full flex-col justify-center rounded-xl border px-3 py-2 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin-accent ${
                 activeGroup?.key === group.key
-                  ? 'bg-emerald-50 text-admin-accent'
-                  : 'text-admin-text-primary'
+                  ? 'border-admin-accent/20 bg-admin-accent/10 text-admin-accent'
+                  : 'border-transparent bg-white text-admin-text-secondary hover:border-admin-border hover:bg-admin-elevated'
               }`}
             >
               <span className="text-sm font-semibold">{group.title}</span>
@@ -268,17 +259,13 @@ export function SystemSettingsPanel({
 
       <section
         data-testid="system-setting-detail-panel"
-        className="flex min-h-0 flex-col rounded-[20px] border border-admin-border bg-admin-bg shadow-[0_12px_34px_rgba(15,23,42,0.04)]"
+        className="flex h-full min-h-0 flex-col rounded-[18px] border border-admin-border bg-admin-surface shadow-[0_16px_48px_rgba(15,23,42,0.05)]"
       >
-        <div className="flex flex-col gap-2 border-b border-admin-border px-4 py-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-3 border-b border-admin-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="admin-kicker">{copy.detailKicker}</p>
-            <h3 className="mt-1 text-lg font-semibold text-admin-text-primary font-display">
+            <h3 className="text-xl font-semibold text-admin-text-primary font-display">
               {copy.detailTitle}
             </h3>
-            <p className="mt-1.5 text-xs leading-5 text-admin-text-secondary">
-              {copy.detailDescription}
-            </p>
           </div>
           {activeGroup ? (
             <span className="inline-flex w-fit rounded-full bg-admin-elevated px-3 py-1 text-xs font-semibold text-admin-text-muted">
@@ -290,23 +277,20 @@ export function SystemSettingsPanel({
           ) : null}
         </div>
 
-        <div className="min-h-0 flex-1 px-4 py-4">
+        <div className="min-h-0 flex-1 p-4">
           {activeGroup ? (
             <section
               key={activeGroup.key}
               data-testid="system-setting-active-panel"
-              className="flex min-h-full flex-col"
+              className="flex h-full min-h-0 flex-col"
             >
               <div>
                 <h4 className="text-base font-bold text-admin-text-primary">
                   {activeGroup.title}
                 </h4>
-                <p className="mt-1 text-sm leading-6 text-admin-text-secondary">
-                  {activeGroup.description}
-                </p>
               </div>
 
-              <form action={formAction} className="mt-4 flex flex-1 flex-col">
+              <form action={formAction} className="mt-4 flex min-h-0 flex-1 flex-col">
                 <div
                   data-testid="system-setting-config-list"
                   className="divide-y divide-admin-border overflow-hidden rounded-xl border border-admin-border bg-white"

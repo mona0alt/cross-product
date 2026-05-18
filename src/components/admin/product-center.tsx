@@ -668,14 +668,14 @@ export function ProductCenter({
   };
 
   return (
-    <section className="relative flex h-[calc(100vh-104px)] flex-col overflow-hidden rounded-xl border border-admin-border bg-admin-bg shadow-sm">
-      <header className="flex shrink-0 flex-col gap-4 border-b border-admin-border bg-white px-4 py-4 xl:flex-row xl:items-center xl:justify-between lg:px-5">
-        <div className="flex min-w-0 flex-1 flex-col gap-3 lg:flex-row lg:items-center">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-admin-accent">
+    <section className="relative flex h-[calc(100vh-104px)] flex-col overflow-hidden rounded-xl border border-admin-border bg-admin-bg text-sm shadow-sm">
+      <header className="flex shrink-0 flex-col gap-3 border-b border-admin-border bg-white px-4 py-3 xl:flex-row xl:items-center xl:justify-between lg:px-5">
+        <div className="flex min-w-0 flex-1 flex-col gap-2.5 lg:flex-row lg:items-center">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-admin-accent">
               <Package className="h-4 w-4" />
             </div>
-            <h2 className="shrink-0 text-xl font-bold text-admin-text-primary">
+            <h2 className="shrink-0 text-base font-semibold text-admin-text-primary">
               {copy.listTitle}
             </h2>
           </div>
@@ -690,7 +690,7 @@ export function ProductCenter({
                 setCurrentProductPage(1);
               }}
               placeholder={copy.searchPlaceholder}
-              className="h-10 w-full rounded-lg border border-admin-border bg-admin-elevated pl-9 pr-3 text-sm text-admin-text-primary outline-none transition focus:border-admin-accent focus:bg-white focus:ring-2 focus:ring-emerald-500/10"
+              className="h-9 w-full rounded-lg border border-admin-border bg-admin-elevated pl-9 pr-3 text-xs text-admin-text-primary outline-none transition focus:border-admin-accent focus:bg-white focus:ring-2 focus:ring-emerald-500/10"
             />
           </label>
         </div>
@@ -702,7 +702,7 @@ export function ProductCenter({
           <div
             role="group"
             aria-label={copy.filterLabel}
-            className="inline-flex h-10 items-center gap-1 rounded-lg border border-admin-border bg-admin-elevated p-1"
+            className="inline-flex h-9 items-center gap-1 rounded-lg border border-admin-border bg-admin-elevated p-1"
           >
             <button
               type="button"
@@ -731,7 +731,7 @@ export function ProductCenter({
           <button
             type="button"
             onClick={exportFilteredProducts}
-            className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg border border-admin-border bg-white px-4 text-sm font-semibold text-admin-text-secondary transition hover:border-admin-border-strong hover:bg-admin-elevated focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-admin-border bg-white px-3 text-xs font-semibold text-admin-text-secondary transition hover:border-admin-border-strong hover:bg-admin-elevated focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
           >
             <Download className="h-4 w-4" />
             {copy.exportCsv}
@@ -739,7 +739,7 @@ export function ProductCenter({
           <button
             type="button"
             onClick={openCreateEditor}
-            className="inline-flex h-10 shrink-0 items-center gap-2 rounded-lg bg-admin-accent px-4 text-sm font-semibold text-white transition hover:bg-admin-accent-hover focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+            className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-admin-accent px-3 text-xs font-semibold text-white transition hover:bg-admin-accent-hover focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
           >
             <CirclePlus className="h-4 w-4" />
             {copy.newProduct}
@@ -747,22 +747,23 @@ export function ProductCenter({
         </div>
       </header>
 
-      <div className="grid min-h-0 flex-1 gap-5 bg-admin-bg p-4 lg:grid-cols-[minmax(280px,360px)_minmax(0,1fr)] lg:p-5">
-        <aside className="min-h-0 overflow-y-auto rounded-xl border border-admin-border bg-white p-5 shadow-sm">
-          <div className="mb-5 flex items-center justify-between gap-3">
-            <h3 className="text-xl font-bold text-admin-text-primary">{copy.categoryTitle}</h3>
+      <div className="grid min-h-0 flex-1 gap-4 bg-admin-bg p-4 lg:grid-cols-[minmax(272px,336px)_minmax(0,1fr)]">
+        <aside className="min-h-0 overflow-y-auto rounded-xl border border-admin-border bg-white p-4 shadow-sm">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h3 className="text-sm font-semibold text-admin-text-primary">{copy.categoryTitle}</h3>
             <button
               type="button"
+              aria-label={copy.addCategory}
+              title={copy.addCategory}
               onClick={openCreateCategoryEditor}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-admin-accent px-3 py-2 text-sm font-semibold text-white transition hover:bg-admin-accent-hover"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-admin-accent text-white transition hover:bg-admin-accent-hover focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
             >
               <CirclePlus className="h-4 w-4" />
-              {copy.addCategory}
             </button>
           </div>
 
           {categories.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-2.5">
               {categories.map((category) => (
                 <CategoryItem
                   key={category.id}
@@ -785,12 +786,12 @@ export function ProductCenter({
 
         <main className="flex min-h-0 flex-col gap-3">
             {notice ? (
-              <p className="shrink-0 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700">
+              <p className="shrink-0 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700">
                 {notice}
               </p>
             ) : null}
             {selectedProductIds.length > 0 ? (
-              <div className="flex shrink-0 flex-wrap items-center gap-2 rounded-lg border border-admin-border bg-white px-3 py-2 text-sm text-admin-text-secondary shadow-sm">
+              <div className="flex shrink-0 flex-wrap items-center gap-2 rounded-lg border border-admin-border bg-white px-3 py-2 text-xs text-admin-text-secondary shadow-sm">
                 <span className="font-semibold">
                   {formatCopy(copy.selectedProducts, { count: selectedProductIds.length })}
                 </span>
@@ -869,7 +870,7 @@ export function ProductCenter({
                                 type="button"
                                 aria-label={formatCopy(copy.editProductLabel, { name: product.nameZh })}
                                 onClick={() => openEditEditor(product.id)}
-                                className="block max-w-full truncate rounded text-left text-sm font-semibold text-admin-text-primary transition hover:text-admin-accent hover:underline focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+                                className="block max-w-full truncate rounded text-left text-xs font-semibold text-admin-text-primary transition hover:text-admin-accent hover:underline focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
                               >
                                 {product.nameZh}
                               </button>
@@ -879,19 +880,19 @@ export function ProductCenter({
                             </div>
                           </div>
                         </td>
-                        <td className="px-5 py-3 font-mono text-sm text-admin-text-secondary">
+                        <td className="px-5 py-3 font-mono text-xs text-admin-text-secondary">
                           {product.productCode}
                         </td>
-                        <td className="px-5 py-3 text-sm text-admin-text-primary">
+                        <td className="px-5 py-3 text-xs text-admin-text-primary">
                           {product.categoryName}
                         </td>
                         <td className="px-5 py-3">
                           <ProductStatus status={product.status} />
                         </td>
-                        <td className="px-5 py-3 text-sm text-admin-text-primary">
+                        <td className="px-5 py-3 text-xs text-admin-text-primary">
                           {formatPrice(product.priceUsd)}
                         </td>
-                        <td className="px-5 py-3 text-sm text-admin-text-secondary">
+                        <td className="px-5 py-3 text-xs text-admin-text-secondary">
                           {product.isRecommended ? copy.yes : copy.no}
                         </td>
                         <td className="py-3 pl-6 pr-8 text-right">
@@ -1075,7 +1076,7 @@ function CategoryItem({
 }) {
   return (
     <div
-      className={`group flex items-center justify-between gap-3 rounded-lg border p-3 transition ${
+      className={`group flex items-center justify-between gap-2.5 rounded-lg border p-2.5 transition ${
         isSelected
           ? 'border-admin-accent/25 bg-blue-50 text-admin-accent'
           : category.isActive
@@ -1087,16 +1088,16 @@ function CategoryItem({
         type="button"
         aria-pressed={isSelected}
         onClick={() => onSelect(category.id)}
-        className="flex min-w-0 flex-1 items-center justify-between gap-3 text-left"
+        className="flex min-w-0 flex-1 items-center justify-between gap-2.5 text-left"
       >
-        <span className="flex min-w-0 items-center gap-3">
+        <span className="flex min-w-0 items-center gap-2.5">
           {category.iconImageUrl ? (
-            <span className="relative h-9 w-9 shrink-0 overflow-hidden rounded-lg border border-admin-border bg-white">
+            <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-lg border border-admin-border bg-white">
               <NextImage
                 src={category.iconImageUrl}
                 alt={category.nameZh}
                 fill
-                sizes="36px"
+                sizes="32px"
                 className="object-cover"
                 unoptimized
               />
@@ -1105,13 +1106,13 @@ function CategoryItem({
             <FolderTree className="h-5 w-5 shrink-0" />
           )}
           <span className="min-w-0">
-            <span className="block truncate text-sm font-bold">{category.nameZh}</span>
+            <span className="block truncate text-xs font-semibold">{category.nameZh}</span>
             <span className="block truncate text-xs text-admin-text-muted">
               {category.nameEn}
             </span>
           </span>
         </span>
-        <span className="shrink-0 rounded-full bg-white px-2 py-1 text-xs font-semibold text-admin-text-secondary ring-1 ring-admin-border">
+        <span className="shrink-0 rounded-full bg-white px-2 py-0.5 text-[11px] font-semibold text-admin-text-secondary ring-1 ring-admin-border">
           {formatCopy(copy.productCount, { count: category.productCount })}
         </span>
       </button>
@@ -1120,18 +1121,18 @@ function CategoryItem({
           type="button"
           aria-label={formatCopy(copy.editCategoryLabel, { name: category.nameZh })}
           onClick={() => onEdit(category.id)}
-          className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition hover:bg-white hover:text-admin-accent"
+          className="flex h-7 w-7 items-center justify-center rounded-md text-admin-text-muted transition hover:bg-white hover:text-admin-accent"
         >
-          <Edit3 className="h-4 w-4" />
+          <Edit3 className="h-3.5 w-3.5" />
         </button>
         <form action={deleteCategoryFormAction.bind(null, category.id)}>
           <button
             type="submit"
             aria-label={formatCopy(copy.deleteCategoryLabel, { name: category.nameZh })}
             title={copy.deleteCategoryTitle}
-            className="flex h-8 w-8 items-center justify-center rounded-md text-admin-text-muted transition hover:bg-white hover:text-rose-600"
+            className="flex h-7 w-7 items-center justify-center rounded-md text-admin-text-muted transition hover:bg-white hover:text-rose-600"
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </form>
       </div>
@@ -1881,7 +1882,7 @@ function ColumnHeader({
 }) {
   return (
     <th
-      className={`sticky top-0 z-10 bg-admin-elevated px-4 py-3 text-xs font-bold uppercase text-admin-text-muted ${
+      className={`sticky top-0 z-10 bg-admin-elevated px-4 py-2.5 text-[11px] font-bold uppercase text-admin-text-muted ${
         align === 'right' ? 'text-right' : 'text-left'
       } ${className}`}
     >
@@ -1892,13 +1893,13 @@ function ColumnHeader({
 
 function ProductThumb({ product }: { product: ProductCenterRow }) {
   return (
-    <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-admin-border bg-slate-100">
+    <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-admin-border bg-slate-100">
       {product.coverImageUrl ? (
         <NextImage
           src={product.coverImageUrl}
           alt={product.nameZh}
           fill
-          sizes="48px"
+          sizes="44px"
           className="object-cover"
           unoptimized
         />
@@ -1912,7 +1913,7 @@ function ProductThumb({ product }: { product: ProductCenterRow }) {
 function ProductStatus({ status }: { status: string }) {
   return (
     <span
-      className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ${
+      className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ring-1 ${
         statusStyles[status] ?? 'bg-slate-100 text-slate-700 ring-slate-200'
       }`}
     >
@@ -1922,7 +1923,7 @@ function ProductStatus({ status }: { status: string }) {
 }
 
 function filterButtonClass(isActive: boolean) {
-  return `inline-flex h-8 items-center rounded-md border px-3 text-sm font-semibold transition focus:outline-none focus:ring-2 focus:ring-admin-accent/20 ${
+  return `inline-flex h-7 items-center rounded-md border px-2.5 text-xs font-semibold transition focus:outline-none focus:ring-2 focus:ring-admin-accent/20 ${
     isActive
       ? 'border-admin-accent/30 bg-white text-admin-accent shadow-sm'
       : 'border-transparent text-admin-text-secondary hover:bg-white hover:text-admin-text-primary'

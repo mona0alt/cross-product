@@ -387,7 +387,7 @@ describe('admin pages', () => {
 
     expect(messagesHtml).not.toContain('支持中心');
     expect(messagesHtml).not.toContain('管理客户查询与留言工单。');
-    expect(messagesHtml).toContain('留言清单');
+    expect(messagesHtml).toContain('客户留言');
     expect(messagesHtml).toContain('data-testid="message-list-scroll"');
     expect(messagesHtml).toContain('总留言');
     expect(messagesHtml).toContain('未读');
@@ -439,8 +439,8 @@ describe('admin pages', () => {
     expect(analyticsHtml).not.toContain('本周热门类目更偏便携型设备');
     expect(categoriesHtml).toContain('配置类别');
     expect(categoriesHtml).toContain('配置项');
-    expect(categoriesHtml).toContain('lg:grid-cols-[280px_minmax(0,1fr)]');
-    expect(categoriesHtml).toContain('min-h-[calc(100vh-104px)]');
+    expect(categoriesHtml).toContain('xl:grid-cols-[220px_minmax(0,1fr)]');
+    expect(categoriesHtml).toContain('h-[calc(100vh-104px)]');
     expect(categoriesHtml).not.toContain('text-3xl font-semibold tracking-tight text-admin-text-primary');
     expect(categoriesHtml).not.toContain('集中查看后台运行所需的邮箱、数据库、本地存储和大模型配置状态。');
     expect(categoriesHtml).toContain('邮箱配置');
@@ -552,17 +552,19 @@ describe('admin pages', () => {
     expect(productsHtml).toContain('Humanoid Robots');
     expect(productsHtml).not.toContain('商品管理');
     expect(productsHtml).not.toContain('产品类目');
-    expect(messagesHtml).toContain('Message list');
+    expect(messagesHtml).toContain('Support inbox');
     expect(messagesHtml).toContain('Unread');
-    expect(messagesHtml).not.toContain('留言清单');
+    expect(messagesHtml).not.toContain('客户留言');
     expect(subscribersHtml).toContain('Automation rules');
     expect(subscribersHtml).toContain('Subscribers');
     expect(subscribersHtml).not.toContain('自动化发送规则');
     expect(analyticsHtml).toContain('Total products');
     expect(analyticsHtml).toContain('Top product ranking');
     expect(analyticsHtml).not.toContain('总商品数量');
-    expect(categoriesHtml).toContain('Configuration groups');
-    expect(categoriesHtml).toContain('Configuration items');
+    expect(categoriesHtml).toContain('flex h-[calc(100vh-104px)] min-h-0 flex-col overflow-hidden');
+    expect(categoriesHtml).toContain('grid h-full min-h-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)]');
+    expect(categoriesHtml).not.toContain('>Categories<');
+    expect(categoriesHtml).not.toContain('>Configuration<');
     expect(categoriesHtml).not.toContain('配置类别');
   });
 });

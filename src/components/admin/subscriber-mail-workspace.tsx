@@ -66,10 +66,7 @@ type InitialTabKey = TabKey | 'templates' | 'campaign';
 type SubscriberWorkspaceCopy = SubscriberTableCopy & {
   managementTitle: string;
   managementAriaLabel: string;
-  workspacePanelKicker: string;
-  workspaceBadge: string;
   automationRules: string;
-  automationDetail: string;
   automationBoardDescription: string;
   triggerLabel: string;
   triggerProductNew: string;
@@ -85,10 +82,8 @@ type SubscriberWorkspaceCopy = SubscriberTableCopy & {
   rulesSaveError: string;
   currentQueue: string;
   mailWorkspace: string;
-  mailDetail: string;
   sendToAll: string;
   sending: string;
-  templateKicker: string;
   templateLibrary: string;
   processing: string;
   addTemplate: string;
@@ -98,7 +93,6 @@ type SubscriberWorkspaceCopy = SubscriberTableCopy & {
   deleteTemplateLabel: string;
   noTemplates: string;
   editorTitle: string;
-  editorDescription: string;
   estimatedRecipients: string;
   recipientCount: string;
   successRate: string;
@@ -125,7 +119,6 @@ type SubscriberWorkspaceCopy = SubscriberTableCopy & {
   sendCompleted: string;
   sendError: string;
   sentMail: string;
-  sentDetail: string;
   sentSummary: string;
   selectAllSentLabel: string;
   sentAt: string;
@@ -150,16 +143,12 @@ type SubscriberWorkspaceCopy = SubscriberTableCopy & {
   statusFailed: string;
   statusPending: string;
   subscriberList: string;
-  subscriberDetail: string;
 };
 
 const defaultSubscriberWorkspaceCopy: SubscriberWorkspaceCopy = {
   managementTitle: '邮件管理',
   managementAriaLabel: '邮件订阅管理',
-  workspacePanelKicker: 'Workspace Panel',
-  workspaceBadge: '邮件订阅工作区',
   automationRules: '自动化发送规则',
-  automationDetail: '触发与频控',
   automationBoardDescription: '配置邮件触发条件与发送频率，确保推送策略精准高效。',
   triggerLabel: '触发条件',
   triggerProductNew: '产品上新时触发',
@@ -175,10 +164,8 @@ const defaultSubscriberWorkspaceCopy: SubscriberWorkspaceCopy = {
   rulesSaveError: '规则保存失败，请检查服务端日志。',
   currentQueue: '当前队列',
   mailWorkspace: '邮件模板与群发',
-  mailDetail: '编辑与发送',
   sendToAll: '发送给全部订阅者',
   sending: '发送中...',
-  templateKicker: '邮件模板管理',
   templateLibrary: '模板库',
   processing: '处理中...',
   addTemplate: '新增模板',
@@ -188,7 +175,6 @@ const defaultSubscriberWorkspaceCopy: SubscriberWorkspaceCopy = {
   deleteTemplateLabel: '删除模板 {name}',
   noTemplates: '无匹配模板',
   editorTitle: '模板展示与编辑',
-  editorDescription: '选择左侧模板后在此维护内容，并用于群发控制。',
   estimatedRecipients: '预计收件人',
   recipientCount: '{count} 位订阅者',
   successRate: '成功率',
@@ -215,7 +201,6 @@ const defaultSubscriberWorkspaceCopy: SubscriberWorkspaceCopy = {
   sendCompleted: '发送任务已完成，成功 {success} 封，失败 {failed} 封。',
   sendError: '发送任务创建失败，请检查 SMTP 配置和服务端日志。',
   sentMail: '已发送邮件',
-  sentDetail: '发送记录',
   sentSummary: '成功 {success} 封 · 失败 {failed} 封',
   selectAllSentLabel: '全选当前页邮件记录',
   sentAt: '发送时间',
@@ -240,7 +225,6 @@ const defaultSubscriberWorkspaceCopy: SubscriberWorkspaceCopy = {
   statusFailed: '失败',
   statusPending: '待发送',
   subscriberList: '订阅者列表',
-  subscriberDetail: '列表与分页',
   searchPlaceholder: '搜索邮箱...',
   searchLabel: '搜索订阅邮箱',
   addSubscriber: '新增订阅者',
@@ -277,32 +261,27 @@ const defaultSubscriberWorkspaceCopy: SubscriberWorkspaceCopy = {
 function getTabs(copy: SubscriberWorkspaceCopy): ReadonlyArray<{
   key: TabKey;
   label: string;
-  detail: string;
   icon: typeof Send;
 }> {
   return [
   {
     key: 'automation',
     label: copy.automationRules,
-    detail: copy.automationDetail,
     icon: Send
   },
   {
     key: 'mail',
     label: copy.mailWorkspace,
-    detail: copy.mailDetail,
     icon: FileText
   },
   {
     key: 'sent',
     label: copy.sentMail,
-    detail: copy.sentDetail,
     icon: History
   },
   {
     key: 'subscribers',
     label: copy.subscriberList,
-    detail: copy.subscriberDetail,
     icon: Users
   }
   ];
@@ -664,8 +643,7 @@ function MailTemplateCampaignWorkspace({
           >
             <div className="flex items-center justify-between gap-3 border-b border-admin-border px-5 py-5">
               <div>
-                <p className="admin-kicker">{copy.templateKicker}</p>
-                <h4 className="mt-1 text-base font-semibold text-admin-text-primary">
+                <h4 className="text-base font-semibold text-admin-text-primary">
                   {copy.templateLibrary}
                 </h4>
               </div>
@@ -752,9 +730,6 @@ function MailTemplateCampaignWorkspace({
                 <h4 className="text-base font-semibold text-admin-text-primary">
                   {copy.editorTitle}
                 </h4>
-                <p className="mt-1 text-xs text-admin-text-secondary">
-                  {copy.editorDescription}
-                </p>
               </div>
 
               <div className="grid grid-cols-3 border-b border-admin-border px-4 py-3">
@@ -1213,9 +1188,6 @@ export function SubscriberMailWorkspace({
                   <span className="block truncate text-[13px] font-semibold">
                     {tab.label}
                   </span>
-                  <span className="mt-0.5 block truncate text-[11px] text-admin-text-muted">
-                    {tab.detail}
-                  </span>
                 </span>
               </button>
             );
@@ -1261,17 +1233,10 @@ export function SubscriberMailWorkspace({
         >
           <div className="flex flex-col gap-3 border-b border-admin-border px-5 py-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="admin-kicker">{copy.workspacePanelKicker}</p>
-              <h3 className="mt-1 text-xl font-semibold text-admin-text-primary font-display">
+              <h3 className="text-xl font-semibold text-admin-text-primary font-display">
                 {activeTabMeta.label}
               </h3>
-              <p className="mt-2 text-sm leading-6 text-admin-text-secondary">
-                {activeTabMeta.detail}
-              </p>
             </div>
-            <span className="inline-flex w-fit rounded-full bg-admin-elevated px-3 py-1 text-xs font-semibold text-admin-text-muted">
-              {copy.workspaceBadge}
-            </span>
           </div>
 
           {activeTab === 'automation' ? (

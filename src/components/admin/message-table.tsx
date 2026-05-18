@@ -60,14 +60,14 @@ type MessageTableCopy = {
 };
 
 const defaultMessageTableCopy: MessageTableCopy = {
-  listTitle: '留言清单',
+  listTitle: '客户留言',
   total: '总留言',
   unread: '未读',
   read: '已读',
   all: '全部',
   filterUnread: '未读',
-  viewAllLabel: '查看全部邮件',
-  filterUnreadLabel: '筛选未读邮件',
+  viewAllLabel: '查看全部留言',
+  filterUnreadLabel: '筛选未读留言',
   columns: {
     customer: '客户',
     content: '留言内容',
@@ -75,19 +75,19 @@ const defaultMessageTableCopy: MessageTableCopy = {
     status: '状态',
     actions: '操作'
   },
-  empty: '暂无符合条件的邮件。',
+  empty: '暂无符合条件的留言。',
   pagination: '每页 {pageSize} 条 · 当前显示 {visible} 条 · 第 {page} / {totalPages} 页',
   previousPage: '上一页',
   nextPage: '下一页',
-  openLabel: '查看邮件详情：{name}',
-  deleteLabel: '删除邮件：{name}',
-  detailTitle: '邮件详情',
-  closeDetail: '关闭邮件详情',
-  sender: '发件人',
+  openLabel: '查看留言详情：{name}',
+  deleteLabel: '删除留言：{name}',
+  detailTitle: '留言详情',
+  closeDetail: '关闭留言详情',
+  sender: '联系人',
   email: '邮箱',
   receivedAt: '接收时间',
-  messageContent: '邮件内容',
-  deleteCurrent: '删除当前邮件',
+  messageContent: '留言内容',
+  deleteCurrent: '删除当前留言',
   justNow: '刚刚',
   hoursAgo: '{count} 小时前',
   daysAgo: '{count} 天前'
@@ -237,19 +237,19 @@ export function MessageTable({
   return (
     <section
       data-testid="support-center-layout"
-      className="flex min-h-[calc(100vh-104px)] flex-col"
+      className="flex min-h-[calc(100vh-104px)] flex-col text-sm"
     >
       <div
         data-testid="support-center-panel"
-        className="flex min-h-[calc(100vh-104px)] flex-1 flex-col gap-4 rounded-[20px] border border-admin-border bg-admin-surface p-4 shadow-[0_16px_48px_rgba(15,23,42,0.05)]"
+        className="flex min-h-[calc(100vh-104px)] flex-1 flex-col gap-3 rounded-xl border border-admin-border bg-admin-surface p-4 shadow-sm"
       >
         <div>
           <div>
-            <h3 className="mt-1 text-lg font-semibold text-admin-text-primary">
+            <h3 className="text-base font-semibold text-admin-text-primary">
               {copy.listTitle}
             </h3>
           </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <div className="mt-3 grid gap-2.5 sm:grid-cols-3">
             <StatCard
               label={copy.total}
               value={messageList.length}
@@ -280,7 +280,7 @@ export function MessageTable({
             aria-label={copy.viewAllLabel}
             aria-pressed={filter === 'all'}
             onClick={() => changeFilter('all')}
-            className={`inline-flex min-h-10 items-center gap-2 rounded-xl border px-3 text-[13px] font-medium transition-colors ${
+            className={`inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-colors ${
               filter === 'all'
                 ? 'border-admin-text-primary bg-admin-text-primary text-white'
                 : 'border-admin-border text-admin-text-secondary hover:bg-admin-elevated'
@@ -294,7 +294,7 @@ export function MessageTable({
             aria-label={copy.filterUnreadLabel}
             aria-pressed={filter === 'unread'}
             onClick={() => changeFilter('unread')}
-            className={`inline-flex min-h-10 items-center gap-2 rounded-xl border px-3 text-[13px] font-medium transition-colors ${
+            className={`inline-flex h-9 items-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-colors ${
               filter === 'unread'
                 ? 'border-amber-600 bg-amber-600 text-white'
                 : 'border-admin-border text-admin-text-secondary hover:bg-admin-elevated'
@@ -305,36 +305,39 @@ export function MessageTable({
           </button>
         </div>
 
-        <div
-          data-testid="message-list-scroll"
-          className="min-h-0 flex-1 overflow-y-auto rounded-2xl border border-admin-border bg-white"
-        >
-          <div className="hidden grid-cols-[minmax(220px,0.9fr)_minmax(300px,1.5fr)_140px_130px_72px] border-b border-admin-border bg-admin-elevated px-4 py-3 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:grid">
-            <span>{copy.columns.customer}</span>
-            <span>{copy.columns.content}</span>
-            <span>{copy.columns.time}</span>
-            <span>{copy.columns.status}</span>
-            <span>{copy.columns.actions}</span>
-          </div>
-          {visibleMessages.length > 0 ? (
-            <ul className="divide-y divide-admin-border">
-              {visibleMessages.map((message, index) => (
-                <MessageListRow
-                  key={message.id}
-                  message={message}
-                  status={getDisplayStatus(message)}
-                  index={index}
-                  onOpen={() => openMessage(message)}
-                  onDelete={() => void deleteMessage(message.id)}
-                  copy={copy}
-                />
-              ))}
-            </ul>
-          ) : (
-            <div className="flex min-h-[180px] items-center justify-center px-4 text-sm text-admin-text-muted">
-              {copy.empty}
+        <div className="flex min-h-0 flex-1">
+          <div
+            data-testid="message-list-scroll"
+            className="min-h-0 flex-1 overflow-y-auto rounded-xl border border-admin-border bg-white"
+          >
+            <div className="hidden grid-cols-[minmax(200px,0.9fr)_minmax(280px,1.5fr)_120px_112px_64px] border-b border-admin-border bg-admin-elevated px-4 py-2.5 text-[11px] font-bold uppercase text-admin-text-muted lg:grid">
+              <span>{copy.columns.customer}</span>
+              <span>{copy.columns.content}</span>
+              <span>{copy.columns.time}</span>
+              <span>{copy.columns.status}</span>
+              <span>{copy.columns.actions}</span>
             </div>
-          )}
+            {visibleMessages.length > 0 ? (
+              <ul className="divide-y divide-admin-border">
+                {visibleMessages.map((message) => (
+                  <MessageListRow
+                    key={message.id}
+                    message={message}
+                    status={getDisplayStatus(message)}
+                    isSelected={selectedMessageId === message.id}
+                    onOpen={() => openMessage(message)}
+                    onDelete={() => void deleteMessage(message.id)}
+                    copy={copy}
+                  />
+                ))}
+              </ul>
+            ) : (
+              <div className="flex min-h-[180px] items-center justify-center px-4 text-xs text-admin-text-muted">
+                {copy.empty}
+              </div>
+            )}
+          </div>
+
         </div>
 
         <div className="flex flex-col gap-3 border-t border-admin-border pt-3 md:flex-row md:items-center md:justify-between">
@@ -352,7 +355,7 @@ export function MessageTable({
               aria-label={copy.previousPage}
               disabled={currentPage === 1}
               onClick={() => setPage((value) => Math.max(1, value - 1))}
-              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-admin-border px-4 text-[13px] font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-45"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-admin-border px-3 text-xs font-semibold text-admin-text-secondary transition-colors hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-45"
             >
               <ChevronLeft className="h-4 w-4" aria-hidden="true" />
               {copy.previousPage}
@@ -362,7 +365,7 @@ export function MessageTable({
               aria-label={copy.nextPage}
               disabled={currentPage === totalPages}
               onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
-              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-admin-border px-4 text-[13px] font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-45"
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-admin-border px-3 text-xs font-semibold text-admin-text-secondary transition-colors hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-45"
             >
               {copy.nextPage}
               <ChevronRight className="h-4 w-4" aria-hidden="true" />
@@ -371,7 +374,7 @@ export function MessageTable({
         </div>
       </div>
       {selectedMessage ? (
-        <MessageDetailDialog
+        <MessageDetailSidebar
           message={selectedMessage}
           status={getDisplayStatus(selectedMessage)}
           onClose={() => setSelectedMessageId(null)}
@@ -396,17 +399,17 @@ function StatCard({
 }) {
   return (
     <div
-      className={`flex items-center justify-between rounded-xl border border-admin-border bg-admin-surface px-4 py-3 shadow-[0_1px_3px_rgba(0,0,0,0.03)] transition-all duration-300 hover:shadow-[0_4px_12px_rgba(0,0,0,0.05)] border-l-[3px] ${accent}`}
+      className={`flex items-center justify-between rounded-lg border border-admin-border bg-admin-surface px-3 py-2.5 shadow-sm transition-colors hover:bg-admin-elevated border-l-[3px] ${accent}`}
     >
       <div>
-        <p className="text-[11px] font-medium uppercase tracking-wider text-admin-text-muted">
+        <p className="text-[11px] font-semibold uppercase text-admin-text-muted">
           {label}
         </p>
-        <p className="mt-1 text-xl font-bold tabular-nums text-admin-text-primary">
+        <p className="mt-1 text-lg font-semibold tabular-nums text-admin-text-primary">
           {value}
         </p>
       </div>
-      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-admin-elevated text-admin-text-muted">
+      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-admin-text-muted ring-1 ring-admin-border">
         {icon}
       </div>
     </div>
@@ -416,14 +419,14 @@ function StatCard({
 function MessageListRow({
   message,
   status,
-  index,
+  isSelected,
   onOpen,
   onDelete,
   copy,
 }: {
   message: MessageRow;
   status: DisplayStatus;
-  index: number;
+  isSelected: boolean;
   onOpen: () => void;
   onDelete: () => void;
   copy: MessageTableCopy;
@@ -435,51 +438,49 @@ function MessageListRow({
 
   return (
     <li
-      style={{
-        animation: `fadeSlideIn 0.4s ease-out both`,
-        animationDelay: `${index * 60}ms`,
-      }}
-      className="group relative bg-admin-surface transition-colors duration-300 hover:bg-admin-elevated"
+      className={`group relative transition-colors hover:bg-admin-elevated ${
+        isSelected ? 'bg-blue-50/70' : 'bg-admin-surface'
+      }`}
     >
       <div
         className={`absolute left-0 top-0 h-full w-[3px] ${accentColor}`}
       />
 
-      <div className="grid gap-3 px-4 py-4 lg:min-h-[88px] lg:grid-cols-[minmax(220px,0.9fr)_minmax(300px,1.5fr)_140px_130px_72px] lg:items-center">
+      <div className="grid gap-3 px-4 py-3 lg:min-h-[72px] lg:grid-cols-[minmax(200px,0.9fr)_minmax(280px,1.5fr)_120px_112px_64px] lg:items-center">
         <button
           type="button"
           aria-label={formatCopy(copy.openLabel, { name: message.name })}
-          aria-haspopup="dialog"
+          aria-current={isSelected ? 'true' : undefined}
           onClick={onOpen}
-          className="grid min-w-0 gap-3 text-left lg:col-span-4 lg:grid-cols-[minmax(220px,0.9fr)_minmax(300px,1.5fr)_140px_130px] lg:items-center"
+          className="grid min-w-0 gap-3 text-left lg:col-span-4 lg:grid-cols-[minmax(200px,0.9fr)_minmax(280px,1.5fr)_120px_112px] lg:items-center"
         >
-          <div className="flex min-w-0 items-center gap-3">
+          <div className="flex min-w-0 items-center gap-2.5">
             <div
-              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-[11px] font-bold text-white shadow-inner ${getAvatarColor(message.name)}`}
+              className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[11px] font-bold text-white shadow-inner ${getAvatarColor(message.name)}`}
             >
               {getInitials(message.name)}
             </div>
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-admin-text-primary">
+              <p className="truncate text-xs font-semibold text-admin-text-primary">
                 {message.name}
               </p>
-              <p className="mt-1 truncate text-xs text-admin-text-muted">
+              <p className="mt-0.5 truncate text-xs text-admin-text-muted">
                 {message.email}
               </p>
             </div>
           </div>
 
           <div className="min-w-0">
-            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:hidden">
+            <p className="mb-1 text-[10px] font-semibold uppercase text-admin-text-muted lg:hidden">
               {copy.columns.content}
             </p>
-            <p className="line-clamp-2 text-[13px] leading-relaxed text-admin-text-secondary">
+            <p className="line-clamp-2 text-xs leading-5 text-admin-text-secondary">
               {message.content}
             </p>
           </div>
 
           <div>
-            <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:hidden">
+            <p className="mb-1 text-[10px] font-semibold uppercase text-admin-text-muted lg:hidden">
               {copy.columns.time}
             </p>
             <span className="inline-flex items-center gap-1 text-[11px] text-admin-text-muted">
@@ -490,22 +491,22 @@ function MessageListRow({
 
           <div className="flex items-center gap-3">
             <div>
-              <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:hidden">
+              <p className="mb-1 text-[10px] font-semibold uppercase text-admin-text-muted lg:hidden">
                 {copy.columns.status}
               </p>
               <span
-                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
-                isUnread
-                  ? 'bg-amber-50 text-amber-700'
-                  : 'bg-emerald-50 text-emerald-700'
-              }`}
-            >
-              <StatusIcon className="h-3 w-3" />
-              {statusLabel}
-            </span>
+                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase ${
+                  isUnread
+                    ? 'bg-amber-50 text-amber-700'
+                    : 'bg-emerald-50 text-emerald-700'
+                }`}
+              >
+                <StatusIcon className="h-3 w-3" />
+                {statusLabel}
+              </span>
             </div>
 
-            <span className="ml-auto opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            <span className="ml-auto opacity-0 transition-opacity group-hover:opacity-100">
               {isUnread ? (
                 <Mail className="h-4 w-4 text-amber-500" />
               ) : (
@@ -519,7 +520,7 @@ function MessageListRow({
           type="button"
           aria-label={formatCopy(copy.deleteLabel, { name: message.name })}
           onClick={onDelete}
-          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-rose-100 text-rose-600 transition-colors hover:bg-rose-50 lg:justify-self-end"
+          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-rose-100 text-rose-600 transition-colors hover:bg-rose-50 lg:justify-self-end"
         >
           <Trash2 className="h-4 w-4" aria-hidden="true" />
         </button>
@@ -528,7 +529,7 @@ function MessageListRow({
   );
 }
 
-function MessageDetailDialog({
+function MessageDetailSidebar({
   message,
   status,
   onClose,
@@ -544,70 +545,80 @@ function MessageDetailDialog({
   const statusLabel = status === 'unread' ? copy.unread : copy.read;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 px-4 py-6">
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="message-detail-title"
-        className="w-full max-w-2xl rounded-2xl border border-admin-border bg-white shadow-[0_24px_80px_rgba(15,23,42,0.22)]"
-      >
-        <div className="flex items-start justify-between gap-4 border-b border-admin-border px-5 py-4">
-          <div className="min-w-0">
-            <h3 id="message-detail-title" className="mt-1 text-lg font-semibold text-admin-text-primary">
-              {copy.detailTitle}
-            </h3>
-          </div>
-          <button
-            type="button"
-            aria-label={copy.closeDetail}
-            onClick={onClose}
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-admin-border text-admin-text-muted transition-colors hover:bg-admin-elevated hover:text-admin-text-primary"
-          >
-            <X className="h-4 w-4" aria-hidden="true" />
-          </button>
+    <aside
+      data-testid="message-detail-sidebar"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="message-detail-title"
+      className="fixed inset-y-0 right-0 z-50 flex w-full max-w-[520px] flex-col border-l border-admin-border bg-white shadow-[-24px_0_48px_rgba(15,23,42,0.12)]"
+    >
+      <div className="flex items-center justify-between border-b border-admin-border bg-admin-elevated px-5 py-4">
+        <div>
+          <h3 id="message-detail-title" className="text-base font-bold text-admin-text-primary">
+            {copy.detailTitle}
+          </h3>
+          <p className="mt-0.5 text-xs text-admin-text-muted">
+            {message.name} · {statusLabel}
+          </p>
         </div>
+        <button
+          type="button"
+          aria-label={copy.closeDetail}
+          onClick={onClose}
+          className="flex h-8 w-8 items-center justify-center rounded-full text-admin-text-muted transition hover:bg-white hover:text-admin-text-primary"
+        >
+          <X className="h-4 w-4" aria-hidden="true" />
+        </button>
+      </div>
 
-        <div className="space-y-5 px-5 py-5">
-          <div className="grid gap-3 sm:grid-cols-2">
+      <div className="flex-1 space-y-5 overflow-y-auto p-5">
+        <section className="space-y-3">
+          <h4 className="text-xs font-bold uppercase text-admin-text-muted">联系信息</h4>
+          <div className="grid gap-3 md:grid-cols-2">
             <DetailField label={copy.sender} value={message.name} />
             <DetailField label={copy.email} value={message.email} />
             <DetailField label={copy.receivedAt} value={formatFullDate(message.createdAt)} />
             <DetailField label={copy.columns.status} value={statusLabel} />
           </div>
+        </section>
 
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted">
-              {copy.messageContent}
-            </p>
-            <p className="mt-2 whitespace-pre-wrap rounded-xl border border-admin-border bg-admin-elevated px-4 py-3 text-sm leading-7 text-admin-text-secondary">
-              {message.content}
-            </p>
+        <section className="space-y-3">
+          <h4 className="text-xs font-bold uppercase text-admin-text-muted">{copy.messageContent}</h4>
+          <div className="whitespace-pre-wrap rounded-xl border border-admin-border bg-admin-surface px-4 py-3 text-sm leading-7 text-admin-text-secondary">
+            {message.content}
           </div>
-
-          <div className="flex justify-end border-t border-admin-border pt-4">
-            <button
-              type="button"
-              aria-label={copy.deleteCurrent}
-              onClick={onDelete}
-              className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-rose-100 px-4 text-sm font-semibold text-rose-700 transition-colors hover:bg-rose-50"
-            >
-              <Trash2 className="h-4 w-4" aria-hidden="true" />
-              {copy.deleteCurrent}
-            </button>
-          </div>
-        </div>
+        </section>
       </div>
-    </div>
+
+      <footer className="flex items-center justify-end gap-3 border-t border-admin-border bg-admin-elevated px-5 py-4">
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-lg border border-admin-border bg-white px-4 py-2 text-sm font-semibold text-admin-text-secondary transition hover:border-admin-border-strong"
+        >
+          {copy.closeDetail}
+        </button>
+        <button
+          type="button"
+          aria-label={copy.deleteCurrent}
+          onClick={onDelete}
+          className="inline-flex items-center gap-2 rounded-lg border border-rose-200 bg-white px-4 py-2 text-sm font-semibold text-rose-700 transition hover:border-rose-300 hover:bg-rose-50"
+        >
+          <Trash2 className="h-4 w-4" aria-hidden="true" />
+          {copy.deleteCurrent}
+        </button>
+      </footer>
+    </aside>
   );
 }
 
 function DetailField({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0 rounded-xl border border-admin-border bg-admin-surface px-4 py-3">
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-admin-text-muted">
+    <div className="min-w-0 rounded-lg border border-admin-border bg-admin-surface px-3 py-2.5">
+      <p className="text-[11px] font-semibold uppercase text-admin-text-muted">
         {label}
       </p>
-      <p className="mt-1 break-words text-sm font-medium text-admin-text-primary">
+      <p className="mt-1 break-words text-xs font-medium text-admin-text-primary">
         {value}
       </p>
     </div>

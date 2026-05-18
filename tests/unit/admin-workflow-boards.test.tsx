@@ -111,13 +111,48 @@ describe('admin workflow boards', () => {
     expect(html).toContain('data-testid="system-setting-detail-panel"');
     expect(html).toContain('data-testid="smtp-connection-test"');
     expect(html).toContain('验证 SMTP');
-    expect(html).toContain('rounded-[20px] border border-admin-border bg-admin-bg shadow-[0_12px_34px_rgba(15,23,42,0.04)]');
+    expect(html).toContain('grid h-full min-h-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)]');
+    expect(html).toContain('rounded-[18px] border border-admin-border bg-admin-surface shadow-[0_16px_48px_rgba(15,23,42,0.05)]');
     expect(html).toContain('data-testid="system-setting-config-list"');
     expect(html).toContain('divide-y divide-admin-border');
     expect(html).toContain('hover:bg-admin-elevated/70');
     expect(html).toContain('support@fbgm.com');
+    expect(html).not.toContain('lg:grid-cols-[280px_minmax(0,1fr)]');
+    expect(html).not.toContain('rounded-[20px] border border-admin-border bg-admin-bg');
     expect(html).not.toContain('grid flex-1 auto-rows-fr gap-4');
     expect(html).not.toContain('min-w-0 rounded-xl border border-admin-border bg-white px-4 py-4');
+  });
+
+  it('omits redundant system settings guidance copy', () => {
+    const html = renderToStaticMarkup(
+      <SystemSettingsPanel
+        settings={{
+          groups: [
+            {
+              key: 'email',
+              title: '邮箱配置',
+              description: '展示前台联系邮箱与 SMTP 发送服务状态。',
+              fields: [
+                {
+                  key: 'email.mailFrom',
+                  label: '发件邮箱',
+                  value: 'support@fbgm.com',
+                  inputType: 'text',
+                  configured: true,
+                  editable: true
+                }
+              ]
+            }
+          ]
+        }}
+      />
+    );
+
+    expect(html).not.toContain('>Configuration<');
+    expect(html).not.toContain('>Categories<');
+    expect(html).not.toContain('按运行模块编辑真实配置，敏感项只显示配置状态。');
+    expect(html).not.toContain('保存后写入数据库，前台联系入口、邮件发送和上传服务会读取这些配置。');
+    expect(html).not.toContain('展示前台联系邮箱与 SMTP 发送服务状态。');
   });
 
   it('renders a real database connection test action for database settings', () => {
@@ -171,7 +206,7 @@ describe('admin workflow boards', () => {
 
     const html = renderToStaticMarkup(<MessageTable messages={messages} />);
 
-    expect(html).toContain('留言清单');
+    expect(html).toContain('客户留言');
     expect(html).not.toContain('Inbox');
     expect(html).not.toContain('列表分页展示客户留言，每页 5 条');
     expect(html).toContain('第 1 / 2 页');
@@ -195,11 +230,11 @@ describe('admin workflow boards', () => {
     expect(html).toContain('未读');
     expect(html).toContain('已读');
     expect(html).toContain('data-testid="message-filter-toolbar"');
-    expect(html).toContain('aria-label="查看全部邮件"');
-    expect(html).toContain('aria-label="筛选未读邮件"');
-    expect(html).toContain('aria-haspopup="dialog"');
-    expect(html).toContain('aria-label="查看邮件详情：客户 1"');
-    expect(html).toContain('aria-label="删除邮件：客户 1"');
+    expect(html).toContain('aria-label="查看全部留言"');
+    expect(html).toContain('aria-label="筛选未读留言"');
+    expect(html).toContain('aria-label="查看留言详情：客户 1"');
+    expect(html).toContain('aria-label="删除留言：客户 1"');
+    expect(html).not.toContain('aria-haspopup="dialog"');
     expect(html).not.toContain('待处理');
     expect(html).not.toContain('已处理');
     expect(html).not.toContain('清单卡片固定大小');
@@ -209,7 +244,7 @@ describe('admin workflow boards', () => {
     expect(html).not.toContain('<article');
   });
 
-  it('renders the selected support message in a detail dialog', () => {
+  it('renders the selected support message in a product-style right drawer', () => {
     const html = renderToStaticMarkup(
       <MessageTable
         messages={[
@@ -226,14 +261,23 @@ describe('admin workflow boards', () => {
       />
     );
 
+    expect(html).toContain('data-testid="message-detail-sidebar"');
     expect(html).toContain('role="dialog"');
-    expect(html).toContain('邮件详情');
+    expect(html).toContain('aria-modal="true"');
+    expect(html).toContain('fixed inset-y-0 right-0 z-50');
+    expect(html).toContain('max-w-[520px]');
+    expect(html).toContain('border-l border-admin-border bg-white shadow-[-24px_0_48px_rgba(15,23,42,0.12)]');
+    expect(html).not.toContain('xl:grid-cols-[minmax(0,1fr)_360px]');
+    expect(html).toContain('aria-current="true"');
+    expect(html).not.toContain('fixed inset-0');
+    expect(html).not.toContain('bg-slate-950/45');
+    expect(html).toContain('留言详情');
     expect(html).not.toContain('Message');
     expect(html).toContain('客户 1');
     expect(html).toContain('customer1@example.com');
     expect(html).toContain('这是一封需要完整查看的邮件详情。');
-    expect(html).toContain('aria-label="关闭邮件详情"');
-    expect(html).toContain('aria-label="删除当前邮件"');
+    expect(html).toContain('aria-label="关闭留言详情"');
+    expect(html).toContain('aria-label="删除当前留言"');
   });
 
   it('can render only unread support messages when the unread filter is active', () => {
@@ -293,7 +337,6 @@ describe('admin workflow boards', () => {
       />
     );
 
-    expect(html).toContain('邮件订阅工作区');
     expect(html).toContain('自动化发送规则');
     expect(html).toContain('邮件模板与群发');
     expect(html).toContain('已发送邮件');
@@ -309,6 +352,12 @@ describe('admin workflow boards', () => {
     expect(html).toContain('xl:grid-cols-[220px_minmax(0,1fr)]');
     expect(html).toContain('h-full');
     expect(html).toContain('flex h-full min-h-0 flex-col');
+    expect(html).not.toContain('Workspace Panel');
+    expect(html).not.toContain('邮件订阅工作区');
+    expect(html).not.toContain('触发与频控');
+    expect(html).not.toContain('编辑与发送');
+    expect(html).not.toContain('>发送记录<');
+    expect(html).not.toContain('列表与分页');
     expect(html).not.toContain('rounded-t-xl');
   });
 
@@ -349,9 +398,7 @@ describe('admin workflow boards', () => {
 
     expect(html).toContain('邮件模板与群发');
     expect(html).toContain('模板库');
-    expect(html).toContain('邮件模板管理');
     expect(html).toContain('模板展示与编辑');
-    expect(html).toContain('群发控制');
     expect(html).toContain('已发送邮件');
     expect(html).toContain('成功率');
     expect(html).toContain('成功');
@@ -390,6 +437,11 @@ describe('admin workflow boards', () => {
     expect(html).not.toContain('Data View');
     expect(html).not.toContain('Workspace Panel');
     expect(html).not.toContain('邮件订阅工作区');
+    expect(html).not.toContain('邮件模板管理');
+    expect(html).not.toContain('选择左侧模板后在此维护内容，并用于群发控制。');
+    expect(html).not.toContain('群发控制');
+    expect(html).not.toContain('Mail template management');
+    expect(html).not.toContain('Select a template on the left, edit the content here, and use it for bulk sending.');
     expect(html).not.toContain('在同一个工作区维护模板内容、预览正文，并向当前订阅者列表创建群发任务。');
     expect(html).not.toContain('维护订阅通知的主题、正文和变量占位符，右侧同步用于群发预览。');
     expect(html).not.toContain('使用当前模板内容创建发送任务，默认发送给全部订阅者。');
@@ -435,7 +487,7 @@ describe('admin workflow boards', () => {
 
     expect(html).toContain('邮件模板与群发');
     expect(html).toContain('已发送邮件');
-    expect(html).toContain('发送记录');
+    expect(html).not.toContain('>发送记录<');
     expect(panelHtml).toContain('data-testid="sent-mail-history"');
     expect(panelHtml).toContain('已发送邮件');
     expect(panelHtml).toContain('发送时间');
@@ -559,7 +611,12 @@ describe('admin workflow boards', () => {
 
     expect(automationHtml).toContain('Trigger');
     expect(automationHtml).toContain('Save rule');
-    expect(automationHtml).toContain('Workspace panel');
+    expect(automationHtml).not.toContain('Workspace panel');
+    expect(automationHtml).not.toContain('Mail subscription workspace');
+    expect(automationHtml).not.toContain('Triggers and caps');
+    expect(automationHtml).not.toContain('Edit and send');
+    expect(automationHtml).not.toContain('Send history');
+    expect(automationHtml).not.toContain('List and pagination');
     expect(automationHtml).not.toContain('触发条件');
     expect(automationHtml).not.toContain('邮件订阅工作区');
   });

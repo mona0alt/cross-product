@@ -82,7 +82,7 @@ export default async function AdminCategoriesPage() {
   ]);
 
   return (
-    <section className="min-h-[calc(100vh-104px)]">
+    <section className="flex h-[calc(100vh-104px)] min-h-0 flex-col overflow-hidden">
       <SystemSettingsPanel
         settings={localizeSystemSettings(settings, Admin.settings)}
         saveAction={updateAdminSystemSettings}

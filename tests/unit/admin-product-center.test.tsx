@@ -151,7 +151,9 @@ describe('ProductCenter', () => {
 
     expect(html).toContain('商品管理');
     expect(html).toContain('产品类目');
-    expect(html).toContain('添加类目');
+    expect(html).toContain('aria-label="添加类目"');
+    expect(html).toContain('title="添加类目"');
+    expect(html).not.toMatch(/>\s*添加类目\s*</);
     expect(html).not.toContain('href="/admin/categories"');
     expect(html).toContain('人形机器人');
     expect(html).toContain('Humanoid Robots');
