@@ -633,15 +633,16 @@ function MailTemplateCampaignWorkspace({
       <AdminTableShell
         title={copy.mailWorkspace}
         kicker={null}
+        compact
         toolbar={toolbar}
         fullHeight
       >
-        <div className="grid h-full min-h-0 gap-4 p-4 xl:grid-cols-[minmax(320px,0.72fr)_minmax(0,1.28fr)]">
+        <div className="grid h-full min-h-0 gap-4 p-4 xl:grid-cols-[minmax(300px,0.66fr)_minmax(0,1.34fr)]">
           <section
             data-testid="mail-template-list"
             className="flex min-h-0 flex-col rounded-2xl border border-admin-border bg-white"
           >
-            <div className="flex items-center justify-between gap-3 border-b border-admin-border px-5 py-5">
+            <div className="flex items-center justify-between gap-3 border-b border-admin-border px-4 py-4">
               <div>
                 <h4 className="text-base font-semibold text-admin-text-primary">
                   {copy.templateLibrary}
@@ -651,7 +652,7 @@ function MailTemplateCampaignWorkspace({
                 type="button"
                 onClick={handleCreateTemplate}
                 disabled={isSaving}
-                className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-admin-text-primary px-4 text-[13px] font-medium text-white transition-colors hover:bg-black"
+                className="inline-flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg bg-admin-text-primary px-3.5 text-[13px] font-medium text-white transition-colors hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Plus className="h-4 w-4" aria-hidden="true" />
                 {isSaving ? copy.processing : copy.addTemplate}
@@ -818,7 +819,7 @@ function MailTemplateCampaignWorkspace({
                       setBody(event.target.value);
                       setSendStatus('');
                     }}
-                    className="min-h-[260px] w-full resize-y rounded-xl border border-admin-border bg-white px-4 py-3 text-[13px] leading-6 text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+                    className="min-h-[220px] w-full resize-y rounded-xl border border-admin-border bg-white px-4 py-3 text-[13px] leading-6 text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
                   />
                 </div>
 
@@ -991,6 +992,7 @@ function SentMailHistoryWorkspace({
           failed: totalFailed
         })}
         kicker={null}
+        compact
         toolbar={toolbar}
         fullHeight
       >
@@ -1150,8 +1152,8 @@ export function SubscriberMailWorkspace({
   return (
     <div className="grid h-full min-h-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)]">
       <aside className="flex h-full min-h-0 flex-col rounded-[18px] border border-admin-border bg-admin-surface shadow-[0_16px_48px_rgba(15,23,42,0.05)]">
-        <div className="border-b border-admin-border px-4 py-3">
-          <h3 className="text-lg font-semibold text-admin-text-primary font-display">
+        <div className="border-b border-admin-border px-5 py-4">
+          <h3 className="mt-1 text-xl font-semibold text-admin-text-primary font-display">
             {copy.managementTitle}
           </h3>
         </div>
@@ -1200,7 +1202,7 @@ export function SubscriberMailWorkspace({
           data-testid="subscriber-mail-workspace-panel"
           className="flex h-full min-h-0 flex-col"
         >
-          <SubscriberTable subscribers={subscribers} framed={false} copy={copy} />
+          <SubscriberTable subscribers={subscribers} framed copy={copy} />
         </section>
       ) : activeTab === 'sent' ? (
         <section

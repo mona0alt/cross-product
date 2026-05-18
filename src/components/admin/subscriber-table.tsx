@@ -224,7 +224,7 @@ export function SubscriberTable({
         onChange={handleQueryChange}
         placeholder={copy.searchPlaceholder}
         aria-label={copy.searchLabel}
-        className="h-10 w-full rounded-xl border border-admin-border bg-white px-4 pl-9 text-[13px] text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20 md:w-64"
+        className="h-9 w-full rounded-lg border border-admin-border bg-white px-3 pl-9 text-[13px] text-admin-text-primary transition-shadow focus:border-admin-accent focus:outline-none focus:ring-2 focus:ring-admin-accent/20 md:w-60"
       />
       <Search
         className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-admin-text-muted"
@@ -238,7 +238,7 @@ export function SubscriberTable({
       type="button"
       onClick={openAddDialog}
       aria-label={copy.openAddDialog}
-      className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-admin-text-primary px-4 text-[13px] font-medium text-white transition-colors hover:bg-black"
+      className="inline-flex h-9 items-center justify-center gap-2 rounded-lg bg-admin-text-primary px-3.5 text-[13px] font-medium text-white transition-colors hover:bg-black"
     >
       <Plus className="h-4 w-4" aria-hidden="true" />
       {copy.addSubscriber}
@@ -333,7 +333,7 @@ export function SubscriberTable({
   ) : null;
 
   const content = (
-    <div className="flex h-full min-h-0 flex-col gap-4 p-4">
+    <div className={`flex h-full min-h-0 flex-col ${framed ? 'p-4' : 'gap-4 p-4'}`}>
       {!framed ? (
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
@@ -349,9 +349,9 @@ export function SubscriberTable({
 
       <div
         data-testid="subscriber-list-card"
-        className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-admin-border bg-white"
+        className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-admin-border bg-white"
       >
-        <div className="hidden shrink-0 grid-cols-[minmax(220px,1.5fr)_100px_150px_130px_92px] border-b border-admin-border bg-admin-elevated px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:grid">
+        <div className="hidden shrink-0 grid-cols-[minmax(220px,1.5fr)_96px_144px_126px_44px] border-b border-admin-border bg-admin-elevated px-4 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-admin-text-muted lg:grid">
           <span>{copy.columns.email}</span>
           <span>{copy.columns.status}</span>
           <span>{copy.columns.createdAt}</span>
@@ -359,14 +359,14 @@ export function SubscriberTable({
           <span className="text-right">{copy.columns.actions}</span>
         </div>
 
-        <ul className="divide-y divide-admin-border">
+        <ul className="min-h-0 flex-1 divide-y divide-admin-border overflow-y-auto">
           {visibleSubscribers.map((subscriber) => (
             <li
               key={subscriber.id}
-              className="grid min-h-[58px] gap-3 px-4 py-3 transition-colors hover:bg-admin-elevated lg:grid-cols-[minmax(220px,1.5fr)_100px_150px_130px_92px] lg:items-center"
+              className="grid min-h-[54px] gap-3 px-4 py-3 transition-colors hover:bg-admin-elevated lg:grid-cols-[minmax(220px,1.5fr)_96px_144px_126px_44px] lg:items-center"
             >
               <div className="flex min-w-0 items-center gap-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-admin-elevated text-[11px] font-semibold text-admin-text-muted">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-admin-elevated text-[11px] font-semibold text-admin-text-muted">
                   {subscriber.email.charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">
@@ -412,11 +412,11 @@ export function SubscriberTable({
                   type="button"
                   onClick={() => handleDeleteSubscriber(subscriber.id)}
                   disabled={pendingSubscriberId === subscriber.id}
-                  className="inline-flex min-h-9 items-center justify-center gap-1.5 rounded-lg border border-red-200 px-3 text-[12px] font-medium text-red-600 transition-colors hover:bg-red-50"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-admin-text-muted transition-colors hover:bg-red-50 hover:text-admin-danger disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin-accent"
                   aria-label={formatCopy(copy.deleteLabel, { email: subscriber.email })}
+                  title={pendingSubscriberId === subscriber.id ? copy.deleting : copy.delete}
                 >
                   <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
-                  {pendingSubscriberId === subscriber.id ? copy.deleting : copy.delete}
                 </button>
               </div>
             </li>
@@ -447,9 +447,9 @@ export function SubscriberTable({
               aria-label={copy.previousPage}
               disabled={currentPage === 1}
               onClick={() => setPage((value) => Math.max(1, value - 1))}
-              className="inline-flex h-10 items-center gap-2 rounded-xl border border-admin-border px-4 text-[13px] font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-45"
+              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-admin-border px-3 text-xs font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-45"
             >
-              <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+              <ChevronLeft className="h-3.5 w-3.5" aria-hidden="true" />
               {copy.previousPage}
             </button>
             <button
@@ -457,10 +457,10 @@ export function SubscriberTable({
               aria-label={copy.nextPage}
               disabled={currentPage === totalPages}
               onClick={() => setPage((value) => Math.min(totalPages, value + 1))}
-              className="inline-flex h-10 items-center gap-2 rounded-xl border border-admin-border px-4 text-[13px] font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-45"
+              className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-admin-border px-3 text-xs font-medium text-admin-text-secondary transition-colors hover:bg-admin-elevated disabled:cursor-not-allowed disabled:opacity-45"
             >
               {copy.nextPage}
-              <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              <ChevronRight className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -483,6 +483,7 @@ export function SubscriberTable({
         title={copy.subscriberList}
         kicker={null}
         compact
+        fullHeight
         toolbar={tableToolbar}
       >
         {content}

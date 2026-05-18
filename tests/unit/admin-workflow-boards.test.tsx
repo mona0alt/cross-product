@@ -111,8 +111,11 @@ describe('admin workflow boards', () => {
     expect(html).toContain('data-testid="system-setting-detail-panel"');
     expect(html).toContain('data-testid="smtp-connection-test"');
     expect(html).toContain('验证 SMTP');
+    expect(html).not.toContain('尚未验证当前 SMTP 配置。');
     expect(html).toContain('grid h-full min-h-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)]');
     expect(html).toContain('rounded-[18px] border border-admin-border bg-admin-surface shadow-[0_16px_48px_rgba(15,23,42,0.05)]');
+    expect(html).toContain('border-b border-admin-border px-5 py-4');
+    expect(html).toContain('mt-1 text-xl font-semibold text-admin-text-primary font-display');
     expect(html).toContain('data-testid="system-setting-config-list"');
     expect(html).toContain('divide-y divide-admin-border');
     expect(html).toContain('hover:bg-admin-elevated/70');
@@ -153,6 +156,38 @@ describe('admin workflow boards', () => {
     expect(html).not.toContain('按运行模块编辑真实配置，敏感项只显示配置状态。');
     expect(html).not.toContain('保存后写入数据库，前台联系入口、邮件发送和上传服务会读取这些配置。');
     expect(html).not.toContain('展示前台联系邮箱与 SMTP 发送服务状态。');
+  });
+
+  it('localizes SMTP verification controls without showing idle status on refresh', () => {
+    const html = renderToStaticMarkup(
+      <SystemSettingsPanel
+        settings={{
+          groups: [
+            {
+              key: 'email',
+              title: 'Email configuration',
+              description: 'Email delivery settings.',
+              fields: [
+                {
+                  key: 'email.smtpHost',
+                  label: 'SMTP host',
+                  value: 'smtp.example.com',
+                  inputType: 'text',
+                  configured: true,
+                  editable: true
+                }
+              ]
+            }
+          ]
+        }}
+        copy={enMessages.Admin.settings}
+      />
+    );
+
+    expect(html).toContain('Verify SMTP');
+    expect(html).not.toContain('验证 SMTP');
+    expect(html).not.toContain('Current SMTP configuration has not been verified.');
+    expect(html).not.toContain('尚未验证当前 SMTP 配置。');
   });
 
   it('renders a real database connection test action for database settings', () => {
@@ -343,6 +378,8 @@ describe('admin workflow boards', () => {
     expect(html).toContain('订阅者列表');
     expect(html).toContain('role="tablist"');
     expect(html).toContain('邮件管理');
+    expect(html).toContain('border-b border-admin-border px-5 py-4');
+    expect(html).toContain('mt-1 text-xl font-semibold text-admin-text-primary font-display');
     expect(html).not.toContain('主题与正文');
     expect(html).not.toContain('模板群发');
     expect(html).not.toContain('工作区导航');
@@ -415,7 +452,8 @@ describe('admin workflow boards', () => {
     expect(html).toContain('data-testid="bulk-mail-campaign-list"');
     expect(html).toContain('data-testid="mail-template-editor-panel"');
     expect(html).toContain('data-layout="full-page"');
-    expect(html).toContain('xl:grid-cols-[minmax(320px,0.72fr)_minmax(0,1.28fr)]');
+    expect(html).not.toContain('维护模板内容与变量占位符，并向当前订阅者创建群发任务。');
+    expect(html).toContain('xl:grid-cols-[minmax(300px,0.66fr)_minmax(0,1.34fr)]');
     expect(html).toContain('邮件模板');
     expect(html).toContain('模板名称');
     expect(html).toContain('模板主题');
@@ -640,6 +678,7 @@ describe('admin workflow boards', () => {
     expect(html).toContain('data-testid="subscriber-mail-workspace-panel"');
     expect(html).not.toContain('Data View');
     expect(html).toContain('data-testid="subscriber-list-card"');
+    expect(html).not.toContain('维护订阅邮箱、状态与触达偏好，支撑模板群发和自动化触达。');
     expect(html).toContain('grid h-full min-h-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)]');
     expect(html).toContain(
       'flex h-full min-h-0 flex-col rounded-[18px] border border-admin-border bg-admin-surface'
@@ -680,15 +719,15 @@ describe('admin workflow boards', () => {
     expect(html).toContain('data-testid="subscriber-list-pagination" class="mt-auto flex flex-col gap-3 border-t border-admin-border px-4 py-3');
     expect(html).not.toContain('flex h-full min-h-0 flex-col rounded-[24px]');
     expect(html).toContain('flex h-full min-h-0 flex-col gap-4 p-4');
-    expect(html).toContain('flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-admin-border bg-white');
+    expect(html).toContain('flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-admin-border bg-white');
     expect(getElementHtmlByTestId(html, 'subscriber-list-card')).toContain(
       'data-testid="subscriber-list-pagination"'
     );
-    expect(html).not.toContain('overflow-y-auto');
+    expect(html).toContain('min-h-0 flex-1 divide-y divide-admin-border overflow-y-auto');
     expect(html).not.toContain('[scrollbar-gutter:stable]');
     expect(html).toContain('subscriber1@example.com');
     expect(html).toContain('aria-label="删除订阅者 subscriber1@example.com"');
-    expect(html).toContain('>删除<');
+    expect(html).toContain('title="删除"');
     expect(html).not.toContain('>查看<');
     expect(html).not.toContain('min-h-[560px]');
     expect(html).not.toContain('h-[168px]');

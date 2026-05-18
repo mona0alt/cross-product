@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useActionState, useState } from 'react';
+import React, { useActionState, useEffect, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 
 import type {
@@ -121,7 +121,7 @@ export function SystemSettingsPanel({
     message: string;
   }>({
     status: 'idle',
-    message: copy.smtpConnectionIdle
+    message: ''
   });
   const [state, formAction, isPending] = useActionState(
     saveAction ??
@@ -131,6 +131,21 @@ export function SystemSettingsPanel({
       })),
     initialActionState
   );
+
+  useEffect(() => {
+    if (smtpTest.status !== 'success' && smtpTest.status !== 'failed') {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setSmtpTest({
+        status: 'idle',
+        message: ''
+      });
+    }, 3000);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [smtpTest.status, smtpTest.message]);
 
   async function handleDatabaseConnectionTest() {
     setDatabaseTest({
@@ -227,8 +242,8 @@ export function SystemSettingsPanel({
   return (
     <div className="grid h-full min-h-0 gap-3 xl:grid-cols-[220px_minmax(0,1fr)]">
       <aside className="flex h-full min-h-0 flex-col rounded-[18px] border border-admin-border bg-admin-surface shadow-[0_16px_48px_rgba(15,23,42,0.05)]">
-        <div className="border-b border-admin-border px-4 py-3">
-          <h3 className="text-lg font-semibold text-admin-text-primary font-display">
+        <div className="border-b border-admin-border px-5 py-4">
+          <h3 className="mt-1 text-xl font-semibold text-admin-text-primary font-display">
             {copy.categoryTitle}
           </h3>
         </div>
@@ -263,7 +278,7 @@ export function SystemSettingsPanel({
       >
         <div className="flex flex-col gap-3 border-b border-admin-border px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h3 className="text-xl font-semibold text-admin-text-primary font-display">
+            <h3 className="mt-1 text-xl font-semibold text-admin-text-primary font-display">
               {copy.detailTitle}
             </h3>
           </div>
