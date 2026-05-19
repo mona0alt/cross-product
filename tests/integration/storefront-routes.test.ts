@@ -61,7 +61,7 @@ describe('storefront routes', () => {
           slug: 'electronics',
           iconImageUrl: '/electronics.svg',
           name: 'Electronics',
-          description: 'Devices'
+          description: 'Configurable electronics hero copy'
         },
         {
           id: 'cat-2',
@@ -100,9 +100,11 @@ describe('storefront routes', () => {
 
     expect(html).toContain('Star River Pro Phone');
     expect(html).toContain('Electronics');
+    expect(html).toContain('Configurable electronics hero copy');
     expect(html).toContain('/electronics.svg');
     expect(html).toContain('href="/en/products?category=electronics"');
     expect(html).not.toContain('/legacy-banner.jpg');
+    expect(html).not.toContain('Premium robotics for modern work');
     expect(html).toContain('Product Series');
     expect(html).toContain('More Product Images');
     expect(html).toContain('Social Media #FBGM');
@@ -195,6 +197,35 @@ describe('storefront routes', () => {
       }),
       'en'
     );
+  });
+
+  it('does not render default homepage hero copy when category hero text is incomplete', async () => {
+    getHomepagePayload.mockResolvedValue({
+      banners: [],
+      featuredCategories: [
+        {
+          id: 'cat-1',
+          slug: 'electronics',
+          iconImageUrl: '/electronics.svg',
+          name: 'Electronics',
+          description: null
+        }
+      ],
+      recommendedProducts: []
+    });
+
+    const HomePage = (await import('@/app/[locale]/page')).default;
+    const html = renderToStaticMarkup(
+      await HomePage({
+        params: Promise.resolve({ locale: 'en' })
+      })
+    );
+
+    expect(html).toContain('/electronics.svg');
+    expect(html).not.toContain('Premium robotics for modern work');
+    expect(html).not.toContain('Explore intelligent robots, drones and automation products built for global partners.');
+    expect(html).not.toContain('Browse Products');
+    expect(html).not.toContain('Contact Us');
   });
 
   it('renders published product details and throws 404 for missing slug', async () => {

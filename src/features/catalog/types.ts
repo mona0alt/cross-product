@@ -66,6 +66,8 @@ export type HomepagePayload = {
     targetId: string | null;
     targetUrl: string | null;
     sortOrder: number;
+    title?: string | null;
+    description?: string | null;
   }>;
   featuredCategories: StorefrontCategory[];
   recommendedProducts: StorefrontProductCard[];

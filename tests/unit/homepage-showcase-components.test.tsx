@@ -23,6 +23,31 @@ const categories = [
   }
 ];
 
+const carouselCategories = [
+  ...categories,
+  {
+    id: 'cat-3',
+    slug: 'cleaners',
+    iconImageUrl: '/show/robot_window_cleaner.png',
+    name: 'Cleaners',
+    description: 'Glass robots'
+  },
+  {
+    id: 'cat-4',
+    slug: 'vacuums',
+    iconImageUrl: '/show/robot_floor_cleaner.png',
+    name: 'Vacuums',
+    description: 'Floor robots'
+  },
+  {
+    id: 'cat-5',
+    slug: 'arms',
+    iconImageUrl: '/show/robot_industrial_arm.png',
+    name: 'Industrial Arms',
+    description: 'Factory robots'
+  }
+];
+
 const products = [
   {
     id: 'product-1',
@@ -78,6 +103,36 @@ const products = [
   }
 ];
 
+const carouselProducts = [
+  ...products,
+  {
+    id: 'product-5',
+    slug: 'arm',
+    productCode: 'A-5',
+    coverImageUrl: '/show/robot_industrial_arm.png',
+    priceUsd: 500,
+    isRecommended: true,
+    name: 'Industrial Arm',
+    intro: 'Intro',
+    detail: 'Detail',
+    images: [],
+    category: { slug: 'arms', name: 'Arms' }
+  },
+  {
+    id: 'product-6',
+    slug: 'sensor',
+    productCode: 'S-6',
+    coverImageUrl: '/show/local-unsplash/photo-1518770660439-4636190af475.jpg',
+    priceUsd: 600,
+    isRecommended: true,
+    name: 'Sensor Kit',
+    intro: 'Intro',
+    detail: 'Detail',
+    images: [],
+    category: { slug: 'sensors', name: 'Sensors' }
+  }
+];
+
 describe('homepage showcase components', () => {
   it('renders category cards linked to product filters', () => {
     const html = renderToStaticMarkup(
@@ -104,6 +159,25 @@ describe('homepage showcase components', () => {
     expect(html).toContain('text-center text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--mk-text-muted)]');
     expect(html).not.toContain('absolute inset-0 bg-gradient-to-t from-[#061b38]/84 via-[#0f63ce]/14 to-transparent');
     expect(html).not.toContain('shadow-[0_16px_38px_rgba(29,126,234,0.08)]');
+  });
+
+  it('renders product series as a one-card-step carousel when more than four categories exist', () => {
+    const html = renderToStaticMarkup(
+      <HomepageCategoryGrid
+        locale="en"
+        eyebrow="Categories"
+        title="Product Series"
+        categories={carouselCategories}
+      />
+    );
+
+    expect(html).toContain('Product Series');
+    expect(html).toContain('Industrial Arms');
+    expect(html).toContain('/en/products?category=arms');
+    expect(html).toContain('data-category-carousel="true"');
+    expect(html).toContain('aria-label="Previous product series"');
+    expect(html).toContain('aria-label="Next product series"');
+    expect(html).toContain('lg:basis-1/4');
   });
 
   it('renders a product image matrix without empty placeholders', () => {
@@ -151,6 +225,29 @@ describe('homepage showcase components', () => {
     expect(html).not.toContain('bg-white/16');
     expect(html).not.toContain('p-4\"><h3 class=\"text-sm font-semibold text-[var(--mk-text)]');
     expect(html).not.toContain('empty-slot');
+  });
+
+  it('renders recommended products as autoplay matrix carousel without manual controls when more than five products exist', () => {
+    const html = renderToStaticMarkup(
+      <HomepageProductMatrix
+        locale="en"
+        eyebrow="Product Gallery"
+        title="More Product Images"
+        viewAllLabel="View all"
+        products={carouselProducts}
+      />
+    );
+
+    expect(html).toContain('Sensor Kit');
+    expect(html).toContain('/en/products/sensor');
+    expect(html).toContain('data-product-carousel="true"');
+    expect(html).toContain('data-product-autoplay-interval="4000"');
+    expect(html).toContain('grid grid-cols-1 gap-5 md:grid-cols-12 md:auto-rows-[220px]');
+    expect(html).toContain('md:col-span-8 md:row-span-2');
+    expect(html).toContain('md:col-span-8');
+    expect(html).not.toContain('xl:basis-1/5');
+    expect(html).not.toContain('aria-label="Previous product"');
+    expect(html).not.toContain('aria-label="Next product"');
   });
 
   it('renders social media cards with platform tabs', () => {

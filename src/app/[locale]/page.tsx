@@ -23,7 +23,9 @@ function getHomepageHeroBanners(
       targetType: 'category',
       targetId: category.id,
       targetUrl: `/${locale}/products?category=${category.slug}`,
-      sortOrder: index + 1
+      sortOrder: index + 1,
+      title: category.name,
+      description: category.description
     }));
 
   return categoryBanners.length > 0 ? categoryBanners : payload.banners;
