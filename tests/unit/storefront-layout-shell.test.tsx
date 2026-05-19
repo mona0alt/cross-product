@@ -23,7 +23,6 @@ describe('storefront layout shell', () => {
       <StorefrontHeader
         locale="en"
         whatsAppNumber="+1 555 123 4567"
-        contactEmail="support@fbgm.com"
         categoryGroups={[
           {
             id: 'group-1',
@@ -88,8 +87,9 @@ describe('storefront layout shell', () => {
     expect(html).toContain('data-testid="storefront-header-shell"');
     expect(html).toContain('bg-[#07111f]');
     expect(html).not.toContain('bg-[#f0f6fd]');
-    expect(html).toContain('href="mailto:support@fbgm.com"');
-    expect(html).toContain('support@fbgm.com');
+    expect(html).toContain('href="/en/subscribe"');
+    expect(html).toContain('aria-label="Subscribe"');
+    expect(html).not.toContain('href="mailto:support@fbgm.com"');
     expect(html).not.toContain('<span>support@fbgm.com</span>');
     expect(html).not.toContain('Phone sales +1 555 123 4567');
     expect(html).not.toContain('Blog');
@@ -110,7 +110,6 @@ describe('storefront layout shell', () => {
       <StorefrontHeader
         locale="en"
         whatsAppNumber="+1 555 123 4567"
-        contactEmail="support@fbgm.com"
         categoryGroups={[
           {
             id: 'group-1',
@@ -210,7 +209,6 @@ describe('storefront layout shell', () => {
       <StorefrontHeader
         locale="en"
         whatsAppNumber="+1 555 123 4567"
-        contactEmail="support@fbgm.com"
         categoryGroups={[
           {
             id: 'group-1',
@@ -307,7 +305,6 @@ describe('storefront layout shell', () => {
       <StorefrontHeader
         locale="en"
         whatsAppNumber="+1 555 123 4567"
-        contactEmail="support@fbgm.com"
         categoryGroups={[
           {
             id: 'group-1',
@@ -373,7 +370,6 @@ describe('storefront layout shell', () => {
       <StorefrontHeader
         locale="en"
         whatsAppNumber="+1 555 123 4567"
-        contactEmail="support@fbgm.com"
         categoryGroups={[
           {
             id: 'group-1',
@@ -490,7 +486,6 @@ describe('storefront layout shell', () => {
       <StorefrontHeader
         locale="en"
         whatsAppNumber="+1 555 123 4567"
-        contactEmail="support@fbgm.com"
         categoryGroups={categoryGroups}
         copy={{
           brand: 'Cross',

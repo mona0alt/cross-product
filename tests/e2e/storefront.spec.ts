@@ -85,7 +85,7 @@ test('desktop category navigation is clamped between logo and contact controls',
     const logo = header.locator('a:has(img)').first();
     const nav = header.locator('nav').first();
     const navLinks = nav.locator('a[href*="/zh-CN/products?category="]');
-    const emailLink = header.locator('a[href^="mailto:"]').first();
+    const emailLink = header.locator('a[href="/zh-CN/subscribe"]').first();
     const languageTrigger = header.getByTestId('language-switcher-trigger');
 
     await expect(navLinks.first()).toBeVisible();

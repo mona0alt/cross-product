@@ -96,13 +96,11 @@ export function StorefrontHeader({
   locale,
   copy,
   whatsAppNumber,
-  contactEmail,
   categoryGroups
 }: {
   locale: Locale;
   copy: HeaderCopy;
   whatsAppNumber: string;
-  contactEmail: string;
   categoryGroups: StorefrontCategoryGroup[];
 }) {
   const pathname = usePathname();
@@ -115,6 +113,7 @@ export function StorefrontHeader({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const normalizedWhatsAppNumber = whatsAppNumber.replace(/[^\d]/g, '');
+  const subscribeHref = `/${locale}/subscribe`;
 
   const mainNav: Array<{
     key: string;
@@ -414,13 +413,13 @@ export function StorefrontHeader({
 
           {/* Right side: language + contact */}
           <div className={rightControlsClassName}>
-            <a
-              href={`mailto:${contactEmail}`}
+            <Link
+              href={subscribeHref}
               className={emailLinkClassName}
-              aria-label={contactEmail}
+              aria-label={copy.nav.subscribe}
             >
               <MailIcon className="h-4 w-4" />
-            </a>
+            </Link>
             <LanguageSwitcher
               currentLocale={locale}
               label={copy.languageLabel}
@@ -461,11 +460,11 @@ export function StorefrontHeader({
                 </Link>
               ))}
               <Link
-                href={`mailto:${contactEmail}`}
+                href={subscribeHref}
                 className="rounded-md border border-white/10 px-4 py-3 text-sm font-semibold text-white"
                 onClick={() => setIsMenuOpen(false)}
               >
-                {contactEmail}
+                {copy.nav.subscribe}
               </Link>
             </div>
           </div>

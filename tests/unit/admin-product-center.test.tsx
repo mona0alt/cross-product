@@ -8,6 +8,7 @@ import {
   getProductActionMenuState,
   scheduleNoticeDismiss,
   saveCategoryEditorForm,
+  buildAdminProductSearchUrl,
   getProductFilterUpdate,
   getProductGalleryHiddenValue,
   getProductGalleryPreviewSrc,
@@ -190,7 +191,8 @@ describe('ProductCenter', () => {
     expect(html).not.toContain('>编辑商品<');
     expect(html).toContain('批量推荐');
     expect(html).toContain('取消推荐');
-    expect(html).toContain('批量归档');
+    expect(html).toContain('删除商品');
+    expect(html).not.toContain('批量归档');
     expect(html).toContain('aria-label="商品操作 Alpha Humanoid 服务机器人"');
     expect(html).toContain('aria-expanded="false"');
     expect(html).toContain('aria-haspopup="menu"');
@@ -198,7 +200,6 @@ describe('ProductCenter', () => {
     expect(html).not.toContain('<details');
     expect(html).not.toContain('<summary');
     expect(html).not.toContain('>更多操作<');
-    expect(html).not.toContain('>归档商品<');
     expect(html).not.toContain('>预览前台<');
     expect(html).not.toContain('href="/zh-CN/products/alpha-humanoid"');
     expect(html).not.toContain('分类和商品均来自后台数据库。');
@@ -232,6 +233,19 @@ describe('ProductCenter', () => {
     expect(html).not.toContain('当前筛选 1 个商品。');
     expect(html).toContain('待审核巡检无人机');
     expect(html).not.toContain('Alpha Humanoid 服务机器人');
+  });
+
+  it('builds backend product search URLs from current filters', () => {
+    expect(
+      buildAdminProductSearchUrl({
+        searchTerm: ' drone ',
+        statusFilter: 'recommended',
+        activeCategoryId: 'cat-drones',
+        locale: 'en'
+      })
+    ).toBe(
+      '/api/admin/products?search=drone&status=recommended&categoryId=cat-drones&locale=en'
+    );
   });
 
   it('uses the same fixed product-list layout for all and recommended filters', () => {
@@ -330,7 +344,25 @@ describe('ProductCenter', () => {
     expect(html).toContain('预览前台');
     expect(html).toContain('href="/es/products/alpha-humanoid"');
     expect(html).not.toContain('href="/zh-CN/products/alpha-humanoid"');
-    expect(html).toContain('归档商品');
+    expect(html).toContain('删除商品');
+  });
+
+  it('renders a localized delete confirmation dialog for a pending product deletion', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        defaultPendingDeleteProductId="product-1"
+      />
+    );
+
+    expect(html).toContain('role="alertdialog"');
+    expect(html).toContain('确认删除商品？');
+    expect(html).toContain('Alpha Humanoid 服务机器人');
+    expect(html).toContain('删除后将移除该商品及相关图片资源，此操作无法撤销。');
+    expect(html).toContain('取消');
+    expect(html).toContain('确认删除');
+    expect(html).toContain('border-rose-200 bg-rose-50 text-rose-700');
   });
 
   it('closes the product action popover on outside click or escape', () => {
@@ -560,6 +592,33 @@ describe('ProductCenter', () => {
     expect(html).toContain('<option value="cat-drones" selected="">无人机</option>');
   });
 
+  it('limits product editor status choices to draft and published', () => {
+    const createHtml = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        defaultEditorOpen
+        defaultEditorMode="create"
+      />
+    );
+    const editHtml = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        defaultEditorOpen
+        defaultEditorMode="edit"
+        defaultSelectedProductId="product-1"
+      />
+    );
+
+    for (const html of [createHtml, editHtml]) {
+      expect(html).toContain('<option value="draft"');
+      expect(html).toContain('<option value="published"');
+      expect(html).not.toContain('<option value="pending"');
+      expect(html).not.toContain('<option value="archived"');
+    }
+  });
+
   it('renders the category create drawer on the product page when requested', () => {
     const html = renderToStaticMarkup(
       <ProductCenter
@@ -573,6 +632,9 @@ describe('ProductCenter', () => {
     expect(html).toContain('role="dialog"');
     expect(html).toContain('新建类目');
     expect(html).toContain('父级类目');
+    expect(html).toContain(
+      '<input type="hidden" name="parentId" value=""/><select aria-hidden="true" tabindex="-1" class="sr-only" disabled="">'
+    );
     expect(html).toContain('类目主图');
     expect(html).toContain('上传主图');
     expect(html).toContain('中文名称');
@@ -596,40 +658,67 @@ describe('ProductCenter', () => {
     expect(html).toContain('人形机器人');
     expect(html).toContain('/show/robot_humanoid.png');
     expect(html).toContain('移除类目主图');
+    expect(html).toContain(
+      '<input type="hidden" name="parentId" value=""/><select aria-hidden="true" tabindex="-1" class="sr-only" disabled="">'
+    );
     expect(html).toContain('保存类目');
   });
 
-  it('localizes product management side drawers with the admin product copy', () => {
+  it('renders only one side drawer when product and category drawers are both requested', () => {
     const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        defaultEditorOpen
+        defaultEditorMode="edit"
+        defaultCategoryEditorOpen
+        defaultCategoryEditorMode="create"
+      />
+    );
+
+    expect(html.match(/role="dialog"/g)).toHaveLength(1);
+    expect(html).toContain('编辑商品');
+    expect(html).not.toContain('新建类目');
+  });
+
+  it('localizes product management side drawers with the admin product copy', () => {
+    const productHtml = renderToStaticMarkup(
       <ProductCenter
         categories={categories}
         products={products}
         copy={enMessages.Admin.products}
         defaultEditorOpen
         defaultEditorMode="create"
+      />
+    );
+    const categoryHtml = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        copy={enMessages.Admin.products}
         defaultCategoryEditorOpen
         defaultCategoryEditorMode="create"
       />
     );
 
-    expect(html).toContain('New product');
-    expect(html).toContain('Product media');
-    expect(html).toContain('Upload cover');
-    expect(html).toContain('Product image manager');
-    expect(html).toContain('Product URL path');
-    expect(html).toContain('Used to generate the product detail page URL.');
-    expect(html).toContain('<option value="draft" selected="">Draft</option>');
-    expect(html).toContain('<option value="pending">Pending review</option>');
-    expect(html).toContain('<option value="published">Published</option>');
-    expect(html).toContain('<option value="archived">Archived</option>');
-    expect(html).toContain('Save changes');
-    expect(html).toContain('New category');
-    expect(html).toContain('Parent category');
-    expect(html).toContain('Save category');
-    expect(html).not.toContain('商品图片管理');
-    expect(html).not.toContain('保存类目');
-    expect(html).not.toContain('新建类目');
-    expect(html).not.toContain('新增商品');
+    expect(productHtml).toContain('New product');
+    expect(productHtml).toContain('Product media');
+    expect(productHtml).toContain('Upload cover');
+    expect(productHtml).toContain('Product image manager');
+    expect(productHtml).toContain('Product URL path');
+    expect(productHtml).toContain('Used to generate the product detail page URL.');
+    expect(productHtml).toContain('<option value="draft" selected="">Draft</option>');
+    expect(productHtml).toContain('<option value="published">Published</option>');
+    expect(productHtml).not.toContain('<option value="pending">Pending review</option>');
+    expect(productHtml).not.toContain('<option value="archived">Archived</option>');
+    expect(productHtml).toContain('Save changes');
+    expect(productHtml).not.toContain('商品图片管理');
+    expect(productHtml).not.toContain('新增商品');
+    expect(categoryHtml).toContain('New category');
+    expect(categoryHtml).toContain('Parent category');
+    expect(categoryHtml).toContain('Save category');
+    expect(categoryHtml).not.toContain('保存类目');
+    expect(categoryHtml).not.toContain('新建类目');
   });
 
   it('localizes the product management category sidebar with the admin product copy', () => {
@@ -671,7 +760,7 @@ describe('ProductCenter', () => {
     expect(html).toContain('aria-label="Select Alpha Humanoid"');
     expect(html).toContain('aria-label="Product actions Alpha Humanoid"');
     expect(html).toContain('aria-label="Product action menu Alpha Humanoid"');
-    expect(html).toContain('aria-label="Archive product Alpha Humanoid"');
+    expect(html).toContain('aria-label="Delete product Alpha Humanoid"');
     expect(html).not.toContain('aria-label="Edit product Alpha Humanoid 服务机器人"');
     expect(html).not.toContain('aria-label="Select Alpha Humanoid 服务机器人"');
   });

@@ -4,6 +4,7 @@ const productCreate = vi.fn();
 const productUpdate = vi.fn();
 const productUpdateMany = vi.fn();
 const productFindUnique = vi.fn();
+const productDelete = vi.fn();
 const productImageDeleteMany = vi.fn();
 const productImageCreateMany = vi.fn();
 const categoryFindUnique = vi.fn();
@@ -17,6 +18,7 @@ const messageUpdate = vi.fn();
 const messageDelete = vi.fn();
 const transaction = vi.fn();
 const revalidatePath = vi.fn();
+const unlink = vi.fn();
 
 vi.mock('@/lib/db', () => ({
   db: {
@@ -24,7 +26,8 @@ vi.mock('@/lib/db', () => ({
       create: productCreate,
       update: productUpdate,
       updateMany: productUpdateMany,
-      findUnique: productFindUnique
+      findUnique: productFindUnique,
+      delete: productDelete
     },
     productImage: {
       deleteMany: productImageDeleteMany,
@@ -51,6 +54,10 @@ vi.mock('@/lib/db', () => ({
 
 vi.mock('next/cache', () => ({
   revalidatePath
+}));
+
+vi.mock('node:fs/promises', () => ({
+  unlink
 }));
 
 function createValidProductFormData() {
@@ -84,6 +91,7 @@ describe('admin actions', () => {
     productUpdate.mockReset();
     productUpdateMany.mockReset();
     productFindUnique.mockReset();
+    productDelete.mockReset();
     productImageDeleteMany.mockReset();
     productImageCreateMany.mockReset();
     categoryFindUnique.mockReset();
@@ -97,6 +105,7 @@ describe('admin actions', () => {
     messageDelete.mockReset();
     transaction.mockReset();
     revalidatePath.mockReset();
+    unlink.mockReset();
     transaction.mockImplementation(async (callback) =>
       callback({
         product: {
@@ -269,19 +278,45 @@ describe('admin actions', () => {
     expect(revalidatePath).toHaveBeenCalledWith('/admin/products');
   });
 
-  it('archives products from the product center without hard deleting them', async () => {
-    productUpdate.mockResolvedValue({
+  it('deletes products from the product center and removes uploaded local images', async () => {
+    productFindUnique.mockResolvedValue({
       id: 'product-1',
-      status: 'archived'
+      coverImageUrl: '/uploads/products/cover.png',
+      images: [
+        {
+          imageUrl: '/uploads/products/gallery-a.png'
+        },
+        {
+          imageUrl: '/uploads/products/gallery-a.png'
+        },
+        {
+          imageUrl: '/logo.jpg'
+        }
+      ]
     });
+    productDelete.mockResolvedValue({
+      id: 'product-1'
+    });
+    unlink.mockResolvedValue(undefined);
 
-    const { archiveProductFromListAction } = await import('@/features/admin/product-actions');
-    await archiveProductFromListAction('product-1');
+    const { deleteProductFromListAction } = await import('@/features/admin/product-actions');
+    await deleteProductFromListAction('product-1');
 
-    expect(productUpdate).toHaveBeenCalledWith({
+    expect(productFindUnique).toHaveBeenCalledWith({
       where: { id: 'product-1' },
-      data: { status: 'archived' }
+      include: { images: true }
     });
+    expect(productDelete).toHaveBeenCalledWith({
+      where: { id: 'product-1' }
+    });
+    expect(productUpdate).not.toHaveBeenCalled();
+    expect(unlink).toHaveBeenCalledTimes(2);
+    expect(unlink).toHaveBeenCalledWith(
+      expect.stringContaining('/public/uploads/products/cover.png')
+    );
+    expect(unlink).toHaveBeenCalledWith(
+      expect.stringContaining('/public/uploads/products/gallery-a.png')
+    );
     expect(revalidatePath).toHaveBeenCalledWith('/admin/products');
   });
 

@@ -297,6 +297,96 @@ describe('catalog queries', () => {
     });
   });
 
+  it('excludes unpublished products from storefront navigation category branch products', async () => {
+    categoryFindMany.mockResolvedValue([
+      {
+        id: 'root-drone',
+        parentId: null,
+        slug: 'industrial-drones',
+        sortOrder: 1,
+        isActive: true,
+        iconImageUrl: '/uploads/categories/drone.webp',
+        nameZh: '工业无人机',
+        nameEn: 'Industrial Drones',
+        nameEs: 'Drones Industriales',
+        namePt: 'Drones Industriais',
+        descriptionZh: '工业无人机',
+        descriptionEn: 'Industrial drones',
+        descriptionEs: 'Drones industriales',
+        descriptionPt: 'Drones industriais'
+      }
+    ]);
+    productFindMany.mockResolvedValue([
+      {
+        id: 'product-published',
+        status: 'published',
+        slug: 'falcon-pro',
+        productCode: 'DR-1001',
+        coverImageUrl: '/uploads/products/falcon.webp',
+        priceUsd: new Decimal('1299.00'),
+        isRecommended: true,
+        categoryId: 'root-drone',
+        nameZh: '猎鹰 Pro',
+        nameEn: 'Falcon Pro',
+        nameEs: 'Falcon Pro',
+        namePt: 'Falcon Pro',
+        introZh: '工业巡检无人机',
+        introEn: 'Industrial inspection drone',
+        introEs: 'Drone de inspeccion industrial',
+        introPt: 'Drone de inspeção industrial',
+        detailZh: '详情',
+        detailEn: 'Details',
+        detailEs: 'Detalles',
+        detailPt: 'Detalhes',
+        images: [],
+        category: {
+          slug: 'industrial-drones',
+          nameZh: '工业无人机',
+          nameEn: 'Industrial Drones',
+          nameEs: 'Drones Industriales',
+          namePt: 'Drones Industriais'
+        }
+      },
+      {
+        id: 'product-draft',
+        status: 'draft',
+        slug: 'draft-drone',
+        productCode: 'DR-DRAFT',
+        coverImageUrl: '/uploads/products/draft.webp',
+        priceUsd: new Decimal('799.00'),
+        isRecommended: false,
+        categoryId: 'root-drone',
+        nameZh: '草稿无人机',
+        nameEn: 'Draft Drone',
+        nameEs: 'Draft Drone',
+        namePt: 'Draft Drone',
+        introZh: '草稿商品',
+        introEn: 'Draft product',
+        introEs: 'Producto borrador',
+        introPt: 'Produto rascunho',
+        detailZh: '详情',
+        detailEn: 'Details',
+        detailEs: 'Detalles',
+        detailPt: 'Detalhes',
+        images: [],
+        category: {
+          slug: 'industrial-drones',
+          nameZh: '工业无人机',
+          nameEn: 'Industrial Drones',
+          nameEs: 'Drones Industriales',
+          namePt: 'Drones Industriais'
+        }
+      }
+    ]);
+
+    const { getStorefrontCategoryGroups } = await import('@/features/catalog/queries');
+    const groups = await getStorefrontCategoryGroups('en');
+
+    expect(groups[0]?.products?.map((product) => product.slug)).toEqual([
+      'falcon-pro'
+    ]);
+  });
+
   it('uses configured category images for homepage banners that target a category branch', async () => {
     bannerFindMany.mockResolvedValue([
       {
@@ -452,5 +542,43 @@ describe('catalog queries', () => {
       'Alpha Robot',
       'Zeta Robot'
     ]);
+  });
+
+  it('queries admin products by backend filters including recommendation and localized search fields', async () => {
+    productFindMany.mockResolvedValue([]);
+
+    const { getAdminProductList } = await import('@/features/catalog/queries');
+    await getAdminProductList({
+      search: 'drone',
+      status: 'recommended',
+      categoryId: 'cat-drones'
+    });
+
+    expect(productFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          categoryId: 'cat-drones',
+          isRecommended: true,
+          OR: [
+            { productCode: { contains: 'drone', mode: 'insensitive' } },
+            { slug: { contains: 'drone', mode: 'insensitive' } },
+            { nameZh: { contains: 'drone', mode: 'insensitive' } },
+            { nameEn: { contains: 'drone', mode: 'insensitive' } },
+            { nameEs: { contains: 'drone', mode: 'insensitive' } },
+            { namePt: { contains: 'drone', mode: 'insensitive' } },
+            {
+              category: {
+                OR: [
+                  { nameZh: { contains: 'drone', mode: 'insensitive' } },
+                  { nameEn: { contains: 'drone', mode: 'insensitive' } },
+                  { nameEs: { contains: 'drone', mode: 'insensitive' } },
+                  { namePt: { contains: 'drone', mode: 'insensitive' } }
+                ]
+              }
+            }
+          ]
+        }
+      })
+    );
   });
 });

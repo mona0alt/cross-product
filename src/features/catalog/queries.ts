@@ -40,6 +40,7 @@ type StorefrontCategoryGroupNode = StorefrontCategory & {
 
 type StorefrontNavigationProductRecord = {
   id: string;
+  status?: string;
   categoryId: string;
   slug: string;
   productCode: string;
@@ -124,7 +125,11 @@ function buildStorefrontCategoryGroupsFromRecords(
       description: root.description,
       children: root.children,
       products: products
-        .filter((product) => categoryIds.has(product.categoryId))
+        .filter(
+          (product) =>
+            categoryIds.has(product.categoryId) &&
+            (product.status === undefined || product.status === 'published')
+        )
         .map((product) => mapLocalizedProduct(product, locale))
     };
   });
@@ -422,16 +427,36 @@ export async function getProductDetailBySlug(
 }
 
 export async function getAdminProductList(filters: AdminProductFilters) {
+  const search = filters.search?.trim();
+  const isRecommendedFilter =
+    filters.recommended === true || filters.status === 'recommended';
+
   return db.product.findMany({
     where: {
-      ...(filters.status ? { status: filters.status as never } : {}),
+      ...(filters.status && filters.status !== 'recommended'
+        ? { status: filters.status as never }
+        : {}),
+      ...(isRecommendedFilter ? { isRecommended: true } : {}),
       ...(filters.categoryId ? { categoryId: filters.categoryId } : {}),
-      ...(filters.search
+      ...(search
         ? {
             OR: [
-              { productCode: { contains: filters.search, mode: 'insensitive' } },
-              { nameZh: { contains: filters.search, mode: 'insensitive' } },
-              { nameEn: { contains: filters.search, mode: 'insensitive' } }
+              { productCode: { contains: search, mode: 'insensitive' } },
+              { slug: { contains: search, mode: 'insensitive' } },
+              { nameZh: { contains: search, mode: 'insensitive' } },
+              { nameEn: { contains: search, mode: 'insensitive' } },
+              { nameEs: { contains: search, mode: 'insensitive' } },
+              { namePt: { contains: search, mode: 'insensitive' } },
+              {
+                category: {
+                  OR: [
+                    { nameZh: { contains: search, mode: 'insensitive' } },
+                    { nameEn: { contains: search, mode: 'insensitive' } },
+                    { nameEs: { contains: search, mode: 'insensitive' } },
+                    { namePt: { contains: search, mode: 'insensitive' } }
+                  ]
+                }
+              }
             ]
           }
         : {})

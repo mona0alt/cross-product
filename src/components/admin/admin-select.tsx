@@ -14,7 +14,8 @@ export function AdminSelect({
   defaultValue = '',
   placeholder,
   className = '',
-  compact = false
+  compact = false,
+  disabled = false
 }: {
   name: string;
   options: AdminSelectOption[];
@@ -22,6 +23,7 @@ export function AdminSelect({
   placeholder?: string;
   className?: string;
   compact?: boolean;
+  disabled?: boolean;
 }) {
   const selectId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -49,6 +51,10 @@ export function AdminSelect({
   }, [defaultValue]);
 
   const chooseOption = (value: string) => {
+    if (disabled) {
+      return;
+    }
+
     setSelectedValue(value);
     setIsOpen(false);
   };
@@ -60,6 +66,7 @@ export function AdminSelect({
         aria-hidden="true"
         tabIndex={-1}
         className="sr-only"
+        disabled={disabled}
         defaultValue={selectedValue || undefined}
       >
         {options.map((option) => (
@@ -73,8 +80,17 @@ export function AdminSelect({
         aria-haspopup="listbox"
         aria-expanded={isOpen}
         aria-controls={`${selectId}-listbox`}
-        onClick={() => setIsOpen((current) => !current)}
+        disabled={disabled}
+        onClick={() => {
+          if (!disabled) {
+            setIsOpen((current) => !current);
+          }
+        }}
         onKeyDown={(event) => {
+          if (disabled) {
+            return;
+          }
+
           if (event.key === 'Escape') {
             setIsOpen(false);
             return;
@@ -95,7 +111,7 @@ export function AdminSelect({
           setSelectedValue(options[nextIndex]?.value ?? selectedValue);
           setIsOpen(true);
         }}
-        className={`group flex w-full items-center justify-between gap-3 rounded-lg border border-admin-border bg-admin-surface text-left text-sm font-medium text-admin-text-primary shadow-[0_1px_2px_rgba(15,23,42,0.04)] outline-none transition-all duration-200 hover:border-admin-border-strong hover:bg-admin-elevated focus:border-admin-accent focus:ring-2 focus:ring-admin-accent/15 ${
+        className={`group flex w-full items-center justify-between gap-3 rounded-lg border border-admin-border bg-admin-surface text-left text-sm font-medium text-admin-text-primary shadow-[0_1px_2px_rgba(15,23,42,0.04)] outline-none transition-all duration-200 hover:border-admin-border-strong hover:bg-admin-elevated focus:border-admin-accent focus:ring-2 focus:ring-admin-accent/15 disabled:cursor-not-allowed disabled:bg-admin-elevated disabled:text-admin-text-muted disabled:hover:border-admin-border ${
           compact ? 'px-3 py-2' : 'px-4 py-2.5'
         }`}
       >

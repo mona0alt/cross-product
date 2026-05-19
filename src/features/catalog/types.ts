@@ -99,6 +99,7 @@ export type AdminProductFilters = {
   search?: string;
   status?: string;
   categoryId?: string;
+  recommended?: boolean;
 };
 
 export type AdminCategoryTreeNode = {

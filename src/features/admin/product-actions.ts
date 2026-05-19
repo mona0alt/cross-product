@@ -1,5 +1,8 @@
 'use server';
 
+import { unlink } from 'node:fs/promises';
+import { resolve, sep } from 'node:path';
+
 import { revalidatePath } from 'next/cache';
 
 import { db } from '@/lib/db';
@@ -135,6 +138,67 @@ function getEmptyLocalizedFields() {
   };
 }
 
+function getLocalUploadFilePath(value: string | null | undefined) {
+  const localImagePath = requireOptionalLocalUploadPath(value);
+
+  if (!localImagePath) {
+    return null;
+  }
+
+  const publicRoot = resolve(process.cwd(), 'public');
+  const uploadsRoot = resolve(publicRoot, 'uploads');
+  const filePath = resolve(publicRoot, localImagePath.replace(/^\/+/, ''));
+
+  if (!filePath.startsWith(`${uploadsRoot}${sep}`)) {
+    return null;
+  }
+
+  return filePath;
+}
+
+function requireOptionalLocalUploadPath(value: string | null | undefined) {
+  const localImagePath = value?.trim();
+
+  if (
+    !localImagePath ||
+    !localImagePath.startsWith('/uploads/') ||
+    localImagePath.startsWith('//')
+  ) {
+    return null;
+  }
+
+  return localImagePath;
+}
+
+async function deleteLocalUploadFiles(urls: Array<string | null | undefined>) {
+  const filePaths = Array.from(
+    new Set(
+      urls
+        .map((url) => getLocalUploadFilePath(url))
+        .filter((filePath): filePath is string => Boolean(filePath))
+    )
+  );
+
+  await Promise.all(
+    filePaths.map(async (filePath) => {
+      try {
+        await unlink(filePath);
+      } catch (error) {
+        if (
+          typeof error === 'object' &&
+          error !== null &&
+          'code' in error &&
+          error.code === 'ENOENT'
+        ) {
+          return;
+        }
+
+        throw error;
+      }
+    })
+  );
+}
+
 export async function createProductDraft(input: ProductDraftInput) {
   return db.product.create({
     data: {
@@ -219,6 +283,28 @@ export async function updateProductFormAction(id: string, formData: FormData) {
 
 export async function archiveProductFromListAction(id: string) {
   await updateProduct(id, { status: 'archived' });
+
+  revalidatePath('/admin/products');
+}
+
+export async function deleteProductFromListAction(id: string) {
+  const product = await db.product.findUnique({
+    where: { id },
+    include: { images: true }
+  });
+
+  if (!product) {
+    return;
+  }
+
+  await db.product.delete({
+    where: { id }
+  });
+
+  await deleteLocalUploadFiles([
+    product.coverImageUrl,
+    ...product.images.map((image) => image.imageUrl)
+  ]);
 
   revalidatePath('/admin/products');
 }

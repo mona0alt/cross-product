@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import NextImage from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
-  Archive,
+  AlertTriangle,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -22,11 +22,11 @@ import {
   X
 } from 'lucide-react';
 import { AdminSelect, type AdminSelectOption } from '@/components/admin/admin-select';
-import { defaultLocale } from '@/lib/i18n/config';
+import { defaultLocale, type Locale } from '@/lib/i18n/config';
 import {
-  archiveProductFromListAction,
   bulkUpdateProductsFromListAction,
   createProductFormAction,
+  deleteProductFromListAction,
   updateProductFormAction
 } from '@/features/admin/product-actions';
 import {
@@ -108,7 +108,7 @@ type ProductStatusFilter =
   | 'archived'
   | 'recommended';
 
-type ProductBulkOperation = 'recommend' | 'unrecommend' | 'archive';
+type ProductBulkOperation = 'recommend' | 'unrecommend';
 
 type ProductActionMenuEvent =
   | {
@@ -174,7 +174,7 @@ type ProductCenterCopy = {
   selectedProducts: string;
   bulkRecommend: string;
   bulkUnrecommend: string;
-  bulkArchive: string;
+  bulkDelete: string;
   scrollAreaLabel: string;
   selectCurrentPage: string;
   columns: {
@@ -202,12 +202,15 @@ type ProductCenterCopy = {
   emptyProductsDescription: string;
   selectProductLabel: string;
   previewStorefront: string;
-  archiveProduct: string;
-  archiveProductLabel: string;
+  deleteProduct: string;
+  deleteProductLabel: string;
+  deleteProductConfirmTitle: string;
+  deleteProductConfirmDescription: string;
+  deleteProductConfirmAction: string;
   bulkRecommendedNotice: string;
   bulkUnrecommendedNotice: string;
-  bulkArchivedNotice: string;
-  productArchivedNotice: string;
+  bulkDeletedNotice: string;
+  productDeletedNotice: string;
   csvHeaders: string[];
   categoryCreateTitle: string;
   categoryEditTitle: string;
@@ -312,7 +315,7 @@ const defaultProductCenterCopy: ProductCenterCopy = {
   selectedProducts: '已选择 {count} 个商品',
   bulkRecommend: '批量推荐',
   bulkUnrecommend: '取消推荐',
-  bulkArchive: '批量归档',
+  bulkDelete: '删除商品',
   scrollAreaLabel: '商品列表滚动区域',
   selectCurrentPage: '选择当前页商品',
   columns: {
@@ -340,12 +343,15 @@ const defaultProductCenterCopy: ProductCenterCopy = {
   emptyProductsDescription: '新增商品并发布后，前台商品展示会同步更新。',
   selectProductLabel: '选择 {name}',
   previewStorefront: '预览前台',
-  archiveProduct: '归档商品',
-  archiveProductLabel: '归档商品 {name}',
+  deleteProduct: '删除商品',
+  deleteProductLabel: '删除商品 {name}',
+  deleteProductConfirmTitle: '确认删除商品？',
+  deleteProductConfirmDescription: '删除后将移除该商品及相关图片资源，此操作无法撤销。',
+  deleteProductConfirmAction: '确认删除',
   bulkRecommendedNotice: '已批量设为推荐商品。',
   bulkUnrecommendedNotice: '已批量取消推荐。',
-  bulkArchivedNotice: '已批量归档商品。',
-  productArchivedNotice: '商品已归档。',
+  bulkDeletedNotice: '已删除选中的商品。',
+  productDeletedNotice: '商品已删除。',
   csvHeaders: ['商品名称', '英文名称', 'SKU', '类别', '状态', '价格USD', '推荐', 'Slug'],
   categoryCreateTitle: '新建类目',
   categoryEditTitle: '编辑类目',
@@ -665,6 +671,37 @@ export function sortProductRowsByName(products: ProductCenterRow[]) {
   });
 }
 
+export function buildAdminProductSearchUrl({
+  searchTerm,
+  statusFilter,
+  activeCategoryId,
+  locale
+}: {
+  searchTerm: string;
+  statusFilter: ProductStatusFilter;
+  activeCategoryId: string | null;
+  locale: Locale;
+}) {
+  const params = new URLSearchParams();
+  const normalizedSearchTerm = searchTerm.trim();
+
+  if (normalizedSearchTerm) {
+    params.set('search', normalizedSearchTerm);
+  }
+
+  if (statusFilter !== 'all') {
+    params.set('status', statusFilter);
+  }
+
+  if (activeCategoryId) {
+    params.set('categoryId', activeCategoryId);
+  }
+
+  params.set('locale', locale);
+
+  return `/api/admin/products?${params.toString()}`;
+}
+
 function getProductDisplayName(product: ProductCenterRow) {
   return (
     product.localizedName?.trim() ||
@@ -691,6 +728,7 @@ function getProductSecondaryName(product: ProductCenterRow) {
 export function ProductCenter({
   categories,
   products,
+  locale = defaultLocale,
   defaultSelectedProductId,
   defaultActiveCategoryId,
   productPageSize = 8,
@@ -702,10 +740,12 @@ export function ProductCenter({
   defaultStatusFilter = 'all',
   defaultSelectedProductIds = [],
   defaultOpenActionMenuProductId,
+  defaultPendingDeleteProductId,
   copy = defaultProductCenterCopy
 }: {
   categories: ProductCenterCategory[];
   products: ProductCenterRow[];
+  locale?: Locale;
   defaultSelectedProductId?: string;
   defaultActiveCategoryId?: string;
   productPageSize?: number;
@@ -717,6 +757,7 @@ export function ProductCenter({
   defaultStatusFilter?: ProductStatusFilter;
   defaultSelectedProductIds?: string[];
   defaultOpenActionMenuProductId?: string;
+  defaultPendingDeleteProductId?: string;
   copy?: ProductCenterCopy;
 }) {
   const [productRows, setProductRows] = useState(() => sortProductRowsByName(products));
@@ -738,7 +779,7 @@ export function ProductCenter({
   );
   const [isEditorOpen, setIsEditorOpen] = useState(defaultEditorOpen);
   const [isCategoryEditorOpen, setIsCategoryEditorOpen] = useState(
-    defaultCategoryEditorOpen
+    defaultCategoryEditorOpen && !defaultEditorOpen
   );
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] =
@@ -749,7 +790,12 @@ export function ProductCenter({
   const [openActionMenuProductId, setOpenActionMenuProductId] = useState<
     string | null
   >(defaultOpenActionMenuProductId ?? null);
+  const [pendingDeleteProductIds, setPendingDeleteProductIds] = useState<string[]>(
+    defaultPendingDeleteProductId ? [defaultPendingDeleteProductId] : []
+  );
   const [notice, setNotice] = useState('');
+  const didMountRef = useRef(false);
+  const productSearchRequestRef = useRef(0);
 
   useEffect(() => {
     setProductRows(sortProductRowsByName(products));
@@ -763,10 +809,63 @@ export function ProductCenter({
     return scheduleNoticeDismiss(() => setNotice(''));
   }, [notice]);
 
+  useEffect(() => {
+    if (!didMountRef.current) {
+      didMountRef.current = true;
+      return;
+    }
+
+    const controller = new AbortController();
+    const requestId = productSearchRequestRef.current + 1;
+    productSearchRequestRef.current = requestId;
+
+    async function fetchProducts() {
+      const response = await fetch(
+        buildAdminProductSearchUrl({
+          searchTerm,
+          statusFilter,
+          activeCategoryId,
+          locale
+        }),
+        {
+          signal: controller.signal
+        }
+      );
+
+      if (!response.ok || productSearchRequestRef.current !== requestId) {
+        return;
+      }
+
+      const payload = (await response.json()) as {
+        products?: ProductCenterRow[];
+      };
+
+      if (Array.isArray(payload.products)) {
+        setProductRows(sortProductRowsByName(payload.products));
+        setSelectedProductIds((current) =>
+          current.filter((productId) =>
+            payload.products?.some((product) => product.id === productId)
+          )
+        );
+      }
+    }
+
+    void fetchProducts().catch((error) => {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return;
+      }
+    });
+
+    return () => controller.abort();
+  }, [activeCategoryId, locale, searchTerm, statusFilter]);
+
   const selectedProduct =
     selectedProductId === null
       ? null
       : productRows.find((product) => product.id === selectedProductId) ?? null;
+  const pendingDeleteProducts = pendingDeleteProductIds
+    .map((productId) => productRows.find((product) => product.id === productId))
+    .filter((product): product is ProductCenterRow => Boolean(product));
   const selectedCategory =
     selectedCategoryId === null
       ? null
@@ -779,7 +878,6 @@ export function ProductCenter({
     activeCategoryId === null
       ? productRows
       : productRows.filter((product) => product.categoryId === activeCategoryId);
-  const normalizedSearchTerm = searchTerm.trim().toLowerCase();
   const filteredProducts = categoryProducts.filter((product) => {
     const matchesStatus =
       statusFilter === 'all'
@@ -787,22 +885,8 @@ export function ProductCenter({
         : statusFilter === 'recommended'
         ? product.isRecommended
         : product.status === statusFilter;
-    const matchesSearch = normalizedSearchTerm
-      ? [
-          product.nameZh,
-          product.nameEn,
-          product.nameEs,
-          product.namePt,
-          product.productCode,
-          product.categoryName,
-          product.slug
-        ]
-          .join(' ')
-          .toLowerCase()
-          .includes(normalizedSearchTerm)
-      : true;
 
-    return matchesStatus && matchesSearch;
+    return matchesStatus;
   });
   const [currentProductPage, setCurrentProductPage] = useState(1);
   const safePageSize = Math.max(1, productPageSize);
@@ -872,6 +956,7 @@ export function ProductCenter({
     setSelectedProductId(null);
     setEditorMode('create');
     setOpenActionMenuProductId(null);
+    setIsCategoryEditorOpen(false);
     setIsEditorOpen(true);
   };
 
@@ -879,18 +964,21 @@ export function ProductCenter({
     setSelectedProductId(productId);
     setEditorMode('edit');
     setOpenActionMenuProductId(null);
+    setIsCategoryEditorOpen(false);
     setIsEditorOpen(true);
   };
 
   const openCreateCategoryEditor = () => {
     setSelectedCategoryId(null);
     setCategoryEditorMode('create');
+    setIsEditorOpen(false);
     setIsCategoryEditorOpen(true);
   };
 
   const openEditCategoryEditor = (categoryId: string) => {
     setSelectedCategoryId(categoryId);
     setCategoryEditorMode('edit');
+    setIsEditorOpen(false);
     setIsCategoryEditorOpen(true);
   };
 
@@ -917,19 +1005,36 @@ export function ProductCenter({
     setNotice(
       operation === 'recommend'
         ? copy.bulkRecommendedNotice
-        : operation === 'unrecommend'
-        ? copy.bulkUnrecommendedNotice
-        : copy.bulkArchivedNotice
+        : copy.bulkUnrecommendedNotice
     );
     setOpenActionMenuProductId(null);
     setSelectedProductIds([]);
   };
 
-  const archiveProduct = async (productId: string) => {
+  const requestDeleteProduct = (productId: string) => {
     setOpenActionMenuProductId(null);
-    await archiveProductFromListAction(productId);
-    setNotice(copy.productArchivedNotice);
-    setSelectedProductIds((current) => current.filter((id) => id !== productId));
+    setPendingDeleteProductIds([productId]);
+  };
+
+  const requestDeleteSelectedProducts = () => {
+    setOpenActionMenuProductId(null);
+    setPendingDeleteProductIds(selectedProductIds);
+  };
+
+  const deleteProducts = async (productIds: string[]) => {
+    const uniqueProductIds = Array.from(new Set(productIds));
+
+    await Promise.all(uniqueProductIds.map((productId) => deleteProductFromListAction(productId)));
+    setNotice(
+      uniqueProductIds.length > 1 ? copy.bulkDeletedNotice : copy.productDeletedNotice
+    );
+    setPendingDeleteProductIds([]);
+    setSelectedProductIds((current) =>
+      current.filter((id) => !uniqueProductIds.includes(id))
+    );
+    setProductRows((current) =>
+      current.filter((product) => !uniqueProductIds.includes(product.id))
+    );
   };
 
   const updateStatusFilter = (filter: ProductStatusFilter) => {
@@ -1123,11 +1228,11 @@ export function ProductCenter({
                 </button>
                 <button
                   type="button"
-                  onClick={() => void applyBulkOperation('archive')}
+                  onClick={requestDeleteSelectedProducts}
                   className="inline-flex items-center gap-1 rounded-md border border-rose-200 bg-white px-3 py-1.5 text-xs font-semibold text-rose-700 transition hover:border-rose-300"
                 >
-                  <Archive className="h-3.5 w-3.5" />
-                  {copy.bulkArchive}
+                  <Trash2 className="h-3.5 w-3.5" />
+                  {copy.bulkDelete}
                 </button>
               </div>
             ) : null}
@@ -1226,7 +1331,7 @@ export function ProductCenter({
                                   })
                                 )
                               }
-                              onArchive={() => void archiveProduct(product.id)}
+                              onDelete={() => requestDeleteProduct(product.id)}
                               copy={copy}
                             />
                           </div>
@@ -1316,7 +1421,109 @@ export function ProductCenter({
         onSaved={(message) => setNotice(message)}
         copy={copy}
       />
+      <ProductDeleteConfirmDialog
+        products={pendingDeleteProducts}
+        copy={copy}
+        onCancel={() => setPendingDeleteProductIds([])}
+        onConfirm={(productIds) => void deleteProducts(productIds)}
+      />
     </section>
+  );
+}
+
+function ProductDeleteConfirmDialog({
+  products,
+  copy,
+  onCancel,
+  onConfirm
+}: {
+  products: ProductCenterRow[];
+  copy: ProductCenterCopy;
+  onCancel: () => void;
+  onConfirm: (productIds: string[]) => void;
+}) {
+  useEffect(() => {
+    if (products.length === 0) {
+      return;
+    }
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onCancel();
+      }
+    };
+
+    document.addEventListener('keydown', closeOnEscape);
+
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [onCancel, products.length]);
+
+  if (products.length === 0) {
+    return null;
+  }
+
+  const isSingleProduct = products.length === 1;
+  const productDisplayName = isSingleProduct
+    ? getProductDisplayName(products[0])
+    : formatCopy(copy.selectedProducts, { count: products.length });
+
+  return (
+    <div
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="product-delete-confirm-title"
+      aria-describedby="product-delete-confirm-description"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) {
+          onCancel();
+        }
+      }}
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-950/45 px-4 py-6"
+    >
+      <div className="w-full max-w-md overflow-hidden rounded-xl border border-admin-border bg-white text-left shadow-2xl ring-1 ring-black/5">
+        <div className="flex gap-3 border-b border-admin-border bg-admin-elevated px-5 py-4">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-rose-200 bg-rose-50 text-rose-700">
+            <AlertTriangle className="h-5 w-5" />
+          </span>
+          <div className="min-w-0">
+            <h3
+              id="product-delete-confirm-title"
+              className="text-base font-bold text-admin-text-primary"
+            >
+              {copy.deleteProductConfirmTitle}
+            </h3>
+            <p className="mt-1 truncate text-xs font-semibold text-admin-text-secondary">
+              {productDisplayName}
+            </p>
+          </div>
+        </div>
+        <div className="px-5 py-4">
+          <p
+            id="product-delete-confirm-description"
+            className="text-sm leading-6 text-admin-text-secondary"
+          >
+            {copy.deleteProductConfirmDescription}
+          </p>
+        </div>
+        <div className="flex justify-end gap-2 border-t border-admin-border bg-white px-5 py-4">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="inline-flex h-9 items-center rounded-lg border border-admin-border bg-white px-4 text-xs font-semibold text-admin-text-secondary transition hover:border-admin-border-strong hover:bg-admin-elevated focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
+          >
+            {copy.cancel}
+          </button>
+          <button
+            type="button"
+            autoFocus
+            onClick={() => onConfirm(products.map((product) => product.id))}
+            className="inline-flex h-9 items-center rounded-lg bg-rose-600 px-4 text-xs font-semibold text-white transition hover:bg-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-300"
+          >
+            {copy.deleteProductConfirmAction}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -1324,13 +1531,13 @@ function ProductActionMenu({
   product,
   isOpen,
   onToggle,
-  onArchive,
+  onDelete,
   copy
 }: {
   product: ProductCenterRow;
   isOpen: boolean;
   onToggle: () => void;
-  onArchive: () => void;
+  onDelete: () => void;
   copy: ProductCenterCopy;
 }) {
   return (
@@ -1369,12 +1576,12 @@ function ProductActionMenu({
           <button
             type="button"
             role="menuitem"
-            aria-label={formatCopy(copy.archiveProductLabel, { name: getProductDisplayName(product) })}
-            onClick={onArchive}
+            aria-label={formatCopy(copy.deleteProductLabel, { name: getProductDisplayName(product) })}
+            onClick={onDelete}
             className="mt-1 flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-rose-700 transition hover:bg-rose-50 focus:outline-none focus:ring-2 focus:ring-rose-200"
           >
-            <Archive className="h-4 w-4" />
-            {copy.archiveProduct}
+            <Trash2 className="h-4 w-4" />
+            {copy.deleteProduct}
           </button>
         </div>
       ) : null}
@@ -1546,6 +1753,7 @@ function CategoryEditorDrawer({
                 defaultValue={category?.parentId ?? ''}
                 options={parentCategoryOptions}
                 compact
+                disabled
               />
             </Field>
             <Field label="Slug">
@@ -1811,10 +2019,9 @@ function ProductEditorDrawerContent({
       : '');
   const productStatusOptions: AdminSelectOption[] = [
     { value: 'draft', label: copy.statusOptions.draft },
-    { value: 'pending', label: copy.statusOptions.pending },
-    { value: 'published', label: copy.statusOptions.published },
-    { value: 'archived', label: copy.statusOptions.archived }
+    { value: 'published', label: copy.statusOptions.published }
   ];
+  const defaultProductStatus = product?.status === 'published' ? 'published' : 'draft';
 
   return (
     <aside
@@ -1931,7 +2138,7 @@ function ProductEditorDrawerContent({
               <Field label={copy.statusLabel}>
                 <AdminSelect
                   name="status"
-                  defaultValue={product?.status ?? 'draft'}
+                  defaultValue={defaultProductStatus}
                   options={productStatusOptions}
                   compact
                 />
