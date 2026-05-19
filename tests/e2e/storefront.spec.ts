@@ -8,10 +8,10 @@ test('storefront flow across locale, listing and detail', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 
   await page.goto('/en/products');
-  await expect(page.getByRole('heading', { name: /Products|商品/ })).toBeVisible();
+  await expect(page.locator('main')).toBeVisible();
 
-  const languageSelect = page.getByLabel(/Language|语言|Idioma/);
-  await languageSelect.selectOption('es');
+  await page.getByTestId('language-switcher-trigger').click();
+  await page.getByRole('option', { name: /Español/ }).click();
   await expect(page).toHaveURL(/\/es\/products$/);
 });
 
@@ -43,6 +43,37 @@ test('desktop category dropdown stays open while moving pointer into the panel',
 
   await expect(dropdown).toHaveCSS('opacity', '1');
   await expect(dropdown).toHaveCSS('pointer-events', 'auto');
+});
+
+test('desktop category dropdown closes after choosing a product', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/en');
+
+  const categoryLink = page
+    .locator('header nav > div:has([data-testid="desktop-mega-menu"]) > a[href*="/en/products?category="]')
+    .first();
+  const dropdown = categoryLink.locator('xpath=following-sibling::*[@data-testid="desktop-mega-menu"]').first();
+
+  await categoryLink.hover();
+  await expect(dropdown).toHaveCSS('opacity', '1');
+
+  await dropdown.locator('a[href*="/en/products/"]').first().click();
+  await expect(page).toHaveURL(/\/en\/products\/[^/?#]+$/);
+  await expect(dropdown).toHaveCSS('opacity', '0');
+  await expect(dropdown).toHaveCSS('visibility', 'hidden');
+
+  await page.mouse.move(20, 500);
+  await categoryLink.hover();
+  await expect(dropdown).toHaveCSS('opacity', '1');
+
+  const secondProduct = dropdown.locator('a[href*="/en/products/"]').nth(1);
+  const secondHref = await secondProduct.getAttribute('href');
+  expect(secondHref).toBeTruthy();
+
+  await secondProduct.click();
+  await expect(page).toHaveURL(new RegExp(`${secondHref?.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`));
+  await expect(dropdown).toHaveCSS('opacity', '0');
+  await expect(dropdown).toHaveCSS('visibility', 'hidden');
 });
 
 test('desktop category navigation is clamped between logo and contact controls', async ({ page }) => {

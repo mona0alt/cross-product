@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check, ChevronDown } from 'lucide-react';
 
+import {
+  ADMIN_LOCALE_COOKIE,
+  ADMIN_LOCALE_MAX_AGE
+} from '@/lib/admin-locale-constants';
 import { locales, type Locale } from '@/lib/i18n/config';
-
-const ADMIN_LOCALE_COOKIE = 'ADMIN_LOCALE';
 
 const labels: Record<Locale, string> = {
   'zh-CN': '中文',
@@ -58,7 +60,7 @@ export function AdminLanguageSwitcher({
   }, [isOpen]);
 
   const selectLocale = (nextLocale: Locale) => {
-    document.cookie = `${ADMIN_LOCALE_COOKIE}=${nextLocale}; path=/admin; max-age=31536000; samesite=lax`;
+    document.cookie = `${ADMIN_LOCALE_COOKIE}=${nextLocale}; path=/admin; max-age=${ADMIN_LOCALE_MAX_AGE}; samesite=lax`;
     setIsOpen(false);
     router.refresh();
   };

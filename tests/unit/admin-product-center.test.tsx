@@ -328,6 +328,8 @@ describe('ProductCenter', () => {
     expect(html).toContain('rounded-xl border border-admin-border bg-white p-1.5 text-left shadow-xl');
     expect(html).toContain('role="menuitem"');
     expect(html).toContain('预览前台');
+    expect(html).toContain('href="/es/products/alpha-humanoid"');
+    expect(html).not.toContain('href="/zh-CN/products/alpha-humanoid"');
     expect(html).toContain('归档商品');
   });
 
@@ -542,6 +544,20 @@ describe('ProductCenter', () => {
     expect(html).toContain('商品图片管理');
     expect(html).toContain('保存更改');
     expect(html).not.toContain('/admin/products/new');
+  });
+
+  it('preselects the active category when creating a product from a category filter', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        defaultActiveCategoryId="cat-drones"
+        defaultEditorOpen
+        defaultEditorMode="create"
+      />
+    );
+
+    expect(html).toContain('<option value="cat-drones" selected="">无人机</option>');
   });
 
   it('renders the category create drawer on the product page when requested', () => {

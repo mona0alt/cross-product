@@ -1,9 +1,12 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
+import {
+  ADMIN_LOCALE_COOKIE,
+  ADMIN_LOCALE_MAX_AGE
+} from '@/lib/admin-locale-constants';
 import { ADMIN_SESSION_COOKIE } from '@/lib/auth-constants';
 import {
   defaultLocale,
-  getPreferredLocale,
   locales
 } from '@/lib/i18n/config';
 
@@ -13,6 +16,16 @@ function hasLocalePrefix(pathname: string) {
   return locales.some(
     (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`)
   );
+}
+
+function applyDefaultAdminLocale(response: NextResponse) {
+  response.cookies.set(ADMIN_LOCALE_COOKIE, defaultLocale, {
+    path: '/admin',
+    maxAge: ADMIN_LOCALE_MAX_AGE,
+    sameSite: 'lax'
+  });
+
+  return response;
 }
 
 export function middleware(request: NextRequest) {
@@ -32,6 +45,7 @@ export function middleware(request: NextRequest) {
 
   if (pathname === '/admin' || pathname.startsWith('/admin/')) {
     const sessionCookie = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
+    const shouldResetAdminLocale = pathname === '/admin';
 
     if (!sessionCookie) {
       const loginUrl = new URL('/admin/login', request.url);
@@ -40,19 +54,23 @@ export function middleware(request: NextRequest) {
         loginUrl.searchParams.set('from', `${pathname}${search}`);
       }
 
-      return NextResponse.redirect(loginUrl);
+      const response = NextResponse.redirect(loginUrl);
+
+      return shouldResetAdminLocale
+        ? applyDefaultAdminLocale(response)
+        : response;
     }
 
-    return NextResponse.next();
+    const response = NextResponse.next();
+
+    return shouldResetAdminLocale
+      ? applyDefaultAdminLocale(response)
+      : response;
   }
 
   if (!hasLocalePrefix(pathname)) {
-    const locale =
-      pathname === '/'
-        ? getPreferredLocale(request.headers.get('accept-language'))
-        : defaultLocale;
     const redirectUrl = new URL(
-      `/${locale}${pathname === '/' ? '' : pathname}`,
+      `/${defaultLocale}${pathname === '/' ? '' : pathname}`,
       request.url
     );
     redirectUrl.search = search;

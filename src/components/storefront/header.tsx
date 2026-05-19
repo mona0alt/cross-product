@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 import { LanguageSwitcher } from '@/components/storefront/language-switcher';
 import type { Locale } from '@/lib/i18n/config';
@@ -104,9 +105,13 @@ export function StorefrontHeader({
   contactEmail: string;
   categoryGroups: StorefrontCategoryGroup[];
 }) {
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeCategoryKey, setActiveCategoryKey] = useState<string | null>(null);
+  const [isDropdownHoverSuppressed, setIsDropdownHoverSuppressed] = useState(false);
   const navRef = useRef<HTMLElement>(null);
+  const activeCategoryKeyRef = useRef<string | null>(null);
+  const pendingDropdownHoverSuppressedRef = useRef(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
   const normalizedWhatsAppNumber = whatsAppNumber.replace(/[^\d]/g, '');
@@ -126,6 +131,16 @@ export function StorefrontHeader({
     }))
   ];
   const isCompact = mainNav.length >= 5;
+
+  useEffect(() => {
+    if (pendingDropdownHoverSuppressedRef.current || activeCategoryKeyRef.current) {
+      setIsDropdownHoverSuppressed(true);
+    }
+    pendingDropdownHoverSuppressedRef.current = false;
+    activeCategoryKeyRef.current = null;
+    setActiveCategoryKey(null);
+    setIsMenuOpen(false);
+  }, [pathname]);
 
   useLayoutEffect(() => {
     const nav = navRef.current;
@@ -167,6 +182,33 @@ export function StorefrontHeader({
     nav.scrollLeft += event.deltaY;
   };
 
+  const openCategoryDropdown = (key: string) => {
+    if (isDropdownHoverSuppressed) {
+      return;
+    }
+
+    pendingDropdownHoverSuppressedRef.current = false;
+    activeCategoryKeyRef.current = key;
+    setActiveCategoryKey(key);
+  };
+
+  const closeCategoryDropdown = () => {
+    activeCategoryKeyRef.current = null;
+    setActiveCategoryKey(null);
+  };
+
+  const suppressDropdownHover = () => {
+    pendingDropdownHoverSuppressedRef.current = true;
+    activeCategoryKeyRef.current = null;
+    setActiveCategoryKey(null);
+    setIsDropdownHoverSuppressed(true);
+  };
+
+  const resetDropdownHoverSuppression = () => {
+    pendingDropdownHoverSuppressedRef.current = false;
+    setIsDropdownHoverSuppressed(false);
+  };
+
   const headerContentClassName = isCompact
     ? 'grid min-h-[76px] w-full max-w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-4 py-3 sm:px-6 lg:mx-auto lg:w-fit lg:grid-cols-[auto_minmax(0,auto)_auto] lg:gap-2 lg:px-5 xl:px-6'
     : 'grid min-h-[76px] w-full max-w-full grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3 sm:px-6 lg:mx-auto lg:w-fit lg:grid-cols-[auto_minmax(0,auto)_auto] lg:gap-3 lg:px-5 xl:px-6';
@@ -195,10 +237,16 @@ export function StorefrontHeader({
     <header
       data-testid="storefront-header-shell"
       className="sticky top-0 z-30 border-b border-white/10 bg-[#07111f] text-white shadow-[0_18px_45px_rgba(0,0,0,0.18)]"
-      onMouseLeave={() => setActiveCategoryKey(null)}
+      onMouseLeave={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+          closeCategoryDropdown();
+          resetDropdownHoverSuppression();
+        }
+      }}
       onBlur={(event) => {
         if (!event.currentTarget.contains(event.relatedTarget)) {
-          setActiveCategoryKey(null);
+          closeCategoryDropdown();
+          resetDropdownHoverSuppression();
         }
       }}
     >
@@ -260,7 +308,7 @@ export function StorefrontHeader({
                             name: category.name,
                             description: category.description
                           }))
-                  : [];
+                : [];
                 const hasDropdown = featuredItems.length > 0;
                 const isDropdownOpen = activeCategoryKey === item.key;
 
@@ -270,7 +318,7 @@ export function StorefrontHeader({
                     className="group flex shrink-0 self-stretch items-center"
                     onMouseEnter={() => {
                       if (hasDropdown) {
-                        setActiveCategoryKey(item.key);
+                        openCategoryDropdown(item.key);
                       }
                     }}
                   >
@@ -279,8 +327,11 @@ export function StorefrontHeader({
                       className={navLinkClassName}
                       onFocus={() => {
                         if (hasDropdown) {
-                          setActiveCategoryKey(item.key);
+                          openCategoryDropdown(item.key);
                         }
+                      }}
+                      onClick={() => {
+                        suppressDropdownHover();
                       }}
                     >
                       {item.label}
@@ -290,9 +341,14 @@ export function StorefrontHeader({
                     {hasDropdown && (
                       <div
                         data-testid="desktop-mega-menu"
-                        className={`invisible absolute left-1/2 top-full z-40 w-screen -translate-x-1/2 opacity-0 transition duration-200 ease-out group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100 ${
-                          isDropdownOpen ? 'visible opacity-100' : ''
+                        className={`invisible absolute left-1/2 top-full z-40 w-screen -translate-x-1/2 opacity-0 transition duration-200 ease-out ${
+                          isDropdownHoverSuppressed
+                            ? ''
+                            : 'group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100'
+                        } ${
+                          isDropdownOpen && !isDropdownHoverSuppressed ? 'visible opacity-100' : ''
                         }`}
+                        onMouseEnter={() => openCategoryDropdown(item.key)}
                       >
                         <div className="h-2 bg-[#07111f]" />
                         <div className="border-y border-white/10 bg-[#07111f] text-white shadow-[0_22px_55px_rgba(0,0,0,0.22)]">
@@ -303,6 +359,9 @@ export function StorefrontHeader({
                                   key={child.slug}
                                   href={child.href}
                                   className="group/card relative overflow-hidden rounded-lg border border-white/10 bg-[#0b1728] transition hover:border-white/25 hover:shadow-[0_18px_35px_rgba(0,0,0,0.18)]"
+                                  onClick={() => {
+                                    suppressDropdownHover();
+                                  }}
                                 >
                                   <div className="aspect-[4/3] bg-[#0f1c30]">
                                     {child.imageUrl ? (

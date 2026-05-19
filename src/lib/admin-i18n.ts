@@ -1,9 +1,8 @@
 import { cookies } from 'next/headers';
 
+import { ADMIN_LOCALE_COOKIE } from '@/lib/admin-locale-constants';
 import { defaultLocale, isLocale, type Locale } from '@/lib/i18n/config';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
-
-export const ADMIN_LOCALE_COOKIE = 'ADMIN_LOCALE';
 
 export async function getAdminLocale(): Promise<Locale> {
   const cookieStore = await cookies();

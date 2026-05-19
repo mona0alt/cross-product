@@ -12,14 +12,14 @@ describe('admin i18n', () => {
     cookiesMock.mockReset();
   });
 
-  it('falls back to zh-CN for unsupported admin locale cookies', async () => {
+  it('falls back to Spanish for unsupported admin locale cookies', async () => {
     cookiesMock.mockResolvedValue({
       get: () => ({ value: 'fr' })
     });
 
     const { getAdminLocale } = await import('@/lib/admin-i18n');
 
-    await expect(getAdminLocale()).resolves.toBe('zh-CN');
+    await expect(getAdminLocale()).resolves.toBe('es');
   });
 
   it('loads the admin dictionary for a supported admin locale cookie', async () => {

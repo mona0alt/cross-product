@@ -22,6 +22,7 @@ import {
   X
 } from 'lucide-react';
 import { AdminSelect, type AdminSelectOption } from '@/components/admin/admin-select';
+import { defaultLocale } from '@/lib/i18n/config';
 import {
   archiveProductFromListAction,
   bulkUpdateProductsFromListAction,
@@ -1289,6 +1290,7 @@ export function ProductCenter({
         categories={categories}
         product={selectedProduct}
         mode={editorMode}
+        defaultCategoryId={activeCategoryId}
         isOpen={isEditorOpen}
         onClose={() => setIsEditorOpen(false)}
         onProductSaved={(productId, formData) => {
@@ -1356,7 +1358,7 @@ function ProductActionMenu({
         >
           <a
             role="menuitem"
-            href={`/zh-CN/products/${product.slug}`}
+            href={`/${defaultLocale}/products/${product.slug}`}
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-admin-text-secondary transition hover:bg-admin-elevated hover:text-admin-text-primary focus:outline-none focus:ring-2 focus:ring-admin-accent/20"
@@ -1663,6 +1665,7 @@ function ProductEditorDrawer({
   categories,
   product,
   mode,
+  defaultCategoryId,
   isOpen,
   onClose,
   onProductSaved,
@@ -1672,6 +1675,7 @@ function ProductEditorDrawer({
   categories: ProductCenterCategory[];
   product: ProductCenterRow | null;
   mode: 'create' | 'edit';
+  defaultCategoryId: string | null;
   isOpen: boolean;
   onClose: () => void;
   onProductSaved: (productId: string, formData: FormData) => void;
@@ -1687,6 +1691,7 @@ function ProductEditorDrawer({
       categories={categories}
       product={mode === 'create' ? null : product}
       mode={mode}
+      defaultCategoryId={mode === 'create' ? defaultCategoryId : null}
       onClose={onClose}
       onProductSaved={onProductSaved}
       onSaved={onSaved}
@@ -1699,6 +1704,7 @@ function ProductEditorDrawerContent({
   categories,
   product,
   mode,
+  defaultCategoryId,
   onClose,
   onProductSaved,
   onSaved,
@@ -1707,6 +1713,7 @@ function ProductEditorDrawerContent({
   categories: ProductCenterCategory[];
   product: ProductCenterRow | null;
   mode: 'create' | 'edit';
+  defaultCategoryId: string | null;
   onClose: () => void;
   onProductSaved: (productId: string, formData: FormData) => void;
   onSaved: (message: string) => void;
@@ -1797,6 +1804,11 @@ function ProductEditorDrawerContent({
       label: category.nameZh
     }))
   ];
+  const defaultProductCategoryId =
+    product?.categoryId ??
+    (defaultCategoryId && categoryOptions.some((category) => category.id === defaultCategoryId)
+      ? defaultCategoryId
+      : '');
   const productStatusOptions: AdminSelectOption[] = [
     { value: 'draft', label: copy.statusOptions.draft },
     { value: 'pending', label: copy.statusOptions.pending },
@@ -1896,7 +1908,7 @@ function ProductEditorDrawerContent({
               <Field label={copy.category}>
                 <AdminSelect
                   name="categoryId"
-                  defaultValue={product?.categoryId ?? ''}
+                  defaultValue={defaultProductCategoryId}
                   options={productCategoryOptions}
                   compact
                 />

@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
+import { defaultLocale } from '@/lib/i18n/config';
+
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -14,7 +16,7 @@ export default function RootLayout({
   children: ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
+    <html lang={defaultLocale}>
       <body>{children}</body>
     </html>
   );

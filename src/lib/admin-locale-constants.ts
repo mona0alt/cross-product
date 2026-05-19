@@ -1,0 +1,2 @@
+export const ADMIN_LOCALE_COOKIE = 'ADMIN_LOCALE';
+export const ADMIN_LOCALE_MAX_AGE = 60 * 60 * 24 * 365;
