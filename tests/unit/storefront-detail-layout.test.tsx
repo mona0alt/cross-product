@@ -15,4 +15,17 @@ describe('storefront detail layout', () => {
     expect(html).not.toContain('Gallery');
     expect(html).not.toContain('1 / 2');
   });
+
+  it('preserves full product image ratios in the detail gallery', () => {
+    const html = renderToStaticMarkup(
+      <ProductGallery images={['/solar-panel-cleaning-robot.jpg', '/detail.jpg']} />
+    );
+
+    expect(html).toContain('flex min-h-[360px] flex-1 items-center justify-center');
+    expect(html).toContain('absolute inset-0 h-full w-full scale-105 object-cover opacity-20 blur-2xl');
+    expect(html).toContain('relative z-10 h-full w-full object-contain');
+    expect(html).toContain('h-14 w-full rounded-[calc(var(--mk-radius-md)-0.125rem)] object-contain');
+    expect(html).not.toContain('h-[360px] w-full object-cover');
+    expect(html).not.toContain('object-cover sm:h-16');
+  });
 });

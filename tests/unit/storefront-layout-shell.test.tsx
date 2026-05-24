@@ -191,7 +191,7 @@ describe('storefront layout shell', () => {
     expect(html).toContain('tracking-[0.04em]');
     expect(html).toContain('bg-[#07111f] text-white');
     expect(html).toContain('lg:grid-cols-4');
-    expect(html).toContain('absolute inset-x-0 bottom-0');
+    expect(html).toContain('absolute inset-x-0 bottom-0 z-20');
     expect(html).toContain('bg-transparent');
     expect(html).not.toContain('bg-gradient-to-t');
     expect(html).not.toContain('backdrop-blur');
@@ -228,7 +228,7 @@ describe('storefront layout shell', () => {
                 name: 'Falcon Pro',
                 intro: 'Industrial inspection drone',
                 detail: 'Details',
-                images: []
+                images: ['/uploads/products/falcon-gallery.webp']
               },
               {
                 id: 'product-2',
@@ -296,7 +296,13 @@ describe('storefront layout shell', () => {
     expect(html).toContain('Industrial inspection drone');
     expect(html).toContain('Lightweight survey drone');
     expect(html).toContain('/uploads/products/falcon.webp');
+    expect(html).not.toContain('/uploads/products/falcon-gallery.webp');
     expect(html).toContain('/uploads/products/survey-mini.webp');
+    expect(html).toContain('relative flex aspect-square items-center justify-center overflow-hidden bg-[var(--mk-bg-muted)]');
+    expect(html).toContain('absolute inset-0 h-full w-full scale-105 object-cover opacity-20 blur-2xl transition duration-300 group-hover/card:scale-110');
+    expect(html).toContain('relative z-10 h-full w-full object-contain transition duration-300 group-hover/card:scale-105');
+    expect(html).not.toContain('relative z-10 h-[92%] w-[92%] object-contain transition duration-300 group-hover/card:scale-105');
+    expect(html).not.toContain('h-full w-full object-cover transition duration-300 group-hover/card:scale-105');
     expect(html).not.toContain('href="/en/categories/industrial-drones"');
   });
 

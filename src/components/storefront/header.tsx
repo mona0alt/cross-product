@@ -362,21 +362,30 @@ export function StorefrontHeader({
                                     suppressDropdownHover();
                                   }}
                                 >
-                                  <div className="aspect-[4/3] bg-[#0f1c30]">
+                                  <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-[var(--mk-bg-muted)]">
                                     {child.imageUrl ? (
-                                      // eslint-disable-next-line @next/next/no-img-element
-                                      <img
-                                        src={child.imageUrl}
-                                        alt={child.name}
-                                        className="h-full w-full object-cover transition duration-300 group-hover/card:scale-105"
-                                      />
+                                      <>
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                          src={child.imageUrl}
+                                          alt=""
+                                          aria-hidden="true"
+                                          className="absolute inset-0 h-full w-full scale-105 object-cover opacity-20 blur-2xl transition duration-300 group-hover/card:scale-110"
+                                        />
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                          src={child.imageUrl}
+                                          alt={child.name}
+                                          className="relative z-10 h-full w-full object-contain transition duration-300 group-hover/card:scale-105"
+                                        />
+                                      </>
                                     ) : (
                                       <div className="flex h-full w-full items-center justify-center bg-[#0f1c30] text-sm font-semibold text-white/62">
                                         {child.name}
                                       </div>
                                     )}
                                   </div>
-                                  <div className="absolute inset-x-0 bottom-0 bg-transparent p-4">
+                                  <div className="absolute inset-x-0 bottom-0 z-20 bg-transparent p-4">
                                     <h3 className="text-sm font-bold text-white drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)]">
                                       {child.name}
                                     </h3>

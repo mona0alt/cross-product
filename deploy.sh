@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_NAME="cross"
 NGINX_CONF_NAME="cross"
+SKIP_DATABASE_SETUP="${SKIP_DATABASE_SETUP:-0}"
 
 cd "$SCRIPT_DIR"
 
@@ -22,7 +23,12 @@ command_exists() {
 
 # 1. 前置检查
 log "检查必要依赖..."
-for cmd in node npm psql nginx pm2 curl; do
+REQUIRED_COMMANDS=(node npm nginx pm2 curl)
+if [ "$SKIP_DATABASE_SETUP" != "1" ]; then
+  REQUIRED_COMMANDS+=(psql)
+fi
+
+for cmd in "${REQUIRED_COMMANDS[@]}"; do
   if ! command_exists "$cmd"; then
     error "缺少命令: $cmd，请先安装"
   fi
@@ -45,47 +51,51 @@ if [ ! -f .env ]; then
   fi
 fi
 
-# 解析数据库连接信息
-DATABASE_URL=$(grep -E '^DATABASE_URL=' .env | cut -d'"' -f2 | cut -d"'" -f2)
-if [ -z "$DATABASE_URL" ]; then
-  error "无法从 .env 解析 DATABASE_URL"
-fi
-
-# 提取数据库名
-db_user=$(echo "$DATABASE_URL" | sed -n 's|postgresql://\([^:]*\):.*|\1|p')
-db_pass=$(echo "$DATABASE_URL" | sed -n 's|postgresql://[^:]*:\([^@]*\)@.*|\1|p')
-db_host=$(echo "$DATABASE_URL" | sed -n 's|postgresql://[^@]*@\([^:]*\):.*|\1|p')
-db_port=$(echo "$DATABASE_URL" | sed -n 's|postgresql://[^@]*@[^:]*:\([^/]*\)/.*|\1|p')
-db_name=$(echo "$DATABASE_URL" | sed -n 's|postgresql://[^/]*/\([^?]*\).*|\1|p')
-
-# 设置默认值
-: "${db_user:=postgres}"
-: "${db_pass:=postgres}"
-: "${db_host:=localhost}"
-: "${db_port:=5432}"
-: "${db_name:=cross}"
-
-export PGPASSWORD="$db_pass"
-
 # 3. 数据库初始化
-log "初始化数据库..."
-if ! pg_isready -h "$db_host" -p "$db_port" >/dev/null 2>&1; then
-  error "PostgreSQL 未运行或无法连接 ($db_host:$db_port)"
-fi
-
-# 设置 postgres 用户密码（如果通过 peer/trust 连接）
-if [ "$db_user" = "postgres" ]; then
-  if sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$db_pass';" >/dev/null 2>&1; then
-    log "已设置 postgres 用户密码"
+if [ "$SKIP_DATABASE_SETUP" = "1" ]; then
+  log "跳过数据库初始化和 Prisma schema 同步"
+else
+  # 解析数据库连接信息
+  DATABASE_URL=$(grep -E '^DATABASE_URL=' .env | cut -d'"' -f2 | cut -d"'" -f2)
+  if [ -z "$DATABASE_URL" ]; then
+    error "无法从 .env 解析 DATABASE_URL"
   fi
-fi
 
-# 创建数据库（如果不存在）
-if ! psql -h "$db_host" -p "$db_port" -U "$db_user" -d "$db_name" -c '\q' >/dev/null 2>&1; then
-  log "创建数据库: $db_name"
-  psql -h "$db_host" -p "$db_port" -U "$db_user" -d postgres -c "CREATE DATABASE \"$db_name\";" >/dev/null 2>&1 || true
+  # 提取数据库名
+  db_user=$(echo "$DATABASE_URL" | sed -n 's|postgresql://\([^:]*\):.*|\1|p')
+  db_pass=$(echo "$DATABASE_URL" | sed -n 's|postgresql://[^:]*:\([^@]*\)@.*|\1|p')
+  db_host=$(echo "$DATABASE_URL" | sed -n 's|postgresql://[^@]*@\([^:]*\):.*|\1|p')
+  db_port=$(echo "$DATABASE_URL" | sed -n 's|postgresql://[^@]*@[^:]*:\([^/]*\)/.*|\1|p')
+  db_name=$(echo "$DATABASE_URL" | sed -n 's|postgresql://[^/]*/\([^?]*\).*|\1|p')
+
+  # 设置默认值
+  : "${db_user:=postgres}"
+  : "${db_pass:=postgres}"
+  : "${db_host:=localhost}"
+  : "${db_port:=5432}"
+  : "${db_name:=cross}"
+
+  export PGPASSWORD="$db_pass"
+
+  log "初始化数据库..."
+  if ! pg_isready -h "$db_host" -p "$db_port" >/dev/null 2>&1; then
+    error "PostgreSQL 未运行或无法连接 ($db_host:$db_port)"
+  fi
+
+  # 设置 postgres 用户密码（如果通过 peer/trust 连接）
+  if [ "$db_user" = "postgres" ]; then
+    if sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD '$db_pass';" >/dev/null 2>&1; then
+      log "已设置 postgres 用户密码"
+    fi
+  fi
+
+  # 创建数据库（如果不存在）
+  if ! psql -h "$db_host" -p "$db_port" -U "$db_user" -d "$db_name" -c '\q' >/dev/null 2>&1; then
+    log "创建数据库: $db_name"
+    psql -h "$db_host" -p "$db_port" -U "$db_user" -d postgres -c "CREATE DATABASE \"$db_name\";" >/dev/null 2>&1 || true
+  fi
+  log "数据库就绪"
 fi
-log "数据库就绪"
 
 # 4. 安装依赖
 log "安装 npm 依赖..."
@@ -95,18 +105,22 @@ npm ci
 log "Prisma generate..."
 npx prisma generate
 
-log "Prisma 同步数据库 schema..."
-if [ -d prisma/migrations ] && [ "$(ls -A prisma/migrations 2>/dev/null)" ]; then
-  npx prisma migrate deploy
+if [ "$SKIP_DATABASE_SETUP" = "1" ]; then
+  log "跳过 Prisma migrate/db push/seed"
 else
-  npx prisma db push --accept-data-loss
-fi
+  log "Prisma 同步数据库 schema..."
+  if [ -d prisma/migrations ] && [ "$(ls -A prisma/migrations 2>/dev/null)" ]; then
+    npx prisma migrate deploy
+  else
+    npx prisma db push --accept-data-loss
+  fi
 
-if [ "${RUN_PRISMA_SEED:-0}" = "1" ]; then
-  log "Prisma seed..."
-  npx prisma db seed
-else
-  log "跳过 Prisma seed（设置 RUN_PRISMA_SEED=1 可执行）"
+  if [ "${RUN_PRISMA_SEED:-0}" = "1" ]; then
+    log "Prisma seed..."
+    npx prisma db seed
+  else
+    log "跳过 Prisma seed（设置 RUN_PRISMA_SEED=1 可执行）"
+  fi
 fi
 
 # 6. 构建

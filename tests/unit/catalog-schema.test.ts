@@ -90,4 +90,10 @@ describe('catalog schema contract', () => {
     expect(db).not.toContain('adapter-pg');
     expect(db).not.toContain('pg');
   });
+
+  it('regenerates Prisma client before production builds', () => {
+    const packageJson = readFileSync('package.json', 'utf8');
+
+    expect(packageJson).toContain('"prebuild": "prisma generate"');
+  });
 });
