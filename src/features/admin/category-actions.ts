@@ -4,6 +4,11 @@ import { revalidatePath } from 'next/cache';
 
 import { db } from '@/lib/db';
 import { requireLocalImagePath } from '@/features/catalog/local-image-paths';
+import {
+  validateCategoryParent,
+  requireCategoryHasNoChildren,
+  requireCategoryHasNoProducts
+} from '@/features/catalog/category-hierarchy';
 
 type CategoryInput = {
   parentId?: string | null;
@@ -22,6 +27,8 @@ type CategoryInput = {
 };
 
 export async function createCategory(input: CategoryInput) {
+  await validateCategoryParent(input.parentId);
+
   return db.category.create({
     data: {
       sortOrder: 0,
@@ -35,6 +42,16 @@ export async function createCategory(input: CategoryInput) {
 }
 
 export async function updateCategory(id: string, input: Partial<CategoryInput>) {
+  if (input.parentId !== undefined) {
+    await validateCategoryParent(input.parentId, id);
+
+    if (input.parentId) {
+      await requireCategoryHasNoChildren(id);
+    } else {
+      await requireCategoryHasNoProducts(id);
+    }
+  }
+
   return db.category.update({
     where: { id },
     data:

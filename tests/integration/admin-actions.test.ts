@@ -5,6 +5,7 @@ const productUpdate = vi.fn();
 const productUpdateMany = vi.fn();
 const productFindUnique = vi.fn();
 const productDelete = vi.fn();
+const productCount = vi.fn();
 const productImageDeleteMany = vi.fn();
 const productImageCreateMany = vi.fn();
 const categoryFindUnique = vi.fn();
@@ -27,7 +28,8 @@ vi.mock('@/lib/db', () => ({
       update: productUpdate,
       updateMany: productUpdateMany,
       findUnique: productFindUnique,
-      delete: productDelete
+      delete: productDelete,
+      count: productCount
     },
     productImage: {
       deleteMany: productImageDeleteMany,
@@ -92,6 +94,8 @@ describe('admin actions', () => {
     productUpdateMany.mockReset();
     productFindUnique.mockReset();
     productDelete.mockReset();
+    productCount.mockReset();
+    productCount.mockResolvedValue(0);
     productImageDeleteMany.mockReset();
     productImageCreateMany.mockReset();
     categoryFindUnique.mockReset();
