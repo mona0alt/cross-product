@@ -6,6 +6,7 @@ import { resolve, sep } from 'node:path';
 import { revalidatePath } from 'next/cache';
 
 import { db } from '@/lib/db';
+import { requireLeafCategory } from '@/features/catalog/category-hierarchy';
 import { getPublishBlockers } from '@/features/catalog/publishable';
 import { requireLocalImagePath } from '@/features/catalog/local-image-paths';
 
@@ -214,6 +215,8 @@ export async function createProductFromForm(formData: FormData) {
   const payload = getProductFormPayload(formData);
   const galleryUrls = getGalleryUrls(formData);
 
+  await requireLeafCategory(payload.categoryId);
+
   const product = await db.product.create({
     data: {
       ...payload,
@@ -247,6 +250,8 @@ export async function updateProduct(id: string, input: ProductUpdateInput) {
 export async function updateProductFromForm(id: string, formData: FormData) {
   const payload = getProductFormPayload(formData);
   const galleryUrls = getGalleryUrls(formData);
+
+  await requireLeafCategory(payload.categoryId);
 
   const product = await db.$transaction(async (tx) => {
     const product = await tx.product.update({
@@ -346,6 +351,8 @@ export async function publishProduct(id: string) {
   if (!product) {
     throw new Error('PRODUCT_NOT_FOUND');
   }
+
+  await requireLeafCategory(product.categoryId);
 
   const category = await db.category.findUnique({
     where: {

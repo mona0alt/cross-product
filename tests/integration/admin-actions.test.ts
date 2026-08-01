@@ -149,6 +149,7 @@ describe('admin actions', () => {
   });
 
   it('creates products from form data with localized fields', async () => {
+    categoryFindUnique.mockResolvedValue({ parentId: 'root-1' });
     productCreate.mockResolvedValue({
       id: 'product-1',
       status: 'draft',
@@ -219,6 +220,7 @@ describe('admin actions', () => {
   });
 
   it('updates products from form data, including category changes, and refreshes admin products', async () => {
+    categoryFindUnique.mockResolvedValue({ parentId: 'root-1' });
     productUpdate.mockResolvedValue({
       id: 'product-1',
       status: 'published'
