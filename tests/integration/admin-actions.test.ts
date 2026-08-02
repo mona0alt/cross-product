@@ -423,6 +423,8 @@ describe('admin actions', () => {
   });
 
   it('updates categories from form data and clears optional fields', async () => {
+    categoryFindUnique.mockResolvedValue({ parentId: null });
+    categoryCount.mockResolvedValue(0);
     categoryUpdate.mockResolvedValue({
       id: 'cat-drones',
       slug: 'drones',
@@ -430,7 +432,7 @@ describe('admin actions', () => {
     });
 
     const formData = new FormData();
-    formData.set('parentId', '');
+    formData.set('parentId', 'root-1');
     formData.set('slug', 'drones');
     formData.set('sortOrder', '2');
     formData.set('iconImageUrl', '');
@@ -449,7 +451,7 @@ describe('admin actions', () => {
     expect(categoryUpdate).toHaveBeenCalledWith({
       where: { id: 'cat-drones' },
       data: {
-        parentId: null,
+        parentId: 'root-1',
         slug: 'drones',
         sortOrder: 2,
         iconImageUrl: null,

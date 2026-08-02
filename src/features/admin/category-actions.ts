@@ -29,6 +29,10 @@ type CategoryInput = {
 export async function createCategory(input: CategoryInput) {
   await validateCategoryParent(input.parentId);
 
+  if (!input.parentId && !input.iconImageUrl) {
+    throw new Error('CATEGORY_IMAGE_REQUIRED');
+  }
+
   return db.category.create({
     data: {
       sortOrder: 0,
@@ -49,6 +53,10 @@ export async function updateCategory(id: string, input: Partial<CategoryInput>) 
       await requireCategoryHasNoChildren(id);
     } else {
       await requireCategoryHasNoProducts(id);
+
+      if (input.iconImageUrl !== undefined && !input.iconImageUrl) {
+        throw new Error('CATEGORY_IMAGE_REQUIRED');
+      }
     }
   }
 

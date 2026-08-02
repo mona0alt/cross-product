@@ -62,7 +62,10 @@ describe('admin category actions hierarchy rules', () => {
     categoryCreate.mockResolvedValue({ id: 'cat-new', slug: 'third-level' });
 
     const { createCategory } = await import('@/features/admin/category-actions');
-    const result = await createCategory(createValidInput(null));
+    const result = await createCategory({
+      ...createValidInput(null),
+      iconImageUrl: '/uploads/category/root.png'
+    });
 
     expect(categoryCreate).toHaveBeenCalledWith({
       data: expect.objectContaining({ parentId: null, slug: 'third-level' })
@@ -148,5 +151,62 @@ describe('admin category actions hierarchy rules', () => {
       where: { id: 'cat-1' },
       data: { isActive: false }
     });
+  });
+
+  it('rejects creating a root category without an image', async () => {
+    const { createCategory } = await import('@/features/admin/category-actions');
+
+    await expect(createCategory(createValidInput(null))).rejects.toThrow(
+      'CATEGORY_IMAGE_REQUIRED'
+    );
+    expect(categoryCreate).not.toHaveBeenCalled();
+  });
+
+  it('creates a root category with an image', async () => {
+    categoryCreate.mockResolvedValue({ id: 'cat-new' });
+
+    const { createCategory } = await import('@/features/admin/category-actions');
+    await createCategory({
+      ...createValidInput(null),
+      iconImageUrl: '/uploads/category/robots.png'
+    });
+
+    expect(categoryCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        parentId: null,
+        iconImageUrl: '/uploads/category/robots.png'
+      })
+    });
+  });
+
+  it('still allows creating a leaf category without an image', async () => {
+    categoryFindUnique.mockResolvedValue({ parentId: null });
+    categoryCreate.mockResolvedValue({ id: 'cat-leaf' });
+
+    const { createCategory } = await import('@/features/admin/category-actions');
+    await createCategory(createValidInput('root-1'));
+
+    expect(categoryCreate).toHaveBeenCalled();
+  });
+
+  it('rejects clearing the image on a root category update', async () => {
+    const { updateCategory } = await import('@/features/admin/category-actions');
+
+    await expect(
+      updateCategory('root-1', { parentId: null, iconImageUrl: null })
+    ).rejects.toThrow('CATEGORY_IMAGE_REQUIRED');
+    expect(categoryUpdate).not.toHaveBeenCalled();
+  });
+
+  it('updates a root category when an image is provided', async () => {
+    categoryUpdate.mockResolvedValue({ id: 'root-1' });
+
+    const { updateCategory } = await import('@/features/admin/category-actions');
+    await updateCategory('root-1', {
+      parentId: null,
+      iconImageUrl: '/uploads/category/new.png'
+    });
+
+    expect(categoryUpdate).toHaveBeenCalled();
   });
 });
