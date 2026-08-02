@@ -66,13 +66,15 @@ export function FilterSidebar({
                 className="w-full rounded-[18px] border border-[#d8cec7] bg-white px-4 py-3 text-sm text-[var(--mk-text)] outline-none transition focus:border-[var(--mk-accent)]"
               >
                 <option value="">{copy.allSecondary}</option>
-                {categoryGroups.flatMap((group) =>
-                  group.children.map((child) => (
-                    <option key={child.id} value={child.slug}>
-                      {group.name} / {child.name}
-                    </option>
-                  ))
-                )}
+                {categoryGroups.map((group) => (
+                  <optgroup key={group.id} label={group.name}>
+                    {group.children.map((child) => (
+                      <option key={child.id} value={child.slug}>
+                        {child.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
               </select>
             </>
           )}
