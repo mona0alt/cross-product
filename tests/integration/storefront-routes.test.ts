@@ -166,6 +166,8 @@ describe('storefront routes', () => {
         params: Promise.resolve({ locale: 'en' }),
         searchParams: Promise.resolve({
           search: 'phone',
+          category: 'electronics',
+          subcategory: 'electronics-phones',
           sort: 'price-desc'
         })
       })
@@ -175,18 +177,28 @@ describe('storefront routes', () => {
     expect(html).toContain('phone');
     expect(html).toContain('bg-[#f4f0ed] py-6 sm:py-8 lg:py-10');
     expect(html).toContain('mx-auto max-w-7xl px-4 sm:px-6 lg:px-8');
+    expect(html).toContain('grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]');
     expect(html).toContain('grid gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4');
     expect(html).toContain('rounded-[24px] border border-[#d8cec7] bg-white/90');
     expect(html).toContain('relative block aspect-[5/6] overflow-hidden rounded-[20px] bg-[#f3efec]');
     expect(html).toContain('class="flex flex-1 flex-col px-2 pb-2 pt-3');
     expect(html).toContain('href="/en/products/star-river-pro-phone"');
-    expect(html).not.toContain('Filters');
-    expect(html).not.toContain('Catalog');
-    expect(html).not.toContain('Products');
+    expect(html).toContain('Filters');
+    expect(html).toContain('name="search"');
+    expect(html).toContain('value="phone"');
+    expect(html).toContain('name="category"');
+    expect(html).toContain('<option value="electronics" selected="">Electronics</option>');
+    expect(html).toContain('name="subcategory"');
+    expect(html).toContain('<optgroup label="Electronics">');
+    expect(html).toContain('<option value="electronics-phones" selected="">Phones</option>');
+    expect(html).toContain('name="recommended"');
+    expect(html).toContain('name="sort"');
+    expect(html).toContain('Sort by');
+    expect(html).toContain('Price: high to low');
+    expect(html).toContain('Catalog');
+    expect(html).toContain('Products');
     expect(html).not.toContain('View details');
     expect(html).not.toContain('Browse products');
-    expect(html).not.toContain('Sort by');
-    expect(html).not.toContain('name="sort"');
     expect(html).not.toContain('P-1001');
     expect(html).not.toContain('In stock');
     expect(html).not.toContain('$699');
