@@ -237,13 +237,21 @@ export function StorefrontHeader({
       data-testid="storefront-header-shell"
       className="sticky top-0 z-30 border-b border-white/10 bg-[#07111f] text-white shadow-[0_18px_45px_rgba(0,0,0,0.18)]"
       onMouseLeave={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+        const nextTarget = event.relatedTarget;
+        if (
+          !(nextTarget instanceof Node) ||
+          !event.currentTarget.contains(nextTarget)
+        ) {
           closeCategoryDropdown();
           resetDropdownHoverSuppression();
         }
       }}
       onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) {
+        const nextTarget = event.relatedTarget;
+        if (
+          !(nextTarget instanceof Node) ||
+          !event.currentTarget.contains(nextTarget)
+        ) {
           closeCategoryDropdown();
           resetDropdownHoverSuppression();
         }
