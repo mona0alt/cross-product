@@ -113,7 +113,7 @@ describe('catalog queries', () => {
     });
   });
 
-  it('promotes active child categories of inactive parents into storefront navigation groups', async () => {
+  it('hides active child categories of inactive parents from storefront navigation groups', async () => {
     categoryFindMany.mockResolvedValue([
       {
         id: 'root-window',
@@ -170,11 +170,6 @@ describe('catalog queries', () => {
     const groups = await getStorefrontCategoryGroups('en');
 
     expect(groups).toMatchObject([
-      {
-        slug: 'residential-window-robots',
-        name: 'Residential Window Robots',
-        children: []
-      },
       {
         slug: 'industrial-drones',
         name: 'Industrial Drones',
@@ -444,11 +439,8 @@ describe('catalog queries', () => {
       targetType: 'category',
       targetId: 'root-window'
     });
-    expect(payload.featuredCategories[0]).toMatchObject({
-      slug: 'residential-window-robots',
-      name: 'Residential Window Robots',
-      iconImageUrl: '/uploads/categories/window.webp'
-    });
+    // 父类目未启用时，其子类目不再出现在精选类目中
+    expect(payload.featuredCategories).toEqual([]);
   });
 
   it('returns null for an unpublished or missing product detail', async () => {

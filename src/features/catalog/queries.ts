@@ -91,6 +91,11 @@ function buildStorefrontCategoryGroupsFromRecords(
 
     const parentNode = category.parentId ? nodes.get(category.parentId) : null;
 
+    if (category.parentId && !parentNode) {
+      // 父级未启用或不存在，不展示该子类目
+      continue;
+    }
+
     if (parentNode) {
       parentNode.children.push({
         id: node.id,
@@ -270,6 +275,10 @@ export async function getProductListPayload(
       where: {
         status: 'published',
         ...(filters.recommended ? { isRecommended: true } : {}),
+        category: {
+          isActive: true,
+          parent: { isActive: true }
+        },
         ...(filters.search
           ? {
               OR: [
@@ -383,7 +392,8 @@ export async function getStorefrontCategoryGroups(locale: CatalogLocale) {
       where: {
         status: 'published',
         category: {
-          isActive: true
+          isActive: true,
+          parent: { isActive: true }
         }
       },
       include: {
