@@ -815,7 +815,10 @@ describe('admin workflow boards', () => {
     const html = renderToStaticMarkup(
       <ProductForm
         mode="create"
-        categories={[{ id: 'cat-1', label: 'Robots' }]}
+        categories={[
+          { id: 'cat-root', parentId: null, nameZh: 'Robots' },
+          { id: 'cat-1', parentId: 'cat-root', nameZh: 'Bipedal Robots' }
+        ]}
         copy={enMessages.Admin.products}
         uploadLabel={enMessages.Admin.common.upload}
       />
@@ -823,7 +826,7 @@ describe('admin workflow boards', () => {
 
     expect(html).toContain('Manual products follow the same review rules.');
     expect(html).toContain('Source: manual import');
-    expect(html).toContain('<option value="">Select category</option>');
+    expect(html).toContain('<option value="" selected="">Select category</option>');
     expect(html).toContain('<option value="draft" selected="">Draft</option>');
     expect(html).toContain('<option value="pending">Pending review</option>');
     expect(html).toContain('<option value="published">Published</option>');

@@ -4,14 +4,13 @@ import { AdminCard } from './admin-card';
 import { AdminButton } from './admin-button';
 import { AdminSelect } from './admin-select';
 import {
+  AdminCategorySelect,
+  type AdminCategory
+} from './admin-category-select';
+import {
   AdminImageUploadInput,
   type AdminImageUploadCopy
 } from './admin-image-upload-input';
-
-type CategoryOption = {
-  id: string;
-  label: string;
-};
 
 type ProductDraft = {
   id?: string;
@@ -112,7 +111,7 @@ export function ProductForm({
   uploadLabel = '上传图片'
 }: {
   mode: 'create' | 'edit';
-  categories: CategoryOption[];
+  categories: AdminCategory[];
   product?: ProductDraft;
   copy?: ProductFormCopy;
   uploadLabel?: string;
@@ -181,13 +180,6 @@ export function ProductForm({
     }
   };
   const uploadCopy = getProductFormUploadCopy(labels);
-  const categoryOptions = [
-    { value: '', label: labels.selectCategory },
-    ...categories.map((category) => ({
-      value: category.id,
-      label: category.label
-    }))
-  ];
   const statusOptions = [
     { value: 'draft', label: labels.statusOptions.draft },
     { value: 'pending', label: labels.statusOptions.pending },
@@ -242,10 +234,11 @@ export function ProductForm({
           </div>
           <div>
             <label className={labelClass}>{labels.category}</label>
-            <AdminSelect
+            <AdminCategorySelect
               name="categoryId"
+              categories={categories}
               defaultValue={product?.categoryId ?? ''}
-              options={categoryOptions}
+              placeholder={labels.selectCategory}
             />
           </div>
           <div>

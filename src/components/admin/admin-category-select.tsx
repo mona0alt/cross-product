@@ -1,6 +1,6 @@
 import React from 'react';
 
-type AdminCategory = {
+export type AdminCategory = {
   id: string;
   parentId?: string | null;
   nameZh: string;

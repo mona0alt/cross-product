@@ -2,6 +2,7 @@ import React from 'react';
 
 import { AdminSectionHeader } from '@/components/admin/admin-section-header';
 import { ProductForm } from '@/components/admin/product-form';
+import type { AdminCategory } from '@/components/admin/admin-category-select';
 import { getAdminCategoryTree } from '@/features/catalog/queries';
 import { getAdminDictionary } from '@/lib/admin-i18n';
 import type { Locale } from '@/lib/i18n/config';
@@ -22,20 +23,18 @@ function getLocalizedCategoryName(
   );
 }
 
-function flattenCategories(
+function toCategoryRows(
   nodes: Awaited<ReturnType<typeof getAdminCategoryTree>>,
-  locale: Locale,
-  prefix = ''
-): Array<{ id: string; label: string }> {
-  return nodes.flatMap((node) => {
-    const name = getLocalizedCategoryName(node, locale);
-    const label = prefix ? `${prefix} / ${name}` : name;
-
-    return [
-      { id: node.id, label },
-      ...flattenCategories(node.children, locale, label)
-    ];
-  });
+  locale: Locale
+): AdminCategory[] {
+  return nodes.flatMap((node) => [
+    {
+      id: node.id,
+      parentId: node.parentId,
+      nameZh: getLocalizedCategoryName(node, locale)
+    },
+    ...toCategoryRows(node.children, locale)
+  ]);
 }
 
 export default async function AdminNewProductPage() {
@@ -53,7 +52,7 @@ export default async function AdminNewProductPage() {
       />
       <ProductForm
         mode="create"
-        categories={flattenCategories(categories, locale)}
+        categories={toCategoryRows(categories, locale)}
         copy={Admin.products}
         uploadLabel={Admin.common.upload}
       />
