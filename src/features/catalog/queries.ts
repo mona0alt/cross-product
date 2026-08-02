@@ -427,7 +427,11 @@ export async function getProductDetailBySlug(
   const product = await db.product.findFirst({
     where: {
       slug,
-      status: 'published'
+      status: 'published',
+      category: {
+        isActive: true,
+        parent: { isActive: true }
+      }
     },
     include: {
       images: true,

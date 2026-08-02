@@ -32,9 +32,9 @@ export default async function AdminEditProductPage({
   }
 
   const categoryRows = toCategoryRows(categories, locale);
-  // The category tree only lists active categories; keep a product's
-  // deactivated/deleted category selectable so saving cannot silently
-  // clear it.
+  // getAdminCategoryTree has no isActive filter, but a product's category
+  // may have been deleted or otherwise dropped from the tree; keep that
+  // category selectable so saving cannot silently clear it.
   const missingCategoryOption =
     product.categoryId && !categoryRows.some((category) => category.id === product.categoryId)
       ? {

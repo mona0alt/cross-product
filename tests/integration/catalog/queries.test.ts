@@ -309,7 +309,11 @@ describe('product detail query', () => {
     expect(productFindFirst).toHaveBeenCalledWith({
       where: {
         slug: 'survey-drone-x1',
-        status: 'published'
+        status: 'published',
+        category: {
+          isActive: true,
+          parent: { isActive: true }
+        }
       },
       include: {
         images: true,
