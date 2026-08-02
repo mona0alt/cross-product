@@ -1,11 +1,6 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-// page.tsx 的模块依赖链会引入 @/lib/db(PrismaClient),这里 mock 掉避免副作用
-vi.mock('@/lib/db', () => ({
-  db: {}
-}));
-
-import { getHomepageHeroBanners } from '@/app/[locale]/page';
+import { getHomepageHeroBanners } from '@/features/catalog/hero-banners';
 import type { HomepagePayload } from '@/features/catalog/types';
 
 function buildPayload(overrides: Partial<HomepagePayload> = {}): HomepagePayload {

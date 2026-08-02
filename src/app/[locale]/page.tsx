@@ -4,34 +4,12 @@ import { BannerCarousel } from '@/components/storefront/banner-carousel';
 import { HomepageCategoryGrid } from '@/components/storefront/homepage-category-grid';
 import { HomepageProductMatrix } from '@/components/storefront/homepage-product-matrix';
 import { SocialShowcase } from '@/components/storefront/social-showcase';
+import { getHomepageHeroBanners } from '@/features/catalog/hero-banners';
 import { getHomepagePayload } from '@/features/catalog/queries';
-import type { HomepagePayload } from '@/features/catalog/types';
 import { defaultLocale, isLocale, type Locale } from '@/lib/i18n/config';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
 
 export const dynamic = 'force-dynamic';
-
-export function getHomepageHeroBanners(
-  payload: HomepagePayload,
-  locale: Locale
-) {
-  const categoryBanners = payload.rootCategories
-    .filter((category) => Boolean(category.iconImageUrl))
-    .map((category, index) => ({
-      id: `category-${category.id}`,
-      imageUrl: category.iconImageUrl ?? '',
-      targetType: 'category',
-      targetId: category.id,
-      targetUrl: `/${locale}/categories/${category.slug}`,
-      targetCategorySlug: category.slug,
-      targetCategoryIsLeaf: false,
-      sortOrder: index + 1,
-      title: category.name,
-      description: category.description
-    }));
-
-  return categoryBanners.length > 0 ? categoryBanners : payload.banners;
-}
 
 export default async function LocalizedHomePage({
   params
