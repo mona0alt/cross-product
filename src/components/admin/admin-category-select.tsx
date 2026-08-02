@@ -17,13 +17,15 @@ export function AdminCategorySelect({
   categories,
   defaultValue = '',
   placeholder = '选择类目',
-  disabled = false
+  disabled = false,
+  extraOption
 }: {
   name: string;
   categories: AdminCategory[];
   defaultValue?: string;
   placeholder?: string;
   disabled?: boolean;
+  extraOption?: { value: string; label: string };
 }) {
   const roots = categories.filter((c) => !c.parentId);
   const leavesByRoot = new Map(
@@ -38,6 +40,7 @@ export function AdminCategorySelect({
       className={inputClass}
     >
       <option value="">{placeholder}</option>
+      {extraOption ? <option value={extraOption.value}>{extraOption.label}</option> : null}
       {roots.map((root) => (
         <optgroup key={root.id} label={root.nameZh}>
           {(leavesByRoot.get(root.id) ?? []).map((leaf) => (

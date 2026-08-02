@@ -66,6 +66,18 @@ describe('AdminCategorySelect', () => {
     expect(markup).not.toContain('<option value="leaf-1" selected="">');
   });
 
+  it('renders an extra standalone option before the optgroups when provided', () => {
+    const markup = renderSelect({
+      defaultValue: 'cat-archived',
+      extraOption: { value: 'cat-archived', label: '已停用分类' }
+    });
+
+    expect(markup).toContain('<option value="cat-archived" selected="">已停用分类</option>');
+    expect(markup.indexOf('<option value="cat-archived"')).toBeLessThan(
+      markup.indexOf('<optgroup')
+    );
+  });
+
   it('renders the name attribute on the select element', () => {
     const markup = renderSelect();
 

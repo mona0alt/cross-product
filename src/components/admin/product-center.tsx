@@ -22,6 +22,7 @@ import {
   X
 } from 'lucide-react';
 import { AdminSelect, type AdminSelectOption } from '@/components/admin/admin-select';
+import { AdminCategorySelect } from '@/components/admin/admin-category-select';
 import { defaultLocale, type Locale } from '@/lib/i18n/config';
 import {
   bulkUpdateProductsFromListAction,
@@ -2030,28 +2031,15 @@ function ProductEditorDrawerContent({
   const galleryUrls = [...(product?.images ?? [])]
     .sort((left, right) => (left.sortOrder ?? 0) - (right.sortOrder ?? 0))
     .map((image) => image.imageUrl);
-  const categoryOptions =
+  const missingCategoryOption =
     product &&
     product.categoryId &&
     !categories.some((category) => category.id === product.categoryId)
-      ? [
-          {
-            id: product.categoryId,
-            nameZh: product.categoryName
-          },
-          ...categories
-        ]
-      : categories;
-  const productCategoryOptions: AdminSelectOption[] = [
-    { value: '', label: copy.selectCategory },
-    ...categoryOptions.map((category) => ({
-      value: category.id,
-      label: category.nameZh
-    }))
-  ];
+      ? { value: product.categoryId, label: product.categoryName }
+      : undefined;
   const defaultProductCategoryId =
     product?.categoryId ??
-    (defaultCategoryId && categoryOptions.some((category) => category.id === defaultCategoryId)
+    (defaultCategoryId && categories.some((category) => category.id === defaultCategoryId)
       ? defaultCategoryId
       : '');
   const productStatusOptions: AdminSelectOption[] = [
@@ -2150,11 +2138,12 @@ function ProductEditorDrawerContent({
                 </p>
               </Field>
               <Field label={copy.category}>
-                <AdminSelect
+                <AdminCategorySelect
                   name="categoryId"
+                  categories={categories}
                   defaultValue={defaultProductCategoryId}
-                  options={productCategoryOptions}
-                  compact
+                  placeholder={copy.selectCategory}
+                  extraOption={missingCategoryOption}
                 />
               </Field>
               <Field label={copy.priceUsd}>

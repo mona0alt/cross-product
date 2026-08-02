@@ -656,18 +656,42 @@ describe('ProductCenter', () => {
     expect(html).not.toContain('/admin/products/new');
   });
 
+  it('groups the product editor category select by root category with only leaf options', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={treeCategories}
+        products={treeProducts}
+        defaultSelectedProductId="tree-product-1"
+        defaultEditorOpen
+      />
+    );
+
+    const categorySelectMatch = html.match(
+      /<select name="categoryId"[^>]*>([\s\S]*?)<\/select>/
+    );
+    expect(categorySelectMatch).not.toBeNull();
+    const categorySelectHtml = categorySelectMatch![1];
+
+    expect(categorySelectHtml).toContain('<optgroup label="机器人大类">');
+    expect(categorySelectHtml).toContain(
+      '<option value="cat-bipedal" selected="">双足</option>'
+    );
+    expect(categorySelectHtml).toContain('<option value="cat-quadruped">四足</option>');
+    expect(categorySelectHtml).not.toContain('<option value="cat-root-robots"');
+  });
+
   it('preselects the active category when creating a product from a category filter', () => {
     const html = renderToStaticMarkup(
       <ProductCenter
-        categories={categories}
-        products={products}
-        defaultActiveCategoryId="cat-drones"
+        categories={treeCategories}
+        products={treeProducts}
+        defaultActiveCategoryId="cat-bipedal"
         defaultEditorOpen
         defaultEditorMode="create"
       />
     );
 
-    expect(html).toContain('<option value="cat-drones" selected="">无人机</option>');
+    expect(html).toContain('<option value="cat-bipedal" selected="">双足</option>');
   });
 
   it('limits product editor status choices to draft and published', () => {
