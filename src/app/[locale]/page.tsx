@@ -11,11 +11,11 @@ import { getDictionary } from '@/lib/i18n/get-dictionary';
 
 export const dynamic = 'force-dynamic';
 
-function getHomepageHeroBanners(
+export function getHomepageHeroBanners(
   payload: HomepagePayload,
   locale: Locale
 ) {
-  const categoryBanners = payload.featuredCategories
+  const categoryBanners = payload.rootCategories
     .filter((category) => Boolean(category.iconImageUrl))
     .map((category, index) => ({
       id: `category-${category.id}`,
@@ -24,7 +24,7 @@ function getHomepageHeroBanners(
       targetId: category.id,
       targetUrl: `/${locale}/categories/${category.slug}`,
       targetCategorySlug: category.slug,
-      targetCategoryIsLeaf: true,
+      targetCategoryIsLeaf: false,
       sortOrder: index + 1,
       title: category.name,
       description: category.description
