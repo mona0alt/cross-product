@@ -49,210 +49,88 @@ async function main() {
 
     const catalog: CategorySeed[] = [
       {
-        slug: 'window-cleaning-robots',
+        slug: 'tech',
         iconImageUrl:
-          '/show/local-unsplash/photo-1581091226825-a6a2a5aee158.jpg',
+          '/show/local-unsplash/photo-1518770660439-4636190af475.jpg',
         names: {
-          zh: '擦窗机器人',
-          en: 'Window Cleaning Robots',
-          es: 'Robots Limpiacristales',
-          pt: 'Robôs de Limpeza de Vidros'
+          zh: '科技类',
+          en: 'Technology',
+          es: 'Tecnología',
+          pt: 'Tecnologia'
         },
         descriptions: {
-          zh: '高效智能的窗户清洁解决方案。',
-          en: 'Efficient and intelligent window cleaning solutions.',
-          es: 'Soluciones de limpieza de ventanas eficientes e inteligentes.',
-          pt: 'Soluções de limpeza de vidros eficientes e inteligentes.'
+          zh: '汇聚前沿智能科技与机器人产品。',
+          en: 'Cutting-edge smart technology and robotics products.',
+          es: 'Productos de tecnología inteligente y robótica de vanguardia.',
+          pt: 'Produtos de tecnologia inteligente e robótica de ponta.'
         },
         children: [
           {
-            slug: 'residential-window-robots',
-            iconImageUrl: '/show/robot_window_cleaner.png',
-            names: {
-              zh: '家用擦窗机器人',
-              en: 'Residential',
-              es: 'Residencial',
-              pt: 'Residencial'
-            },
-            descriptions: {
-              zh: '专为家庭窗户设计的智能清洁机器人。',
-              en: 'Smart cleaning robots designed for home windows.',
-              es: 'Robots de limpieza inteligentes diseñados para ventanas del hogar.',
-              pt: 'Robôs de limpeza inteligentes projetados para janelas residenciais.'
-            }
-          },
-          {
-            slug: 'commercial-window-robots',
-            iconImageUrl:
-              '/show/local-unsplash/photo-1581092160562-40aa08e78837.jpg',
-            names: {
-              zh: '商用擦窗机器人',
-              en: 'Commercial',
-              es: 'Comercial',
-              pt: 'Comercial'
-            },
-            descriptions: {
-              zh: '适用于高层建筑与商业场景的专业设备。',
-              en: 'Professional equipment for high-rise and commercial use.',
-              es: 'Equipo profesional para uso en altura y comercial.',
-              pt: 'Equipamento profissional para uso em altura e comercial.'
-            }
-          }
-        ]
-      },
-      {
-        slug: 'drones',
-        iconImageUrl:
-          '/show/local-unsplash/photo-1473968512647-3e447244af8f.jpg',
-        names: {
-          zh: '无人机',
-          en: 'Drones',
-          es: 'Drones',
-          pt: 'Drones'
-        },
-        descriptions: {
-          zh: '消费级与工业级无人机。',
-          en: 'Consumer and industrial drones.',
-          es: 'Drones de consumo e industriales.',
-          pt: 'Drones de consumo e industriais.'
-        },
-        children: [
-          {
-            slug: 'consumer-drones',
-            iconImageUrl:
-              '/show/local-unsplash/photo-1507582020474-9a35b7d455d9.jpg',
-            names: {
-              zh: '消费级无人机',
-              en: 'Consumer Drones',
-              es: 'Drones de Consumo',
-              pt: 'Drones de Consumo'
-            },
-            descriptions: {
-              zh: '航拍与娱乐飞行设备。',
-              en: 'Aerial photography and recreational flight devices.',
-              es: 'Dispositivos de fotografía aérea y vuelo recreativo.',
-              pt: 'Dispositivos de fotografia aérea e voo recreativo.'
-            }
-          },
-          {
-            slug: 'industrial-drones',
-            iconImageUrl:
-              '/show/local-unsplash/photo-1527977966376-1c8408f9f108.jpg',
-            names: {
-              zh: '工业级无人机',
-              en: 'Industrial Drones',
-              es: 'Drones Industriales',
-              pt: 'Drones Industriais'
-            },
-            descriptions: {
-              zh: '测绘、巡检与物流应用的工业无人机。',
-              en: 'Industrial drones for surveying, inspection and logistics.',
-              es: 'Drones industriales para topografía, inspección y logística.',
-              pt: 'Drones industriais para levantamento topográfico, inspeção e logística.'
-            }
-          }
-        ]
-      },
-      {
-        slug: 'humanoid-robots',
-        iconImageUrl:
-          '/show/local-unsplash/photo-1485827404703-89b55fcc595e.jpg',
-        names: {
-          zh: '人形机器人',
-          en: 'Humanoid Robots',
-          es: 'Robots Humanoides',
-          pt: 'Robôs Humanoides'
-        },
-        descriptions: {
-          zh: '面向服务、研究与教育的人形机器人平台。',
-          en: 'Humanoid robot platforms for service, research and education.',
-          es: 'Plataformas de robots humanoides para servicio, investigación y educación.',
-          pt: 'Plataformas de robôs humanoides para serviço, pesquisa e educação.'
-        },
-        children: [
-          {
-            slug: 'service-humanoids',
-            iconImageUrl:
-              '/show/local-unsplash/photo-1531746790731-6c087fecd65a.jpg',
-            names: {
-              zh: '服务人形机器人',
-              en: 'Service Humanoids',
-              es: 'Humanoides de Servicio',
-              pt: 'Humanoides de Serviço'
-            },
-            descriptions: {
-              zh: '迎宾、导览与家庭服务人形机器人。',
-              en: 'Reception, guide and home service humanoid robots.',
-              es: 'Robots humanoides de recepción, guía y servicio doméstico.',
-              pt: 'Robôs humanoides de recepção, guia e serviço doméstico.'
-            }
-          },
-          {
-            slug: 'research-humanoids',
-            iconImageUrl: '/show/robot_humanoid.png',
-            names: {
-              zh: '研究/教育人形机器人',
-              en: 'Research & Education',
-              es: 'Investigación y Educación',
-              pt: 'Pesquisa e Educação'
-            },
-            descriptions: {
-              zh: '面向高校与科研机构的开发人形机器人。',
-              en: 'Development humanoid robots for universities and research institutes.',
-              es: 'Robots humanoides de desarrollo para universidades e institutos de investigación.',
-              pt: 'Robôs humanoides de desenvolvimento para universidades e institutos de pesquisa.'
-            }
-          }
-        ]
-      },
-      {
-        slug: 'robot-vacuums',
-        iconImageUrl:
-          '/show/local-unsplash/photo-1518640467707-6811f4a6ab73.jpg',
-        names: {
-          zh: '扫地机器人',
-          en: 'Vacuum Robots',
-          es: 'Robots Aspiradores',
-          pt: 'Robôs Aspiradores'
-        },
-        descriptions: {
-          zh: '智能扫地与扫拖一体机器人。',
-          en: 'Smart vacuum and vacuum-mop combo robots.',
-          es: 'Robots aspiradores inteligentes y combos aspiradora-fregona.',
-          pt: 'Robôs aspiradores inteligentes e combos aspirador-esfregão.'
-        },
-        children: [
-          {
-            slug: 'robot-vacuums',
-            iconImageUrl: '/show/robot_floor_cleaner.png',
-            names: {
-              zh: '扫地机器人',
-              en: 'Robot Vacuums',
-              es: 'Aspiradoras Robóticas',
-              pt: 'Aspiradores Robóticos'
-            },
-            descriptions: {
-              zh: '专注高效吸尘的智能扫地机。',
-              en: 'Smart robot vacuums focused on efficient suction.',
-              es: 'Aspiradoras robóticas inteligentes enfocadas en succión eficiente.',
-              pt: 'Aspiradores robóticos inteligentes focados em sucção eficiente.'
-            }
-          },
-          {
-            slug: 'robot-mops',
+            slug: 'window-cleaning-robots',
             iconImageUrl:
               '/show/local-unsplash/photo-1581091226825-a6a2a5aee158.jpg',
             names: {
-              zh: '扫拖一体机',
-              en: 'Vacuum-Mop Combos',
-              es: 'Combos Aspiradora-Fregona',
-              pt: 'Combos Aspirador-Esfregão'
+              zh: '擦窗机器人',
+              en: 'Window Cleaning Robots',
+              es: 'Robots Limpiacristales',
+              pt: 'Robôs de Limpeza de Vidros'
             },
             descriptions: {
-              zh: '先扫后拖，一步到位。',
-              en: 'Sweep and mop in one go.',
-              es: 'Barre y friega en un solo paso.',
-              pt: 'Varre e esfrega em um único passo.'
+              zh: '高效智能的窗户清洁解决方案。',
+              en: 'Efficient and intelligent window cleaning solutions.',
+              es: 'Soluciones de limpieza de ventanas eficientes e inteligentes.',
+              pt: 'Soluções de limpeza de vidros eficientes e inteligentes.'
+            }
+          },
+          {
+            slug: 'drones',
+            iconImageUrl:
+              '/show/local-unsplash/photo-1473968512647-3e447244af8f.jpg',
+            names: {
+              zh: '无人机',
+              en: 'Drones',
+              es: 'Drones',
+              pt: 'Drones'
+            },
+            descriptions: {
+              zh: '消费级与工业级无人机。',
+              en: 'Consumer and industrial drones.',
+              es: 'Drones de consumo e industriales.',
+              pt: 'Drones de consumo e industriais.'
+            }
+          },
+          {
+            slug: 'humanoid-robots',
+            iconImageUrl:
+              '/show/local-unsplash/photo-1485827404703-89b55fcc595e.jpg',
+            names: {
+              zh: '人形机器人',
+              en: 'Humanoid Robots',
+              es: 'Robots Humanoides',
+              pt: 'Robôs Humanoides'
+            },
+            descriptions: {
+              zh: '面向服务、研究与教育的人形机器人平台。',
+              en: 'Humanoid robot platforms for service, research and education.',
+              es: 'Plataformas de robots humanoides para servicio, investigación y educación.',
+              pt: 'Plataformas de robôs humanoides para serviço, pesquisa e educação.'
+            }
+          },
+          {
+            slug: 'robot-vacuums',
+            iconImageUrl:
+              '/show/local-unsplash/photo-1518640467707-6811f4a6ab73.jpg',
+            names: {
+              zh: '扫地机器人',
+              en: 'Vacuum Robots',
+              es: 'Robots Aspiradores',
+              pt: 'Robôs Aspiradores'
+            },
+            descriptions: {
+              zh: '智能扫地与扫拖一体机器人。',
+              en: 'Smart vacuum and vacuum-mop combo robots.',
+              es: 'Robots aspiradores inteligentes y combos aspiradora-fregona.',
+              pt: 'Robôs aspiradores inteligentes e combos aspirador-esfregão.'
             }
           }
         ]
@@ -280,6 +158,26 @@ async function main() {
       });
       categories.set(group.slug, parent.id);
 
+      for (const child of group.children) {
+        const childRecord = await tx.category.create({
+          data: {
+            parentId: parent.id,
+            slug: child.slug,
+            iconImageUrl: child.iconImageUrl,
+            isActive: true,
+            sortOrder: 0,
+            nameZh: child.names.zh,
+            nameEn: child.names.en,
+            nameEs: child.names.es,
+            namePt: child.names.pt,
+            descriptionZh: child.descriptions.zh,
+            descriptionEn: child.descriptions.en,
+            descriptionEs: child.descriptions.es,
+            descriptionPt: child.descriptions.pt
+          }
+        });
+        categories.set(child.slug, childRecord.id);
+      }
     }
 
     const products = [
