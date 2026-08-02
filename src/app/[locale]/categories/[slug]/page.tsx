@@ -3,7 +3,6 @@ import Link from 'next/link';
 import type { Locale } from '@/lib/i18n/config';
 
 import { CategoryChildGrid } from '@/components/storefront/category-child-grid';
-import { FilterSidebar } from '@/components/storefront/filter-sidebar';
 import { ProductCard } from '@/components/storefront/product-card';
 import { ResultsToolbar } from '@/components/storefront/results-toolbar';
 import { productListSorts, type ProductListSort } from '@/features/catalog/types';
@@ -59,9 +58,6 @@ export default async function CategoryPage({
         group.children.some((child) => child.slug === slug)
       )
     : undefined;
-  const selectedPrimary =
-    matchedRoot?.slug ?? parentRoot?.slug;
-  const selectedSecondary = matchedLeaf?.slug ?? '';
 
   const breadcrumbItems: Array<{ label: string; href?: string }> = [
     { label: Storefront.nav.home, href: `/${locale}` }
@@ -80,96 +76,57 @@ export default async function CategoryPage({
     breadcrumbItems.push({ label: Storefront.categories.title });
   }
 
+  const breadcrumbNav = (
+    <nav
+      aria-label="breadcrumb"
+      className="text-sm text-[var(--store-text-muted)]"
+    >
+      <ol className="flex flex-wrap items-center">
+        {breadcrumbItems.map((item, index) => (
+          <li key={`${item.label}-${index}`} className="flex items-center">
+            {index > 0 ? (
+              <span aria-hidden="true" className="mx-2">
+                /
+              </span>
+            ) : null}
+            {item.href ? (
+              <Link
+                href={item.href}
+                className="transition hover:text-[var(--store-text)]"
+              >
+                {item.label}
+              </Link>
+            ) : (
+              <span className="text-[var(--store-text)]">{item.label}</span>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
+  );
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <nav
-        aria-label="breadcrumb"
-        className="text-sm text-[var(--store-text-muted)]"
-      >
-        <ol className="flex flex-wrap items-center">
-          {breadcrumbItems.map((item, index) => (
-            <li key={`${item.label}-${index}`} className="flex items-center">
-              {index > 0 ? (
-                <span aria-hidden="true" className="mx-2">
-                  /
-                </span>
-              ) : null}
-              {item.href ? (
-                <Link
-                  href={item.href}
-                  className="transition hover:text-[var(--store-text)]"
-                >
-                  {item.label}
-                </Link>
-              ) : (
-                <span className="text-[var(--store-text)]">{item.label}</span>
-              )}
-            </li>
-          ))}
-        </ol>
-      </nav>
-
       {matchedRoot ? (
-        <div className="mt-6 space-y-6">
-          <ResultsToolbar
-            eyebrow={Storefront.categories.eyebrow}
-            title={matchedRoot.name}
-            description={
-              matchedRoot.description ?? Storefront.categories.description
-            }
-          />
-
-          <CategoryChildGrid locale={locale} categories={matchedRoot.children} />
-        </div>
-      ) : (
-        <form className="mt-6 grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
-          <FilterSidebar
-            search=""
-            category={selectedPrimary}
-            subcategory={selectedSecondary}
-            recommended={false}
-            hideCategoryFilters
-            copy={{
-              title: Storefront.products.filters.title,
-              searchPlaceholder: Storefront.searchPlaceholder,
-              allPrimary: Storefront.products.filters.allPrimary,
-              allSecondary: Storefront.products.filters.allSecondary,
-              recommendedOnly: Storefront.products.filters.recommendedOnly,
-              apply: Storefront.products.filters.apply
-            }}
-            categoryGroups={payload.categoryGroups}
-          />
-
-          <div className="space-y-6">
+        <>
+          {breadcrumbNav}
+          <div className="mt-6 space-y-6">
             <ResultsToolbar
               eyebrow={Storefront.categories.eyebrow}
-              title={matchedLeaf?.name ?? Storefront.categories.title}
+              title={matchedRoot.name}
               description={
-                matchedLeaf?.description ?? Storefront.categories.description
+                matchedRoot.description ?? Storefront.categories.description
               }
-              activeSummary={matchedLeaf?.name}
-              sort={sort}
-              sortLabel={Storefront.products.sortLabel}
-              sortOptions={[
-                {
-                  value: 'featured',
-                  label: Storefront.products.sortOptions.featured
-                },
-                {
-                  value: 'price-asc',
-                  label: Storefront.products.sortOptions.priceAsc
-                },
-                {
-                  value: 'price-desc',
-                  label: Storefront.products.sortOptions.priceDesc
-                },
-                {
-                  value: 'name-asc',
-                  label: Storefront.products.sortOptions.nameAsc
-                }
-              ]}
             />
 
+            <CategoryChildGrid locale={locale} categories={matchedRoot.children} />
+          </div>
+        </>
+      ) : (
+        <>
+          {breadcrumbNav}
+
+          <div className="mt-6">
             {payload.products.length === 0 ? (
               <p className="storefront-surface rounded-[var(--store-radius-lg)] p-6 text-sm text-[var(--store-text-muted)]">
                 {Storefront.emptyProducts}
@@ -184,12 +141,13 @@ export default async function CategoryPage({
                     ctaLabel={Storefront.productCta}
                     stockLabel={Storefront.product.stockAvailable}
                     fullWidth
+                    minimal
                   />
                 ))}
               </div>
             )}
           </div>
-        </form>
+        </>
       )}
     </div>
   );

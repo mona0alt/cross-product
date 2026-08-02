@@ -9,6 +9,8 @@ type BannerItem = {
   targetType: string;
   targetId: string | null;
   targetUrl: string | null;
+  targetCategorySlug?: string | null;
+  targetCategoryIsLeaf?: boolean;
   sortOrder: number;
   title?: string | null;
   description?: string | null;
@@ -39,6 +41,11 @@ export function BannerCarousel({
   const [isPaused, setIsPaused] = useState(false);
   const [allowsMotion, setAllowsMotion] = useState(true);
   const activeBanner = banners[activeIndex];
+  const activePrimaryHref = activeBanner?.targetCategorySlug
+    ? `${primaryHref}?${
+        activeBanner.targetCategoryIsLeaf ? 'subcategory' : 'category'
+      }=${encodeURIComponent(activeBanner.targetCategorySlug)}`
+    : primaryHref;
   const hasMultipleBanners = banners.length > 1;
   const activeTitle = activeBanner?.title?.trim();
   const activeDescription = activeBanner?.description?.trim();
@@ -135,7 +142,7 @@ export function BannerCarousel({
             </p>
             <div className="mt-8 flex flex-wrap gap-4">
               <a
-                href={primaryHref}
+                href={activePrimaryHref}
                 className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-bold uppercase tracking-wide text-black transition hover:bg-[var(--mk-accent)] hover:text-white"
               >
                 {copy.primaryCta}

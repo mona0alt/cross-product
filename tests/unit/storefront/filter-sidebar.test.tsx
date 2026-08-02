@@ -62,37 +62,25 @@ function renderSidebar(overrides: Partial<Parameters<typeof FilterSidebar>[0]> =
 }
 
 describe('FilterSidebar', () => {
-  it('renders one primary option per root category', () => {
+  it('renders custom selects backed by hidden form fields', () => {
     const markup = renderSidebar();
 
-    expect(markup).toContain('<option value="humanoids">Humanoids</option>');
-    expect(markup).toContain('<option value="drones">Drones</option>');
-    expect(markup).not.toContain('<option value="bipedal">Humanoids / Bipedal</option>');
+    expect(markup).toContain('<input type="hidden" name="category" value=""/>');
+    expect(markup).toContain('<input type="hidden" name="subcategory" value=""/>');
+    expect(markup).toContain('All categories');
+    expect(markup).toContain('All subcategories');
   });
 
-  it('groups subcategory options under optgroups labeled with root names', () => {
-    const markup = renderSidebar();
+  it('shows the selected category labels on the select buttons', () => {
+    const markup = renderSidebar({
+      category: 'humanoids',
+      subcategory: 'bipedal'
+    });
 
-    expect(markup).toContain('<optgroup label="Humanoids">');
-    expect(markup).toContain('<optgroup label="Drones">');
-
-    const humanoidsGroup = markup.match(
-      /<optgroup label="Humanoids">([\s\S]*?)<\/optgroup>/
-    );
-    expect(humanoidsGroup).not.toBeNull();
-    expect(humanoidsGroup![1]).toContain('<option value="bipedal">Bipedal</option>');
-    expect(humanoidsGroup![1]).toContain('<option value="quadruped">Quadruped</option>');
-
-    const dronesGroup = markup.match(/<optgroup label="Drones">([\s\S]*?)<\/optgroup>/);
-    expect(dronesGroup).not.toBeNull();
-    expect(dronesGroup![1]).toContain('<option value="camera-drones">Camera Drones</option>');
-  });
-
-  it('renders leaf option labels without the parent prefix', () => {
-    const markup = renderSidebar();
-
-    expect(markup).toContain('<option value="bipedal">Bipedal</option>');
-    expect(markup).not.toContain('Humanoids / Bipedal');
+    expect(markup).toContain('<input type="hidden" name="category" value="humanoids"/>');
+    expect(markup).toContain('<input type="hidden" name="subcategory" value="bipedal"/>');
+    expect(markup).toContain('Humanoids');
+    expect(markup).toContain('Bipedal');
   });
 
   it('hides category selects when hideCategoryFilters is set', () => {

@@ -5,7 +5,7 @@ import React from 'react';
 import type { ProductListSort } from '@/features/catalog/types';
 
 type ResultsToolbarProps = {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   description?: string;
   activeSummary?: string;
@@ -32,7 +32,7 @@ export function ResultsToolbar({
     <section className="rounded-[24px] border border-[#d8cec7] bg-white/82 px-5 py-6 shadow-[0_18px_48px_rgba(32,26,25,0.08)] backdrop-blur sm:px-6">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl">
-          <p className="storefront-eyebrow">{eyebrow}</p>
+          {eyebrow ? <p className="storefront-eyebrow">{eyebrow}</p> : null}
           <h1 className="mk-display-font text-3xl font-semibold text-[var(--mk-accent)] sm:text-4xl">
             {title}
           </h1>

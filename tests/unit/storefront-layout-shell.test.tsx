@@ -311,7 +311,7 @@ describe('storefront layout shell', () => {
     expect(megaMenu).not.toContain('/en/categories/industrial-drones"');
   });
 
-  it('keeps a hover dropdown for top-level categories without child items', () => {
+  it('renders top-level categories without child items as plain nav links without a dropdown', () => {
     const html = renderToStaticMarkup(
       <StorefrontHeader
         locale="en"
@@ -369,11 +369,11 @@ describe('storefront layout shell', () => {
       />
     );
 
-    expect(html).toContain('data-testid="desktop-mega-menu"');
+    expect(html).not.toContain('data-testid="desktop-mega-menu"');
     expect(html).toContain('/en/categories/industrial-drones');
-    expect(html).toContain('/uploads/categories/drone.webp');
     expect(html).toContain('Industrial Drones');
-    expect(html).toContain('Industrial drone systems');
+    expect(html).not.toContain('/uploads/categories/drone.webp');
+    expect(html).not.toContain('Industrial drone systems');
   });
 
   it('renders every configured backend category in the desktop navigation', () => {

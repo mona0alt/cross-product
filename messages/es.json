@@ -60,6 +60,9 @@
       "stockAvailable": "Stock disponible",
       "discountBadge": "{percent}% OFF"
     },
+    "productDetail": {
+      "recommendedTitle": "Productos recomendados"
+    },
     "contactForm": {
       "title": "Enviar mensaje",
       "name": "Nombre",
@@ -329,6 +332,7 @@
       "categoryCreatedNotice": "Categoría creada.",
       "categorySavedNotice": "Categoría guardada.",
       "categorySaveError": "No se pudo guardar. Revisa el formulario.",
+      "categorySlugConflictError": "Este slug ya lo usa otra categoría. Elige uno diferente.",
       "productCreateTitle": "Nuevo producto",
       "productEditTitle": "Editar producto",
       "productCreateDescription": "Completa la información y guarda el producto.",

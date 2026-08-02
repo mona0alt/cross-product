@@ -3,8 +3,12 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { ProductGallery } from '@/components/storefront/product-gallery';
+import { ProductRecommendationsCarousel } from '@/components/storefront/product-recommendations-carousel';
 import { getRuntimeSystemSettings } from '@/features/admin/system-settings-actions';
-import { getProductDetailBySlug } from '@/features/catalog/queries';
+import {
+  getProductDetailBySlug,
+  getRecommendedProducts
+} from '@/features/catalog/queries';
 import { defaultLocale, isLocale, type Locale } from '@/lib/i18n/config';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
 
@@ -27,6 +31,8 @@ export default async function ProductDetailPage({
   if (!product) {
     notFound();
   }
+
+  const recommendedProducts = await getRecommendedProducts(locale, product.id);
 
   const galleryImages =
     product.images.length > 0 ? product.images : [product.coverImageUrl];
@@ -127,6 +133,18 @@ export default async function ProductDetailPage({
           </div>
         </aside>
       </section>
+
+      {recommendedProducts.length > 0 ? (
+        <section className="mt-8 sm:mt-10">
+          <h2 className="mk-display-font mb-5 text-2xl font-semibold text-[var(--mk-accent)] sm:text-3xl">
+            {Storefront.productDetail.recommendedTitle}
+          </h2>
+          <ProductRecommendationsCarousel
+            locale={locale}
+            products={recommendedProducts}
+          />
+        </section>
+      ) : null}
     </div>
   );
 }

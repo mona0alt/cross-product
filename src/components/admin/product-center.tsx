@@ -240,6 +240,7 @@ type ProductCenterCopy = {
   categoryCreatedNotice: string;
   categorySavedNotice: string;
   categorySaveError: string;
+  categorySlugConflictError: string;
   productCreateTitle: string;
   productEditTitle: string;
   productCreateDescription: string;
@@ -381,6 +382,7 @@ const defaultProductCenterCopy: ProductCenterCopy = {
   categoryCreatedNotice: '类目已新增。',
   categorySavedNotice: '类目已保存。',
   categorySaveError: '保存失败，请检查表单。',
+  categorySlugConflictError: 'Slug 已被其他类目占用，请更换后再保存。',
   productCreateTitle: '新增商品',
   productEditTitle: '编辑商品',
   productCreateDescription: '填写商品信息后保存到后台。',
@@ -1612,42 +1614,51 @@ function CategoryItem({
 }) {
   const isRoot = !category.parentId;
   const showSelected = isSelected && !isRoot;
+  const actionButtons = (
+    <div className="flex shrink-0 items-center gap-1">
+      <button
+        type="button"
+        aria-label={formatCopy(copy.editCategoryLabel, { name: category.nameZh })}
+        onClick={() => onEdit(category.id)}
+        className="flex h-7 w-7 items-center justify-center rounded-md text-admin-text-muted transition hover:bg-white hover:text-admin-accent"
+      >
+        <Edit3 className="h-3.5 w-3.5" />
+      </button>
+      <form action={deleteCategoryFormAction.bind(null, category.id)}>
+        <button
+          type="submit"
+          aria-label={formatCopy(copy.deleteCategoryLabel, { name: category.nameZh })}
+          title={copy.deleteCategoryTitle}
+          className="flex h-7 w-7 items-center justify-center rounded-md text-admin-text-muted transition hover:bg-white hover:text-rose-600"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      </form>
+    </div>
+  );
+
+  if (isRoot) {
+    return (
+      <div className="group flex items-center justify-between gap-2.5 px-2 pb-1 pt-4 first:pt-1">
+        <div className="flex min-w-0 flex-1 items-center gap-1.5">
+          <FolderTree className="h-3.5 w-3.5 shrink-0 text-admin-text-muted" />
+          <span className="truncate text-[11px] font-bold uppercase tracking-[0.08em] text-admin-text-secondary">
+            {category.nameZh}
+          </span>
+        </div>
+        {actionButtons}
+      </div>
+    );
+  }
+
   return (
     <div
-      className={`group flex items-center justify-between gap-2.5 rounded-lg border p-2.5 transition focus-within:ring-2 focus-within:ring-admin-accent/20 ${
-        isRoot ? 'pl-3' : 'pl-8'
-      } ${
+      className={`group flex items-center justify-between gap-2.5 rounded-lg border p-2.5 pl-8 transition focus-within:ring-2 focus-within:ring-admin-accent/20 ${
         showSelected
           ? 'border-admin-accent/25 bg-blue-50 text-admin-accent'
-          : category.isActive
-          ? 'border-admin-border bg-white text-admin-text-secondary hover:bg-admin-elevated'
           : 'border-admin-border bg-white text-admin-text-secondary hover:bg-admin-elevated'
       }`}
     >
-      {isRoot ? (
-        <div className="flex min-w-0 flex-1 self-stretch items-center gap-2.5 text-left">
-          {category.iconImageUrl ? (
-            <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-lg border border-admin-border bg-white">
-              <NextImage
-                src={category.iconImageUrl}
-                alt={category.nameZh}
-                fill
-                sizes="32px"
-                className="object-cover"
-                unoptimized
-              />
-            </span>
-          ) : (
-            <FolderTree className="h-5 w-5 shrink-0" />
-          )}
-          <span className="min-w-0">
-            <span className="block truncate text-xs font-bold">{category.nameZh}</span>
-            <span className="block truncate text-xs text-admin-text-muted">
-              {category.nameEn}
-            </span>
-          </span>
-        </div>
-      ) : (
       <button
         type="button"
         aria-pressed={isSelected}
@@ -1675,27 +1686,7 @@ function CategoryItem({
           </span>
         </span>
       </button>
-      )}
-      <div className="flex shrink-0 items-center gap-1">
-        <button
-          type="button"
-          aria-label={formatCopy(copy.editCategoryLabel, { name: category.nameZh })}
-          onClick={() => onEdit(category.id)}
-          className="flex h-7 w-7 items-center justify-center rounded-md text-admin-text-muted transition hover:bg-white hover:text-admin-accent"
-        >
-          <Edit3 className="h-3.5 w-3.5" />
-        </button>
-        <form action={deleteCategoryFormAction.bind(null, category.id)}>
-          <button
-            type="submit"
-            aria-label={formatCopy(copy.deleteCategoryLabel, { name: category.nameZh })}
-            title={copy.deleteCategoryTitle}
-            className="flex h-7 w-7 items-center justify-center rounded-md text-admin-text-muted transition hover:bg-white hover:text-rose-600"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </button>
-        </form>
-      </div>
+      {actionButtons}
     </div>
   );
 }
@@ -1719,6 +1710,13 @@ function CategoryEditorDrawer({
 }) {
   const router = useRouter();
   const [formError, setFormError] = useState('');
+  const [parentId, setParentId] = useState(category?.parentId ?? '');
+
+  useEffect(() => {
+    if (isOpen) {
+      setParentId(category?.parentId ?? '');
+    }
+  }, [isOpen, category]);
 
   if (!isOpen) {
     return null;
@@ -1743,7 +1741,12 @@ function CategoryEditorDrawer({
         savedMessage: copy.categorySavedNotice
       });
     } catch (error) {
-      setFormError(error instanceof Error ? error.message : copy.categorySaveError);
+      const message = error instanceof Error ? error.message : '';
+      setFormError(
+        message.includes('Unique constraint')
+          ? copy.categorySlugConflictError
+          : message || copy.categorySaveError
+      );
     }
   };
   const parentOptions = categories.filter(
@@ -1758,12 +1761,18 @@ function CategoryEditorDrawer({
   ];
 
   return (
-    <aside
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="category-editor-title"
-      className="fixed inset-y-0 right-0 z-50 flex w-full max-w-[560px] flex-col border-l border-admin-border bg-white shadow-[-24px_0_48px_rgba(15,23,42,0.12)]"
-    >
+    <>
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 z-40 bg-slate-900/20"
+        onClick={onClose}
+      />
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="category-editor-title"
+        className="fixed inset-y-0 right-0 z-50 flex w-full max-w-[560px] flex-col border-l border-admin-border bg-white shadow-[-24px_0_48px_rgba(15,23,42,0.12)]"
+      >
       <div className="flex items-center justify-between border-b border-admin-border bg-admin-elevated px-5 py-4">
         <div>
           <h3 id="category-editor-title" className="text-base font-bold text-admin-text-primary">
@@ -1783,7 +1792,11 @@ function CategoryEditorDrawer({
         </button>
       </div>
 
-      <form action={handleFormAction} className="flex min-h-0 flex-1 flex-col">
+      <form
+        key={`${mode}:${category?.id ?? 'new'}`}
+        action={handleFormAction}
+        className="flex min-h-0 flex-1 flex-col"
+      >
         <div className="flex-1 space-y-5 overflow-y-auto p-5">
           <div className="grid gap-3 md:grid-cols-2">
             <Field label={copy.parentCategory}>
@@ -1792,6 +1805,7 @@ function CategoryEditorDrawer({
                 defaultValue={category?.parentId ?? ''}
                 options={parentCategoryOptions}
                 compact
+                onValueChange={setParentId}
               />
             </Field>
             <Field label="Slug">
@@ -1810,19 +1824,21 @@ function CategoryEditorDrawer({
                 type="number"
               />
             </Field>
-            <div className="md:col-span-2">
-              <AdminImageUploadInput
-                name="iconImageUrl"
-                label={copy.categoryHeroImage}
-                uploadLabel={copy.uploadHeroImage}
-                defaultValue={category?.iconImageUrl ?? ''}
-                scope="category"
-                showPreview
-                previewAlt={category?.nameZh ?? copy.categoryHeroPreviewAlt}
-                clearLabel={copy.removeCategoryHeroImage}
-                uploadCopy={getProductImageUploadCopy(copy)}
-              />
-            </div>
+            {parentId ? (
+              <div className="md:col-span-2">
+                <AdminImageUploadInput
+                  name="iconImageUrl"
+                  label={copy.categoryHeroImage}
+                  uploadLabel={copy.uploadHeroImage}
+                  defaultValue={category?.iconImageUrl ?? ''}
+                  scope="category"
+                  showPreview
+                  previewAlt={category?.nameZh ?? copy.categoryHeroPreviewAlt}
+                  clearLabel={copy.removeCategoryHeroImage}
+                  uploadCopy={getProductImageUploadCopy(copy)}
+                />
+              </div>
+            ) : null}
             <Field label={copy.nameZhLabel}>
               <input name="nameZh" defaultValue={category?.nameZh ?? ''} className={drawerInputClass} />
             </Field>
@@ -1903,7 +1919,8 @@ function CategoryEditorDrawer({
           </button>
         </footer>
       </form>
-    </aside>
+      </aside>
+    </>
   );
 }
 
@@ -2049,12 +2066,18 @@ function ProductEditorDrawerContent({
   const defaultProductStatus = product?.status === 'published' ? 'published' : 'draft';
 
   return (
-    <aside
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="product-editor-title"
-      className="fixed inset-y-0 right-0 z-50 flex w-full max-w-[620px] flex-col border-l border-admin-border bg-white shadow-[-24px_0_48px_rgba(15,23,42,0.12)]"
-    >
+    <>
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 z-40 bg-slate-900/20"
+        onClick={onClose}
+      />
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="product-editor-title"
+        className="fixed inset-y-0 right-0 z-50 flex w-full max-w-[620px] flex-col border-l border-admin-border bg-white shadow-[-24px_0_48px_rgba(15,23,42,0.12)]"
+      >
       <div className="flex items-center justify-between border-b border-admin-border bg-admin-elevated px-5 py-4">
         <div>
           <h3 id="product-editor-title" className="text-base font-bold text-admin-text-primary">
@@ -2144,13 +2167,6 @@ function ProductEditorDrawerContent({
                   defaultValue={defaultProductCategoryId}
                   placeholder={copy.selectCategory}
                   extraOption={missingCategoryOption}
-                />
-              </Field>
-              <Field label={copy.priceUsd}>
-                <input
-                  name="priceUsd"
-                  defaultValue={product?.priceUsd ?? ''}
-                  className={drawerInputClass}
                 />
               </Field>
               <Field label={copy.sortOrder}>
@@ -2243,7 +2259,8 @@ function ProductEditorDrawerContent({
           />
         </footer>
       </form>
-    </aside>
+      </aside>
+    </>
   );
 }
 

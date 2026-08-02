@@ -23,6 +23,8 @@ function getHomepageHeroBanners(
       targetType: 'category',
       targetId: category.id,
       targetUrl: `/${locale}/categories/${category.slug}`,
+      targetCategorySlug: category.slug,
+      targetCategoryIsLeaf: true,
       sortOrder: index + 1,
       title: category.name,
       description: category.description

@@ -60,6 +60,9 @@
       "stockAvailable": "In stock",
       "discountBadge": "{percent}% OFF"
     },
+    "productDetail": {
+      "recommendedTitle": "Recommended Products"
+    },
     "contactForm": {
       "title": "Send a message",
       "name": "Name",
@@ -329,6 +332,7 @@
       "categoryCreatedNotice": "Category created.",
       "categorySavedNotice": "Category saved.",
       "categorySaveError": "Save failed. Check the form.",
+      "categorySlugConflictError": "This slug is already used by another category. Please choose a different one.",
       "productCreateTitle": "New product",
       "productEditTitle": "Edit product",
       "productCreateDescription": "Fill in product information and save it to the admin system.",

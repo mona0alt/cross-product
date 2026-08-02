@@ -20,14 +20,6 @@ export function getPublishBlockers(
     blockers.push('productCode');
   }
 
-  if (
-    product.priceUsd == null ||
-    !Number.isFinite(product.priceUsd) ||
-    product.priceUsd <= 0
-  ) {
-    blockers.push('priceUsd');
-  }
-
   if (!hasText(product.coverImageUrl)) {
     blockers.push('coverImageUrl');
   }

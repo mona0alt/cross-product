@@ -209,7 +209,7 @@ describe('ProductCenter', () => {
     expect(html).not.toMatch(/>\s*添加类目\s*</);
     expect(html).not.toContain('href="/admin/categories"');
     expect(html).toContain('人形机器人');
-    expect(html).toContain('Humanoid Robots');
+    expect(html).not.toContain('Humanoid Robots');
     expect(html).toContain('无人机');
     expect(html).not.toContain('>1 个商品</span>');
     expect(html).toContain('aria-label="编辑类目 人形机器人"');
@@ -355,12 +355,12 @@ describe('ProductCenter', () => {
     );
 
     expect(html).toContain(
-      '<span class="block truncate text-xs font-bold">机器人大类</span>'
+      '<span class="truncate text-[11px] font-bold uppercase tracking-[0.08em] text-admin-text-secondary">机器人大类</span>'
     );
     expect(html.match(/aria-pressed/g)).toHaveLength(2);
     expect(html.match(/aria-pressed="false"/g)).toHaveLength(2);
     expect(html.match(/pl-8/g)).toHaveLength(2);
-    expect(html.match(/pl-3/g)).toHaveLength(1);
+    expect(html).not.toContain('pl-3');
     expect(html).not.toContain('bg-blue-50 text-admin-accent');
   });
 
@@ -740,11 +740,27 @@ describe('ProductCenter', () => {
     expect(html).not.toContain(
       'name="parentId" value=""/><select aria-hidden="true" tabindex="-1" class="sr-only" disabled="">'
     );
-    expect(html).toContain('类目主图');
-    expect(html).toContain('上传主图');
+    expect(html).not.toContain('类目主图');
+    expect(html).not.toContain('上传主图');
     expect(html).toContain('中文名称');
     expect(html).toContain('保存类目');
     expect(html).not.toContain('href="/admin/categories"');
+  });
+
+  it('shows the category image field when editing a child category', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={treeCategories}
+        products={treeProducts}
+        defaultSelectedCategoryId="cat-bipedal"
+        defaultCategoryEditorOpen
+        defaultCategoryEditorMode="edit"
+      />
+    );
+
+    expect(html).toContain('编辑类目');
+    expect(html).toContain('类目主图');
+    expect(html).toContain('上传主图');
   });
 
   it('renders the category edit drawer for the selected category when requested', () => {
@@ -761,8 +777,7 @@ describe('ProductCenter', () => {
     expect(html).toContain('编辑类目');
     expect(html).toContain('humanoid-robots');
     expect(html).toContain('人形机器人');
-    expect(html).toContain('/show/robot_humanoid.png');
-    expect(html).toContain('移除类目主图');
+    expect(html).not.toContain('移除类目主图');
     expect(html).toContain(
       '<input type="hidden" name="parentId" value=""/><select aria-hidden="true" tabindex="-1" class="sr-only">'
     );

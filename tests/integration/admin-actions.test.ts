@@ -12,6 +12,7 @@ const categoryFindUnique = vi.fn();
 const categoryCreate = vi.fn();
 const categoryUpdate = vi.fn();
 const categoryDelete = vi.fn();
+const categoryCount = vi.fn();
 const bannerCreate = vi.fn();
 const bannerUpdate = vi.fn();
 const messageFindMany = vi.fn();
@@ -39,7 +40,8 @@ vi.mock('@/lib/db', () => ({
       findUnique: categoryFindUnique,
       create: categoryCreate,
       update: categoryUpdate,
-      delete: categoryDelete
+      delete: categoryDelete,
+      count: categoryCount
     },
     banner: {
       create: bannerCreate,
@@ -467,23 +469,39 @@ describe('admin actions', () => {
     expect(revalidatePath).toHaveBeenCalledWith('/admin/categories');
   });
 
-  it('soft deletes categories from form actions by disabling them', async () => {
-    categoryUpdate.mockResolvedValue({
-      id: 'cat-drones',
-      slug: 'drones',
-      isActive: false
-    });
+  it('hard deletes categories from form actions so the slug can be reused', async () => {
+    categoryCount.mockResolvedValue(0);
+    productCount.mockResolvedValue(0);
+    categoryDelete.mockResolvedValue({ id: 'cat-drones' });
 
     const { deleteCategoryFormAction } = await import('@/features/admin/category-actions');
     await deleteCategoryFormAction('cat-drones');
 
-    expect(categoryDelete).not.toHaveBeenCalled();
-    expect(categoryUpdate).toHaveBeenCalledWith({
-      where: { id: 'cat-drones' },
-      data: { isActive: false }
+    expect(categoryDelete).toHaveBeenCalledWith({
+      where: { id: 'cat-drones' }
     });
     expect(revalidatePath).toHaveBeenCalledWith('/admin/products');
     expect(revalidatePath).toHaveBeenCalledWith('/admin/categories');
+  });
+
+  it('blocks deleting a category that still has children or products', async () => {
+    categoryCount.mockResolvedValue(1);
+    productCount.mockResolvedValue(0);
+
+    const { deleteCategoryFormAction } = await import('@/features/admin/category-actions');
+
+    await expect(deleteCategoryFormAction('cat-drones')).rejects.toThrow(
+      'CATEGORY_HAS_CHILDREN'
+    );
+    expect(categoryDelete).not.toHaveBeenCalled();
+
+    categoryCount.mockResolvedValue(0);
+    productCount.mockResolvedValue(2);
+
+    await expect(deleteCategoryFormAction('cat-drones')).rejects.toThrow(
+      'CATEGORY_HAS_PRODUCTS'
+    );
+    expect(categoryDelete).not.toHaveBeenCalled();
   });
 
   it('blocks publishing when required fields are incomplete', async () => {

@@ -60,6 +60,9 @@
       "stockAvailable": "现货供应",
       "discountBadge": "{percent}% 优惠"
     },
+    "productDetail": {
+      "recommendedTitle": "推荐产品"
+    },
     "contactForm": {
       "title": "提交留言",
       "name": "姓名",
@@ -329,6 +332,7 @@
       "categoryCreatedNotice": "类目已新增。",
       "categorySavedNotice": "类目已保存。",
       "categorySaveError": "保存失败，请检查表单。",
+      "categorySlugConflictError": "Slug 已被其他类目占用，请更换后再保存。",
       "productCreateTitle": "新增商品",
       "productEditTitle": "编辑商品",
       "productCreateDescription": "填写商品信息后保存到后台。",

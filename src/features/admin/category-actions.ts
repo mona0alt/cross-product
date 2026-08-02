@@ -65,13 +65,12 @@ export async function updateCategory(id: string, input: Partial<CategoryInput>) 
 }
 
 export async function deleteCategoryById(id: string) {
+  await requireCategoryHasNoChildren(id);
+  await requireCategoryHasNoProducts(id);
+
   return db.category.delete({
     where: { id }
   });
-}
-
-export async function disableCategoryById(id: string) {
-  return updateCategory(id, { isActive: false });
 }
 
 function revalidateCategoryAdminPaths() {
@@ -161,7 +160,7 @@ export async function updateCategoryFormAction(id: string, formData: FormData) {
 }
 
 export async function deleteCategoryFormAction(id: string) {
-  await disableCategoryById(id);
+  await deleteCategoryById(id);
 
   revalidateCategoryAdminPaths();
 }

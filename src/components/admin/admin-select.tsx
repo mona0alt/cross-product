@@ -15,7 +15,8 @@ export function AdminSelect({
   placeholder,
   className = '',
   compact = false,
-  disabled = false
+  disabled = false,
+  onValueChange
 }: {
   name: string;
   options: AdminSelectOption[];
@@ -24,6 +25,7 @@ export function AdminSelect({
   className?: string;
   compact?: boolean;
   disabled?: boolean;
+  onValueChange?: (value: string) => void;
 }) {
   const selectId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -57,6 +59,7 @@ export function AdminSelect({
 
     setSelectedValue(value);
     setIsOpen(false);
+    onValueChange?.(value);
   };
 
   return (
@@ -108,8 +111,11 @@ export function AdminSelect({
               ? 0
               : (selectedIndex + direction + options.length) % options.length;
 
-          setSelectedValue(options[nextIndex]?.value ?? selectedValue);
+          const nextValue = options[nextIndex]?.value ?? selectedValue;
+
+          setSelectedValue(nextValue);
           setIsOpen(true);
+          onValueChange?.(nextValue);
         }}
         className={`group flex w-full items-center justify-between gap-3 rounded-lg border border-admin-border bg-admin-surface text-left text-sm font-medium text-admin-text-primary shadow-[0_1px_2px_rgba(15,23,42,0.04)] outline-none transition-all duration-200 hover:border-admin-border-strong hover:bg-admin-elevated focus:border-admin-accent focus:ring-2 focus:ring-admin-accent/15 disabled:cursor-not-allowed disabled:bg-admin-elevated disabled:text-admin-text-muted disabled:hover:border-admin-border ${
           compact ? 'px-3 py-2' : 'px-4 py-2.5'

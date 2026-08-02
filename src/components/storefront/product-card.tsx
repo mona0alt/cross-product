@@ -21,7 +21,9 @@ export function ProductCard({
   fullWidth,
   variant = 'standard',
   discountBadgeTemplate,
-  discountPercent
+  discountPercent,
+  hidePrice,
+  minimal
 }: {
   locale: Locale;
   product: StorefrontProductCard;
@@ -31,6 +33,8 @@ export function ProductCard({
   variant?: 'standard' | 'premiumCatalog';
   discountBadgeTemplate?: string;
   discountPercent?: number;
+  hidePrice?: boolean;
+  minimal?: boolean;
 }) {
   const discountBadgeLabel =
     discountPercent && discountBadgeTemplate
@@ -53,7 +57,7 @@ export function ProductCard({
             <img
               src={product.coverImageUrl}
               alt={product.name}
-              className="h-full w-full object-contain p-4 transition duration-700 group-hover:scale-[1.045]"
+              className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.045]"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-xs font-semibold uppercase tracking-wide text-[var(--mk-text-muted)]">
@@ -92,7 +96,7 @@ export function ProductCard({
           <img
             src={product.coverImageUrl}
             alt={product.name}
-            className="h-full w-full object-contain p-4 transition duration-700 group-hover:scale-[1.04]"
+            className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-[var(--mk-bg-muted)] text-xs font-semibold uppercase tracking-wide text-[var(--mk-text-muted)]">
@@ -111,29 +115,37 @@ export function ProductCard({
         <h3 className="mk-display-font line-clamp-2 text-lg font-semibold leading-snug text-[var(--mk-accent)]">
           {product.name}
         </h3>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--mk-highlight)]">
-          {product.productCode}
-        </p>
-        <p className="text-xs text-[var(--mk-text-muted)]">{product.category?.name}</p>
+        {minimal ? null : (
+          <>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--mk-highlight)]">
+              {product.productCode}
+            </p>
+            <p className="text-xs text-[var(--mk-text-muted)]">{product.category?.name}</p>
+          </>
+        )}
 
-        <div className="mt-1 flex items-baseline gap-2">
-          {discountPercent ? (
-            <>
+        {hidePrice || minimal ? null : (
+          <div className="mt-1 flex items-baseline gap-2">
+            {discountPercent ? (
+              <>
+                <span className="text-lg font-bold text-[var(--mk-text)]">
+                  {formatPrice(product.priceUsd)}
+                </span>
+                <span className="text-sm text-[var(--mk-text-muted)] line-through">
+                  {formatPrice(Math.round(product.priceUsd * (1 + discountPercent / 100)))}
+                </span>
+              </>
+            ) : (
               <span className="text-lg font-bold text-[var(--mk-text)]">
                 {formatPrice(product.priceUsd)}
               </span>
-              <span className="text-sm text-[var(--mk-text-muted)] line-through">
-                {formatPrice(Math.round(product.priceUsd * (1 + discountPercent / 100)))}
-              </span>
-            </>
-          ) : (
-            <span className="text-lg font-bold text-[var(--mk-text)]">
-              {formatPrice(product.priceUsd)}
-            </span>
-          )}
-        </div>
+            )}
+          </div>
+        )}
 
-        <p className="text-xs text-[var(--mk-success)]">{stockLabel}</p>
+        {minimal ? null : (
+          <p className="text-xs text-[var(--mk-success)]">{stockLabel}</p>
+        )}
 
         <Link
           href={`/${locale}/products/${product.slug}`}

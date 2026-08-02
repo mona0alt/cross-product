@@ -69,6 +69,8 @@ export type HomepagePayload = {
     targetType: string;
     targetId: string | null;
     targetUrl: string | null;
+    targetCategorySlug?: string | null;
+    targetCategoryIsLeaf?: boolean;
     sortOrder: number;
     title?: string | null;
     description?: string | null;

@@ -3,7 +3,6 @@ import type { Locale } from '@/lib/i18n/config';
 
 import { FilterSidebar } from '@/components/storefront/filter-sidebar';
 import { ProductCard } from '@/components/storefront/product-card';
-import { ResultsToolbar } from '@/components/storefront/results-toolbar';
 import { productListSorts, type ProductListSort } from '@/features/catalog/types';
 import { getProductListPayload } from '@/features/catalog/queries';
 import { defaultLocale, isLocale } from '@/lib/i18n/config';
@@ -53,7 +52,7 @@ export default async function ProductsPage({
   );
 
   return (
-    <section className="bg-[#f4f0ed] py-6 sm:py-8 lg:py-10">
+    <section className="flex-1 bg-[var(--mk-bg)] py-6 sm:py-8 lg:py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <form className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
           <FilterSidebar
@@ -73,32 +72,6 @@ export default async function ProductsPage({
           />
 
           <div className="space-y-6">
-            <ResultsToolbar
-              eyebrow={Storefront.products.eyebrow}
-              title={Storefront.products.title}
-              description={Storefront.products.description}
-              sort={sort}
-              sortLabel={Storefront.products.sortLabel}
-              sortOptions={[
-                {
-                  value: 'featured',
-                  label: Storefront.products.sortOptions.featured
-                },
-                {
-                  value: 'price-asc',
-                  label: Storefront.products.sortOptions.priceAsc
-                },
-                {
-                  value: 'price-desc',
-                  label: Storefront.products.sortOptions.priceDesc
-                },
-                {
-                  value: 'name-asc',
-                  label: Storefront.products.sortOptions.nameAsc
-                }
-              ]}
-            />
-
             {payload.products.length === 0 ? (
               <p className="rounded-[24px] border border-[#d8cec7] bg-white/82 p-6 text-sm text-[var(--mk-text-muted)] shadow-[0_18px_48px_rgba(32,26,25,0.08)]">
                 {Storefront.emptyProducts}

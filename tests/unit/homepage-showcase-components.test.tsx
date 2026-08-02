@@ -208,9 +208,9 @@ describe('homepage showcase components', () => {
     expect(html).toContain('h-full w-full object-cover transition duration-700 group-hover/card:scale-[1.04]');
     expect(html).toContain('absolute inset-0 bg-gradient-to-t from-[#201a19]/78 via-[#705951]/18 to-transparent');
     expect(html).not.toContain('absolute left-4 right-4 top-4 flex items-center justify-between gap-3');
-    expect(html).toContain('absolute bottom-4 left-4 right-4 translate-y-0 text-white opacity-100 transition duration-300 ease-out md:bottom-6 md:left-6 md:right-6 md:translate-y-8 md:opacity-0 md:group-hover/card:translate-y-0 md:group-hover/card:opacity-100 md:group-focus-visible/card:translate-y-0 md:group-focus-visible/card:opacity-100 motion-reduce:transform-none motion-reduce:transition-none');
+    expect(html).toContain('absolute translate-y-0 text-white opacity-100 transition duration-300 ease-out md:translate-y-8 md:opacity-0 md:group-hover/card:translate-y-0 md:group-hover/card:opacity-100 md:group-focus-visible/card:translate-y-0 md:group-focus-visible/card:opacity-100 motion-reduce:transform-none motion-reduce:transition-none bottom-4 left-4 right-4 md:bottom-6 md:left-6 md:right-6');
     expect(html).toContain('text-[10px] font-semibold uppercase tracking-[0.14em] text-[#ffe088]');
-    expect(html).toContain('mk-display-font mt-1.5 line-clamp-2 text-lg font-semibold leading-snug sm:text-xl');
+    expect(html).toContain('mk-display-font mt-1.5 line-clamp-2 font-semibold leading-snug text-lg sm:text-xl');
     expect(html).toContain('Humanoids');
     expect(html).toContain('Drones');
     expect(html).toContain('Cleaners');

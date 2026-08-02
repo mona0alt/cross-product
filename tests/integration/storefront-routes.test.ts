@@ -4,11 +4,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const getHomepagePayload = vi.fn();
 const getProductListPayload = vi.fn();
 const getProductDetailBySlug = vi.fn();
+const getRecommendedProducts = vi.fn();
 
 vi.mock('@/features/catalog/queries', () => ({
   getHomepagePayload,
   getProductListPayload,
-  getProductDetailBySlug
+  getProductDetailBySlug,
+  getRecommendedProducts
 }));
 
 vi.mock('@/features/admin/system-settings-actions', () => ({
@@ -41,6 +43,7 @@ describe('storefront routes', () => {
     getHomepagePayload.mockReset();
     getProductListPayload.mockReset();
     getProductDetailBySlug.mockReset();
+    getRecommendedProducts.mockReset();
   });
 
   it('renders the localized homepage', async () => {
@@ -175,7 +178,7 @@ describe('storefront routes', () => {
 
     expect(html).toContain('Star River Pro Phone');
     expect(html).toContain('phone');
-    expect(html).toContain('bg-[#f4f0ed] py-6 sm:py-8 lg:py-10');
+    expect(html).toContain('flex-1 bg-[var(--mk-bg)] py-6 sm:py-8 lg:py-10');
     expect(html).toContain('mx-auto max-w-7xl px-4 sm:px-6 lg:px-8');
     expect(html).toContain('grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]');
     expect(html).toContain('grid gap-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4');
@@ -187,16 +190,16 @@ describe('storefront routes', () => {
     expect(html).toContain('name="search"');
     expect(html).toContain('value="phone"');
     expect(html).toContain('name="category"');
-    expect(html).toContain('<option value="electronics" selected="">Electronics</option>');
+    expect(html).toContain('<input type="hidden" name="category" value="electronics"/>');
     expect(html).toContain('name="subcategory"');
-    expect(html).toContain('<optgroup label="Electronics">');
-    expect(html).toContain('<option value="electronics-phones" selected="">Phones</option>');
+    expect(html).toContain('<input type="hidden" name="subcategory" value="electronics-phones"/>');
+    expect(html).toContain('Electronics');
+    expect(html).toContain('Phones');
     expect(html).toContain('name="recommended"');
-    expect(html).toContain('name="sort"');
-    expect(html).toContain('Sort by');
-    expect(html).toContain('Price: high to low');
-    expect(html).toContain('Catalog');
-    expect(html).toContain('Products');
+    expect(html).not.toContain('name="sort"');
+    expect(html).not.toContain('Sort by');
+    expect(html).not.toContain('Price: high to low');
+    expect(html).not.toContain('Catalog');
     expect(html).not.toContain('View details');
     expect(html).not.toContain('Browse products');
     expect(html).not.toContain('P-1001');
@@ -261,6 +264,24 @@ describe('storefront routes', () => {
         }
       }
     });
+    getRecommendedProducts.mockResolvedValueOnce([
+      {
+        id: 'product-2',
+        slug: 'related-phone',
+        productCode: 'P-1002',
+        coverImageUrl: '/related.jpg',
+        priceUsd: 499,
+        isRecommended: true,
+        name: 'Related Phone',
+        intro: 'Related intro',
+        detail: 'Related detail',
+        images: ['/related.jpg'],
+        category: {
+          slug: 'electronics',
+          name: 'Electronics'
+        }
+      }
+    ]);
     getHomepagePayload.mockResolvedValue({
       banners: [],
       featuredCategories: [],
@@ -317,8 +338,10 @@ describe('storefront routes', () => {
     expect(html).not.toContain('$699');
     expect(html).not.toContain('Recommended only');
     expect(html).not.toContain('View details');
-    expect(html).not.toContain('Related Products');
-    expect(html).not.toContain('Related Phone');
+    expect(html).toContain('Recommended Products');
+    expect(html).toContain('Related Phone');
+    expect(html).toContain('href="/en/products/related-phone"');
+    expect(getRecommendedProducts).toHaveBeenCalledWith('en', 'product-1');
     expect(getHomepagePayload).not.toHaveBeenCalled();
 
     getProductDetailBySlug.mockResolvedValueOnce(null);
@@ -418,7 +441,7 @@ describe('storefront routes', () => {
     );
   });
 
-  it('renders a leaf category page with breadcrumbs, filters and products', async () => {
+  it('renders a leaf category page with breadcrumbs and products', async () => {
     getProductListPayload.mockResolvedValue({
       filters: {
         categorySlug: 'electronics-phones',
@@ -474,8 +497,8 @@ describe('storefront routes', () => {
     expect(html).toContain('aria-label="breadcrumb"');
     expect(html).toContain('Star River Pro Phone');
     expect(html).toContain('href="/en/products/star-river-pro-phone"');
-    expect(html).toContain('name="search"');
-    expect(html).toContain('name="sort"');
+    expect(html).not.toContain('name="search"');
+    expect(html).not.toContain('name="sort"');
 
     const breadcrumb =
       html.match(/aria-label="breadcrumb"[\s\S]*?<\/nav>/)?.[0] ?? '';

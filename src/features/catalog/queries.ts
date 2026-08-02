@@ -245,18 +245,27 @@ export async function getHomepagePayload(
   );
 
   return {
-    banners: banners.map((banner) => ({
-      id: banner.id,
-      imageUrl:
-        banner.targetType === 'category'
-          ? getBannerCategoryImageUrl(categories, banner.targetId) ??
-            banner.imageUrl
-          : banner.imageUrl,
-      targetType: banner.targetType,
-      targetId: banner.targetId,
-      targetUrl: banner.targetUrl,
-      sortOrder: banner.sortOrder
-    })),
+    banners: banners.map((banner) => {
+      const targetCategory =
+        banner.targetType === 'category' && banner.targetId
+          ? categories.find((category) => category.id === banner.targetId)
+          : undefined;
+
+      return {
+        id: banner.id,
+        imageUrl:
+          banner.targetType === 'category'
+            ? getBannerCategoryImageUrl(categories, banner.targetId) ??
+              banner.imageUrl
+            : banner.imageUrl,
+        targetType: banner.targetType,
+        targetId: banner.targetId,
+        targetUrl: banner.targetUrl,
+        targetCategorySlug: targetCategory?.slug ?? null,
+        targetCategoryIsLeaf: Boolean(targetCategory?.parentId),
+        sortOrder: banner.sortOrder
+      };
+    }),
     featuredCategories: categoryGroups.flatMap((group) =>
       group.children.map((child) => ({
         id: child.id,
@@ -448,6 +457,37 @@ export async function getProductDetailBySlug(
   }
 
   return mapLocalizedProduct(product, locale);
+}
+
+export async function getRecommendedProducts(
+  locale: CatalogLocale,
+  excludeProductId?: string
+): Promise<StorefrontProductCard[]> {
+  const products = await db.product.findMany({
+    where: {
+      status: 'published',
+      isRecommended: true,
+      ...(excludeProductId ? { id: { not: excludeProductId } } : {}),
+      category: {
+        isActive: true,
+        parent: { isActive: true }
+      }
+    },
+    include: {
+      images: true,
+      category: true
+    },
+    orderBy: [
+      {
+        sortOrder: 'asc'
+      },
+      {
+        publishedAt: 'desc'
+      }
+    ]
+  });
+
+  return products.map((product) => mapLocalizedProduct(product, locale));
 }
 
 export async function getAdminProductList(filters: AdminProductFilters) {

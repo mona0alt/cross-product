@@ -60,6 +60,9 @@
       "stockAvailable": "Em estoque",
       "discountBadge": "{percent}% OFF"
     },
+    "productDetail": {
+      "recommendedTitle": "Produtos recomendados"
+    },
     "contactForm": {
       "title": "Enviar mensagem",
       "name": "Nome",
@@ -329,6 +332,7 @@
       "categoryCreatedNotice": "Categoria criada.",
       "categorySavedNotice": "Categoria salva.",
       "categorySaveError": "Falha ao salvar. Verifique o formulário.",
+      "categorySlugConflictError": "Este slug já está em uso por outra categoria. Escolha outro.",
       "productCreateTitle": "Novo produto",
       "productEditTitle": "Editar produto",
       "productCreateDescription": "Preencha as informações e salve o produto.",

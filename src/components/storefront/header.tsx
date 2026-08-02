@@ -287,24 +287,14 @@ export function StorefrontHeader({
               {mainNav.map((item) => {
                 const group = item.group;
                 const featuredItems = group
-                  ? (group.children.length > 0
-                      ? group.children.slice(0, 6)
-                      : [
-                          {
-                            id: group.id,
-                            slug: group.slug,
-                            iconImageUrl: group.iconImageUrl,
-                            name: group.name,
-                            description: group.description
-                          }
-                        ]).map((category) => ({
-                          id: category.id,
-                          slug: category.slug,
-                          href: `/${locale}/categories/${category.slug}`,
-                          imageUrl: category.iconImageUrl,
-                          name: category.name,
-                          description: category.description
-                        }))
+                  ? group.children.slice(0, 6).map((category) => ({
+                      id: category.id,
+                      slug: category.slug,
+                      href: `/${locale}/categories/${category.slug}`,
+                      imageUrl: category.iconImageUrl,
+                      name: category.name,
+                      description: category.description
+                    }))
                   : [];
                 const hasDropdown = featuredItems.length > 0;
                 const isDropdownOpen = activeCategoryKey === item.key;
