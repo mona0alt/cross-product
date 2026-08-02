@@ -1745,7 +1745,9 @@ function CategoryEditorDrawer({
       setFormError(error instanceof Error ? error.message : copy.categorySaveError);
     }
   };
-  const parentOptions = categories.filter((item) => item.id !== category?.id);
+  const parentOptions = categories.filter(
+    (item) => item.id !== category?.id && !item.parentId
+  );
   const parentCategoryOptions: AdminSelectOption[] = [
     { value: '', label: copy.rootCategory },
     ...parentOptions.map((item) => ({

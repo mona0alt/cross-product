@@ -742,6 +742,53 @@ describe('ProductCenter', () => {
     expect(html).toContain('保存类目');
   });
 
+  it('restricts the category parent options to root categories plus the root placeholder', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={treeCategories}
+        products={treeProducts}
+        defaultCategoryEditorOpen
+        defaultCategoryEditorMode="create"
+      />
+    );
+
+    const parentSelectMatch = html.match(
+      /<input type="hidden" name="parentId"[^>]*\/><select[^>]*>([\s\S]*?)<\/select>/
+    );
+    expect(parentSelectMatch).not.toBeNull();
+    const parentOptionsHtml = parentSelectMatch![1];
+
+    expect(parentOptionsHtml).toContain('<option value="">一级类目</option>');
+    expect(parentOptionsHtml).toContain(
+      '<option value="cat-root-robots">机器人大类</option>'
+    );
+    expect(parentOptionsHtml).not.toContain('cat-bipedal');
+    expect(parentOptionsHtml).not.toContain('cat-quadruped');
+  });
+
+  it('excludes the category being edited from its parent options', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={treeCategories}
+        products={treeProducts}
+        defaultSelectedCategoryId="cat-root-robots"
+        defaultCategoryEditorOpen
+        defaultCategoryEditorMode="edit"
+      />
+    );
+
+    const parentSelectMatch = html.match(
+      /<input type="hidden" name="parentId"[^>]*\/><select[^>]*>([\s\S]*?)<\/select>/
+    );
+    expect(parentSelectMatch).not.toBeNull();
+    const parentOptionsHtml = parentSelectMatch![1];
+
+    expect(parentOptionsHtml).toContain('<option value="">一级类目</option>');
+    expect(parentOptionsHtml).not.toContain('cat-root-robots');
+    expect(parentOptionsHtml).not.toContain('cat-bipedal');
+    expect(parentOptionsHtml).not.toContain('cat-quadruped');
+  });
+
   it('renders only one side drawer when product and category drawers are both requested', () => {
     const html = renderToStaticMarkup(
       <ProductCenter
