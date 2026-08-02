@@ -266,6 +266,13 @@ export async function getHomepagePayload(
         sortOrder: banner.sortOrder
       };
     }),
+    rootCategories: categoryGroups.map((group) => ({
+      id: group.id,
+      slug: group.slug,
+      iconImageUrl: group.iconImageUrl,
+      name: group.name,
+      description: group.description
+    })),
     featuredCategories: categoryGroups.flatMap((group) =>
       group.children.map((child) => ({
         id: child.id,

@@ -75,6 +75,7 @@ export type HomepagePayload = {
     title?: string | null;
     description?: string | null;
   }>;
+  rootCategories: StorefrontCategory[];
   featuredCategories: StorefrontCategory[];
   recommendedProducts: StorefrontProductCard[];
 };

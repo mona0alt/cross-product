@@ -459,6 +459,76 @@ describe('catalog queries', () => {
     expect(payload.featuredCategories).toEqual([]);
   });
 
+  it('exposes active root categories as rootCategories', async () => {
+    bannerFindMany.mockResolvedValue([]);
+    categoryFindMany.mockResolvedValue([
+      {
+        id: 'cat-root',
+        parentId: null,
+        slug: 'robots',
+        sortOrder: 1,
+        isActive: true,
+        iconImageUrl: '/uploads/category/robots.png',
+        nameZh: '机器人',
+        nameEn: 'Robots',
+        nameEs: 'Robots',
+        namePt: 'Robos',
+        descriptionZh: '机器人大类',
+        descriptionEn: 'Robot group',
+        descriptionEs: 'Grupo de robots',
+        descriptionPt: 'Grupo de robos'
+      },
+      {
+        id: 'cat-leaf',
+        parentId: 'cat-root',
+        slug: 'bipedal',
+        sortOrder: 1,
+        isActive: true,
+        iconImageUrl: '/uploads/category/bipedal.png',
+        nameZh: '双足',
+        nameEn: 'Bipedal',
+        nameEs: 'Bipedal',
+        namePt: 'Bipedal',
+        descriptionZh: null,
+        descriptionEn: null,
+        descriptionEs: null,
+        descriptionPt: null
+      },
+      {
+        id: 'cat-inactive-root',
+        parentId: null,
+        slug: 'inactive',
+        sortOrder: 2,
+        isActive: false,
+        iconImageUrl: '/uploads/category/inactive.png',
+        nameZh: '停用',
+        nameEn: 'Inactive',
+        nameEs: 'Inactive',
+        namePt: 'Inactive',
+        descriptionZh: null,
+        descriptionEn: null,
+        descriptionEs: null,
+        descriptionPt: null
+      }
+    ]);
+    productFindMany.mockResolvedValue([]);
+
+    const { getHomepagePayload } = await import('@/features/catalog/queries');
+    const payload = await getHomepagePayload('en');
+
+    expect(payload.rootCategories).toEqual([
+      {
+        id: 'cat-root',
+        slug: 'robots',
+        iconImageUrl: '/uploads/category/robots.png',
+        name: 'Robots',
+        description: 'Robot group'
+      }
+    ]);
+    // 二级分类仍在 featuredCategories,rootCategories 只含启用的一级分类
+    expect(payload.featuredCategories.map((c) => c.id)).toEqual(['cat-leaf']);
+  });
+
   it('returns null for an unpublished or missing product detail', async () => {
     productFindFirst.mockResolvedValue(null);
 
