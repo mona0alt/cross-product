@@ -204,7 +204,7 @@ describe('storefront layout shell', () => {
     expect(html).toContain('Robots for classrooms');
   });
 
-  it('renders every product in a category hover dropdown', () => {
+  it('renders leaf category cards in the mega menu even when the group has products', () => {
     const html = renderToStaticMarkup(
       <StorefrontHeader
         locale="en"
@@ -216,7 +216,22 @@ describe('storefront layout shell', () => {
             iconImageUrl: '/uploads/categories/drone.webp',
             name: 'Industrial Drones',
             description: 'Industrial drone systems',
-            children: [],
+            children: [
+              {
+                id: 'child-1',
+                slug: 'survey-drones',
+                iconImageUrl: '/uploads/categories/survey-drone.webp',
+                name: 'Survey Drones',
+                description: 'Mapping and survey drones'
+              },
+              {
+                id: 'child-2',
+                slug: 'cargo-drones',
+                iconImageUrl: '/uploads/categories/cargo-drone.webp',
+                name: 'Cargo Drones',
+                description: 'Heavy lift cargo drones'
+              }
+            ],
             products: [
               {
                 id: 'product-1',
@@ -229,18 +244,6 @@ describe('storefront layout shell', () => {
                 intro: 'Industrial inspection drone',
                 detail: 'Details',
                 images: ['/uploads/products/falcon-gallery.webp']
-              },
-              {
-                id: 'product-2',
-                slug: 'survey-mini',
-                productCode: 'DR-2001',
-                coverImageUrl: '/uploads/products/survey-mini.webp',
-                priceUsd: 899,
-                isRecommended: false,
-                name: 'Survey Mini',
-                intro: 'Lightweight survey drone',
-                detail: 'Details',
-                images: []
               }
             ]
           }
@@ -289,15 +292,14 @@ describe('storefront layout shell', () => {
     );
 
     expect(html).toContain('data-testid="desktop-mega-menu"');
-    expect(html).toContain('href="/en/products/falcon-pro"');
-    expect(html).toContain('href="/en/products/survey-mini"');
-    expect(html).toContain('Falcon Pro');
-    expect(html).toContain('Survey Mini');
-    expect(html).toContain('Industrial inspection drone');
-    expect(html).toContain('Lightweight survey drone');
-    expect(html).toContain('/uploads/products/falcon.webp');
-    expect(html).not.toContain('/uploads/products/falcon-gallery.webp');
-    expect(html).toContain('/uploads/products/survey-mini.webp');
+    expect(html).toContain('href="/en/categories/survey-drones"');
+    expect(html).toContain('href="/en/categories/cargo-drones"');
+    expect(html).toContain('Survey Drones');
+    expect(html).toContain('Cargo Drones');
+    expect(html).toContain('Mapping and survey drones');
+    expect(html).toContain('Heavy lift cargo drones');
+    expect(html).toContain('/uploads/categories/survey-drone.webp');
+    expect(html).toContain('/uploads/categories/cargo-drone.webp');
     expect(html).toContain('relative flex aspect-square items-center justify-center overflow-hidden bg-[var(--mk-bg-muted)]');
     expect(html).toContain('absolute inset-0 h-full w-full scale-105 object-cover opacity-20 blur-2xl transition duration-300 group-hover/card:scale-110');
     expect(html).toContain('relative z-10 h-full w-full object-contain transition duration-300 group-hover/card:scale-105');
@@ -305,7 +307,8 @@ describe('storefront layout shell', () => {
     expect(html).not.toContain('h-full w-full object-cover transition duration-300 group-hover/card:scale-105');
     const megaMenu =
       html.match(/data-testid="desktop-mega-menu"[\s\S]*$/)?.[0] ?? '';
-    expect(megaMenu).not.toContain('href="/en/categories/industrial-drones"');
+    expect(megaMenu).not.toContain('href="/en/products/falcon-pro"');
+    expect(megaMenu).not.toContain('/en/categories/industrial-drones"');
   });
 
   it('keeps a hover dropdown for top-level categories without child items', () => {

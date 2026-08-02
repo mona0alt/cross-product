@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('desktop mega menu opens from the root category nav item and links to featured products', async ({
+test('desktop mega menu opens from the root category nav item and shows leaf category cards', async ({
   page
 }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
@@ -18,11 +18,15 @@ test('desktop mega menu opens from the root category nav item and links to featu
   await expect(dropdown).toHaveCSS('opacity', '1');
   await expect(dropdown).toHaveCSS('pointer-events', 'auto');
 
-  const productLink = dropdown.locator('a[href*="/zh-CN/products/"]').first();
-  await expect(productLink).toBeVisible();
-  await productLink.click();
+  const leafLink = dropdown.locator('a[href="/zh-CN/categories/window-cleaning-robots"]');
+  await expect(leafLink).toBeVisible();
+  await expect(leafLink).toContainText('擦窗机器人');
+  await expect(dropdown.locator('a[href="/zh-CN/categories/humanoid-robots"]')).toBeVisible();
+  // 一级类目的 mega menu 只展示二级类目卡片，不展示商品
+  await expect(dropdown.locator('a[href*="/zh-CN/products/"]')).toHaveCount(0);
 
-  await expect(page).toHaveURL(/\/zh-CN\/products\/[^/?#]+$/);
+  await leafLink.click();
+  await expect(page).toHaveURL(/\/zh-CN\/categories\/window-cleaning-robots$/);
   // Move the pointer off the mega menu so the dropdown can settle closed;
   // while the pointer stays over the panel, group-hover keeps it visible.
   await page.mouse.move(640, 780);

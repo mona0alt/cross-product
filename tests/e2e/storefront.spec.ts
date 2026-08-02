@@ -48,7 +48,7 @@ test('desktop category dropdown stays open while moving pointer into the panel',
   await expect(dropdown).toHaveCSS('pointer-events', 'auto');
 });
 
-test('desktop category dropdown closes after choosing a product', async ({ page }) => {
+test('desktop category dropdown closes after choosing a leaf category', async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/en');
 
@@ -60,8 +60,8 @@ test('desktop category dropdown closes after choosing a product', async ({ page 
   await categoryLink.hover();
   await expect(dropdown).toHaveCSS('opacity', '1');
 
-  await dropdown.locator('a[href*="/en/products/"]').first().click();
-  await expect(page).toHaveURL(/\/en\/products\/[^/?#]+$/);
+  await dropdown.locator('a[href*="/en/categories/"]').first().click();
+  await expect(page).toHaveURL(/\/en\/categories\/[^/?#]+$/);
   // Move the pointer off the mega menu so the dropdown can settle closed;
   // while the pointer stays over the panel, group-hover keeps it visible.
   await page.mouse.move(640, 780);
@@ -72,11 +72,11 @@ test('desktop category dropdown closes after choosing a product', async ({ page 
   await categoryLink.hover();
   await expect(dropdown).toHaveCSS('opacity', '1');
 
-  const secondProduct = dropdown.locator('a[href*="/en/products/"]').nth(1);
-  const secondHref = await secondProduct.getAttribute('href');
+  const secondCategory = dropdown.locator('a[href*="/en/categories/"]').nth(1);
+  const secondHref = await secondCategory.getAttribute('href');
   expect(secondHref).toBeTruthy();
 
-  await secondProduct.click();
+  await secondCategory.click();
   await expect(page).toHaveURL(new RegExp(`${secondHref?.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`));
   await page.mouse.move(640, 780);
   await expect(dropdown).toHaveCSS('opacity', '0');
@@ -91,7 +91,7 @@ test('desktop category navigation is clamped between logo and contact controls',
     const header = page.locator('header').first();
     const logo = header.locator('a:has(img)').first();
     const nav = header.locator('nav').first();
-    const navLinks = nav.locator('a[href*="/zh-CN/categories/"]');
+    const navLinks = nav.locator('> div > a[href*="/zh-CN/categories/"]');
     const emailLink = header.locator('a[href="/zh-CN/subscribe"]').first();
     const languageTrigger = header.getByTestId('language-switcher-trigger');
 
