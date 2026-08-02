@@ -60,4 +60,20 @@ describe('ProductForm category select', () => {
     expect(html).toContain('<option value="" selected="">选择分类</option>');
     expect(html.indexOf('<option value=""')).toBeLessThan(html.indexOf('<optgroup'));
   });
+
+  it('renders a missing current category as a selected standalone option', () => {
+    const html = renderToStaticMarkup(
+      <ProductForm
+        mode="edit"
+        categories={categories}
+        product={{ id: 'product-1', categoryId: 'cat-archived' }}
+        missingCategoryOption={{ value: 'cat-archived', label: '已停用分类' }}
+      />
+    );
+
+    expect(html).toContain('<option value="cat-archived" selected="">已停用分类</option>');
+    expect(html.indexOf('<option value="cat-archived"')).toBeLessThan(
+      html.indexOf('<optgroup')
+    );
+  });
 });

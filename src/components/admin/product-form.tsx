@@ -108,13 +108,15 @@ export function ProductForm({
   categories,
   product,
   copy,
-  uploadLabel = '上传图片'
+  uploadLabel = '上传图片',
+  missingCategoryOption
 }: {
   mode: 'create' | 'edit';
   categories: AdminCategory[];
   product?: ProductDraft;
   copy?: ProductFormCopy;
   uploadLabel?: string;
+  missingCategoryOption?: { value: string; label: string };
 }) {
   const inputClass =
     'w-full rounded-lg border border-admin-border bg-admin-surface px-4 py-2.5 text-sm text-admin-text-primary outline-none transition-all duration-200 placeholder:text-admin-text-muted focus:border-admin-accent/30 focus:ring-1 focus:ring-admin-accent/20';
@@ -239,6 +241,7 @@ export function ProductForm({
               categories={categories}
               defaultValue={product?.categoryId ?? ''}
               placeholder={labels.selectCategory}
+              extraOption={missingCategoryOption}
             />
           </div>
           <div>

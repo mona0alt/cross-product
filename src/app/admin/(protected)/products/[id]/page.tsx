@@ -3,42 +3,11 @@ import { notFound } from 'next/navigation';
 
 import { AdminSectionHeader } from '@/components/admin/admin-section-header';
 import { ProductForm } from '@/components/admin/product-form';
-import type { AdminCategory } from '@/components/admin/admin-category-select';
+import { getLocalizedCategoryName, toCategoryRows } from '@/features/admin/category-rows';
 import { getAdminCategoryTree } from '@/features/catalog/queries';
 import { getLocalImagePath } from '@/features/catalog/local-image-paths';
 import { getAdminDictionary } from '@/lib/admin-i18n';
 import { db } from '@/lib/db';
-import type { Locale } from '@/lib/i18n/config';
-
-function getLocalizedCategoryName(
-  node: Awaited<ReturnType<typeof getAdminCategoryTree>>[number],
-  locale: Locale
-) {
-  return (
-    {
-      'zh-CN': node.nameZh,
-      en: node.nameEn,
-      es: node.nameEs,
-      pt: node.namePt
-    }[locale] ||
-    node.nameZh ||
-    node.nameEn
-  );
-}
-
-function toCategoryRows(
-  nodes: Awaited<ReturnType<typeof getAdminCategoryTree>>,
-  locale: Locale
-): AdminCategory[] {
-  return nodes.flatMap((node) => [
-    {
-      id: node.id,
-      parentId: node.parentId,
-      nameZh: getLocalizedCategoryName(node, locale)
-    },
-    ...toCategoryRows(node.children, locale)
-  ]);
-}
 
 export default async function AdminEditProductPage({
   params
@@ -51,6 +20,7 @@ export default async function AdminEditProductPage({
     db.product.findUnique({
       where: { id },
       include: {
+        category: true,
         images: true
       }
     }),
@@ -61,6 +31,20 @@ export default async function AdminEditProductPage({
     notFound();
   }
 
+  const categoryRows = toCategoryRows(categories, locale);
+  // The category tree only lists active categories; keep a product's
+  // deactivated/deleted category selectable so saving cannot silently
+  // clear it.
+  const missingCategoryOption =
+    product.categoryId && !categoryRows.some((category) => category.id === product.categoryId)
+      ? {
+          value: product.categoryId,
+          label: product.category
+            ? getLocalizedCategoryName(product.category, locale)
+            : product.categoryId
+        }
+      : undefined;
+
   return (
     <section className="space-y-6">
       <AdminSectionHeader
@@ -70,7 +54,8 @@ export default async function AdminEditProductPage({
       />
       <ProductForm
         mode="edit"
-        categories={toCategoryRows(categories, locale)}
+        categories={categoryRows}
+        missingCategoryOption={missingCategoryOption}
         product={{
           ...product,
           priceUsd: product.priceUsd.toString(),
