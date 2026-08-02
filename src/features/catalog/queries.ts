@@ -431,7 +431,11 @@ export async function getProductDetailBySlug(
     },
     include: {
       images: true,
-      category: true
+      category: {
+        include: {
+          parent: true
+        }
+      }
     }
   });
 

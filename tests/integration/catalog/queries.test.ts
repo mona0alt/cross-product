@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const bannerFindMany = vi.fn();
 const categoryFindMany = vi.fn();
 const productFindMany = vi.fn();
+const productFindFirst = vi.fn();
 
 vi.mock('@/lib/db', () => ({
   db: {
@@ -13,7 +14,8 @@ vi.mock('@/lib/db', () => ({
       findMany: categoryFindMany
     },
     product: {
-      findMany: productFindMany
+      findMany: productFindMany,
+      findFirst: productFindFirst
     }
   }
 }));
@@ -289,5 +291,34 @@ describe('homepage payload with leaf categories', () => {
         }
       })
     );
+  });
+});
+
+describe('product detail query', () => {
+  beforeEach(() => {
+    productFindFirst.mockReset();
+  });
+
+  it('includes the parent category when loading a product by slug', async () => {
+    productFindFirst.mockResolvedValue(null);
+
+    const { getProductDetailBySlug } = await import('@/features/catalog/queries');
+    const product = await getProductDetailBySlug('survey-drone-x1', 'en');
+
+    expect(product).toBeNull();
+    expect(productFindFirst).toHaveBeenCalledWith({
+      where: {
+        slug: 'survey-drone-x1',
+        status: 'published'
+      },
+      include: {
+        images: true,
+        category: {
+          include: {
+            parent: true
+          }
+        }
+      }
+    });
   });
 });

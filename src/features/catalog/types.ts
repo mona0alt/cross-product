@@ -55,6 +55,10 @@ export type StorefrontProductCard = {
   category?: {
     slug: string;
     name: string;
+    parent?: {
+      slug: string;
+      name: string;
+    };
   };
 };
 

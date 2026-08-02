@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { ProductGallery } from '@/components/storefront/product-gallery';
@@ -32,8 +33,52 @@ export default async function ProductDetailPage({
   const whatsAppNumber = runtimeSettings.contact.whatsappNumber;
   const whatsAppHref = `https://wa.me/${whatsAppNumber.replace(/[^\d]/g, '')}?text=${encodeURIComponent(product.name)}`;
 
+  const breadcrumbItems: Array<{ label: string; href?: string }> = [
+    { label: Storefront.nav.home, href: `/${locale}` }
+  ];
+  if (product.category) {
+    if (product.category.parent) {
+      breadcrumbItems.push({
+        label: product.category.parent.name,
+        href: `/${locale}/categories/${product.category.parent.slug}`
+      });
+    }
+    breadcrumbItems.push({
+      label: product.category.name,
+      href: `/${locale}/categories/${product.category.slug}`
+    });
+  }
+  breadcrumbItems.push({ label: product.name });
+
   return (
     <div className="mx-auto max-w-[1440px] px-3 py-4 sm:px-5 lg:px-6">
+      <nav
+        aria-label="breadcrumb"
+        className="mb-4 text-sm text-[var(--store-text-muted)]"
+      >
+        <ol className="flex flex-wrap items-center">
+          {breadcrumbItems.map((item, index) => (
+            <li key={`${item.label}-${index}`} className="flex items-center">
+              {index > 0 ? (
+                <span aria-hidden="true" className="mx-2">
+                  /
+                </span>
+              ) : null}
+              {item.href ? (
+                <Link
+                  href={item.href}
+                  className="transition hover:text-[var(--store-text)]"
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <span className="text-[var(--store-text)]">{item.label}</span>
+              )}
+            </li>
+          ))}
+        </ol>
+      </nav>
+
       <section className="grid gap-4 lg:grid-cols-[minmax(0,1.12fr)_minmax(380px,0.88fr)] lg:items-stretch xl:gap-5">
         <div className="h-full">
           <ProductGallery images={galleryImages} />

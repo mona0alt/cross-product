@@ -242,7 +242,11 @@ describe('storefront routes', () => {
       images: ['/phone.jpg', '/phone-2.jpg'],
       category: {
         slug: 'electronics',
-        name: 'Electronics'
+        name: 'Electronics',
+        parent: {
+          slug: 'industrial-drones',
+          name: 'Industrial Drones'
+        }
       }
     });
     getHomepagePayload.mockResolvedValue({
@@ -282,6 +286,20 @@ describe('storefront routes', () => {
     expect(html).toContain('WhatsApp');
     expect(html).toContain('href="https://wa.me/15551234567?text=Star%20River%20Pro%20Phone"');
     expect(html).toContain('href="/en/subscribe"');
+
+    const breadcrumbStart = html.indexOf('aria-label="breadcrumb"');
+    expect(breadcrumbStart).toBeGreaterThan(-1);
+    const breadcrumb = html.slice(breadcrumbStart, html.indexOf('</nav>'));
+    expect(breadcrumb).toContain('href="/en"');
+    expect(breadcrumb).toContain('href="/en/categories/industrial-drones"');
+    expect(breadcrumb).toContain('href="/en/categories/electronics"');
+    expect(breadcrumb.indexOf('Industrial Drones')).toBeLessThan(
+      breadcrumb.indexOf('Electronics')
+    );
+    expect(breadcrumb.indexOf('Electronics')).toBeLessThan(
+      breadcrumb.indexOf('Star River Pro Phone')
+    );
+
     expect(html).not.toContain('Gallery');
     expect(html).not.toContain('P-1001');
     expect(html).not.toContain('$699');

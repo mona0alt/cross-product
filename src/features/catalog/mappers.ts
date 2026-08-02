@@ -53,6 +53,9 @@ export function mapLocalizedProduct<
     }>;
     category?: {
       slug: string;
+      parent?: ({
+        slug: string;
+      } & LocalizedCategoryFields) | null;
     } & LocalizedCategoryFields;
   } & LocalizedProductFields
 >(value: TValue, locale: CatalogLocale): StorefrontProductCard {
@@ -75,7 +78,13 @@ export function mapLocalizedProduct<
     category: value.category
       ? {
           slug: value.category.slug,
-          name: getLocalizedPair(value.category, locale, 'name')
+          name: getLocalizedPair(value.category, locale, 'name'),
+          parent: value.category.parent
+            ? {
+                slug: value.category.parent.slug,
+                name: getLocalizedPair(value.category.parent, locale, 'name')
+              }
+            : undefined
         }
       : undefined
   };
