@@ -131,6 +131,55 @@ const paginatedProducts = [
   }
 ];
 
+const treeCategories = [
+  {
+    id: 'cat-root-robots',
+    parentId: null,
+    slug: 'robots',
+    nameZh: '机器人大类',
+    nameEn: 'Robot Groups',
+    isActive: true,
+    productCount: 0
+  },
+  {
+    id: 'cat-bipedal',
+    parentId: 'cat-root-robots',
+    slug: 'bipedal',
+    nameZh: '双足',
+    nameEn: 'Bipedal',
+    isActive: true,
+    productCount: 1
+  },
+  {
+    id: 'cat-quadruped',
+    parentId: 'cat-root-robots',
+    slug: 'quadruped',
+    nameZh: '四足',
+    nameEn: 'Quadruped',
+    isActive: true,
+    productCount: 1
+  }
+];
+
+const treeProducts = [
+  {
+    ...products[0],
+    id: 'tree-product-1',
+    categoryId: 'cat-bipedal',
+    categoryName: '双足',
+    nameZh: 'Bipedal Alpha 双足机器人',
+    nameEn: 'Bipedal Alpha'
+  },
+  {
+    ...products[1],
+    id: 'tree-product-2',
+    categoryId: 'cat-quadruped',
+    categoryName: '四足',
+    nameZh: 'Quadruped Beta 四足机器人',
+    nameEn: 'Quadruped Beta'
+  }
+];
+
 const productsWithArchivedCategory = [
   {
     ...products[0],
@@ -285,20 +334,47 @@ describe('ProductCenter', () => {
     expect(html).not.toContain('智能穿戴设备');
   });
 
-  it('filters the product table by the selected category', () => {
+  it('filters the product table by the selected leaf category', () => {
     const html = renderToStaticMarkup(
       <ProductCenter
-        categories={categories}
-        products={products}
-        defaultActiveCategoryId="cat-humanoid"
+        categories={treeCategories}
+        products={treeProducts}
+        defaultActiveCategoryId="cat-bipedal"
       />
     );
 
-    expect(html).not.toContain('当前显示人形机器人下的 1 个商品。');
     expect(html).not.toContain('管理产品');
-    expect(html).toContain('Alpha Humanoid 服务机器人');
-    expect(html).not.toContain('Aerial X1 航拍无人机');
+    expect(html).toContain('Bipedal Alpha 双足机器人');
+    expect(html).not.toContain('Quadruped Beta 四足机器人');
     expect(html).toContain('aria-pressed="true"');
+  });
+
+  it('renders root categories as non-interactive group labels and indents leaf categories', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter categories={treeCategories} products={treeProducts} />
+    );
+
+    expect(html).toContain(
+      '<span class="block truncate text-xs font-bold">机器人大类</span>'
+    );
+    expect(html.match(/aria-pressed/g)).toHaveLength(2);
+    expect(html.match(/aria-pressed="false"/g)).toHaveLength(2);
+    expect(html.match(/padding-left:32px/g)).toHaveLength(2);
+    expect(html).toContain('padding-left:12px');
+  });
+
+  it('ignores a root category id in the active filter instead of showing an empty list', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={treeCategories}
+        products={treeProducts}
+        defaultActiveCategoryId="cat-root-robots"
+      />
+    );
+
+    expect(html).toContain('Bipedal Alpha 双足机器人');
+    expect(html).toContain('Quadruped Beta 四足机器人');
+    expect(html).not.toContain('aria-pressed="true"');
   });
 
   it('clears the selected category when switching back to all products', () => {

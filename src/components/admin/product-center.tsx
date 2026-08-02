@@ -809,6 +809,17 @@ export function ProductCenter({
     return scheduleNoticeDismiss(() => setNotice(''));
   }, [notice]);
 
+  const activeCategory =
+    activeCategoryId === null
+      ? null
+      : categories.find((category) => category.id === activeCategoryId) ?? null;
+  // Root categories are group headers and cannot filter products; only leaf
+  // categories (or ids not present in the tree) narrow the product list.
+  const filterCategoryId =
+    activeCategoryId !== null && (!activeCategory || activeCategory.parentId)
+      ? activeCategoryId
+      : null;
+
   useEffect(() => {
     if (!didMountRef.current) {
       didMountRef.current = true;
@@ -824,7 +835,7 @@ export function ProductCenter({
         buildAdminProductSearchUrl({
           searchTerm,
           statusFilter,
-          activeCategoryId,
+          activeCategoryId: filterCategoryId,
           locale
         }),
         {
@@ -870,14 +881,10 @@ export function ProductCenter({
     selectedCategoryId === null
       ? null
       : categories.find((category) => category.id === selectedCategoryId) ?? null;
-  const activeCategory =
-    activeCategoryId === null
-      ? null
-      : categories.find((category) => category.id === activeCategoryId) ?? null;
   const categoryProducts =
-    activeCategoryId === null
+    filterCategoryId === null
       ? productRows
-      : productRows.filter((product) => product.categoryId === activeCategoryId);
+      : productRows.filter((product) => product.categoryId === filterCategoryId);
   const filteredProducts = categoryProducts.filter((product) => {
     const matchesStatus =
       statusFilter === 'all'
@@ -1602,8 +1609,10 @@ function CategoryItem({
   onEdit: (categoryId: string) => void;
   copy: ProductCenterCopy;
 }) {
+  const isRoot = !category.parentId;
   return (
     <div
+      style={{ paddingLeft: isRoot ? 12 : 32 }}
       className={`group flex items-center justify-between gap-2.5 rounded-lg border p-2.5 transition focus-within:ring-2 focus-within:ring-admin-accent/20 ${
         isSelected
           ? 'border-admin-accent/25 bg-blue-50 text-admin-accent'
@@ -1612,6 +1621,30 @@ function CategoryItem({
           : 'border-admin-border bg-white text-admin-text-secondary hover:bg-admin-elevated'
       }`}
     >
+      {isRoot ? (
+        <div className="flex min-w-0 flex-1 self-stretch items-center gap-2.5 text-left">
+          {category.iconImageUrl ? (
+            <span className="relative h-8 w-8 shrink-0 overflow-hidden rounded-lg border border-admin-border bg-white">
+              <NextImage
+                src={category.iconImageUrl}
+                alt={category.nameZh}
+                fill
+                sizes="32px"
+                className="object-cover"
+                unoptimized
+              />
+            </span>
+          ) : (
+            <FolderTree className="h-5 w-5 shrink-0" />
+          )}
+          <span className="min-w-0">
+            <span className="block truncate text-xs font-bold">{category.nameZh}</span>
+            <span className="block truncate text-xs text-admin-text-muted">
+              {category.nameEn}
+            </span>
+          </span>
+        </div>
+      ) : (
       <button
         type="button"
         aria-pressed={isSelected}
@@ -1639,6 +1672,7 @@ function CategoryItem({
           </span>
         </span>
       </button>
+      )}
       <div className="flex shrink-0 items-center gap-1">
         <button
           type="button"
