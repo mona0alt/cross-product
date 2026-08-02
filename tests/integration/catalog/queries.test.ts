@@ -1,10 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+const bannerFindMany = vi.fn();
 const categoryFindMany = vi.fn();
 const productFindMany = vi.fn();
 
 vi.mock('@/lib/db', () => ({
   db: {
+    banner: {
+      findMany: bannerFindMany
+    },
     category: {
       findMany: categoryFindMany
     },
@@ -80,6 +84,23 @@ const activeChildSurvey = {
   descriptionEn: 'Survey',
   descriptionEs: 'Inspeccion',
   descriptionPt: 'Levantamento'
+};
+
+const activeChildTransport = {
+  id: 'child-transport',
+  parentId: 'root-drone',
+  slug: 'transport-drones',
+  sortOrder: 2,
+  isActive: true,
+  iconImageUrl: '/uploads/categories/transport.webp',
+  nameZh: '运输无人机',
+  nameEn: 'Transport Drones',
+  nameEs: 'Drones de transporte',
+  namePt: 'Drones de transporte',
+  descriptionZh: '运输',
+  descriptionEn: 'Transport',
+  descriptionEs: 'Transporte',
+  descriptionPt: 'Transporte'
 };
 
 describe('storefront category queries with inactive parents', () => {
@@ -191,6 +212,80 @@ describe('storefront category queries with inactive parents', () => {
               }
             }
           ]
+        }
+      })
+    );
+  });
+});
+
+describe('homepage payload with leaf categories', () => {
+  beforeEach(() => {
+    bannerFindMany.mockReset();
+    categoryFindMany.mockReset();
+    productFindMany.mockReset();
+  });
+
+  it('features leaf categories instead of their root categories', async () => {
+    bannerFindMany.mockResolvedValue([]);
+    categoryFindMany.mockResolvedValue([
+      activeRootDrone,
+      activeChildSurvey,
+      activeChildTransport
+    ]);
+    productFindMany.mockResolvedValue([]);
+
+    const { getHomepagePayload } = await import('@/features/catalog/queries');
+    const payload = await getHomepagePayload('en');
+
+    expect(payload.featuredCategories).toEqual([
+      expect.objectContaining({
+        id: 'child-survey',
+        slug: 'survey-drones',
+        name: 'Survey Drones'
+      }),
+      expect.objectContaining({
+        id: 'child-transport',
+        slug: 'transport-drones',
+        name: 'Transport Drones'
+      })
+    ]);
+  });
+
+  it('excludes children of inactive roots from featured categories', async () => {
+    bannerFindMany.mockResolvedValue([]);
+    categoryFindMany.mockResolvedValue([
+      inactiveRootWindow,
+      activeChildWindow,
+      activeRootDrone,
+      activeChildSurvey
+    ]);
+    productFindMany.mockResolvedValue([]);
+
+    const { getHomepagePayload } = await import('@/features/catalog/queries');
+    const payload = await getHomepagePayload('en');
+
+    expect(payload.featuredCategories.map((category) => category.slug)).toEqual([
+      'survey-drones'
+    ]);
+  });
+
+  it('only queries recommended products whose category and parent category are active', async () => {
+    bannerFindMany.mockResolvedValue([]);
+    categoryFindMany.mockResolvedValue([]);
+    productFindMany.mockResolvedValue([]);
+
+    const { getHomepagePayload } = await import('@/features/catalog/queries');
+    await getHomepagePayload('en');
+
+    expect(productFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          status: 'published',
+          isRecommended: true,
+          category: {
+            isActive: true,
+            parent: { isActive: true }
+          }
         }
       })
     );

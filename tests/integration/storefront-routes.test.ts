@@ -102,7 +102,7 @@ describe('storefront routes', () => {
     expect(html).toContain('Electronics');
     expect(html).toContain('Configurable electronics hero copy');
     expect(html).toContain('/electronics.svg');
-    expect(html).toContain('href="/en/products?category=electronics"');
+    expect(html).toContain('href="/en/categories/electronics"');
     expect(html).not.toContain('/legacy-banner.jpg');
     expect(html).not.toContain('Premium robotics for modern work');
     expect(html).toContain('Product Series');

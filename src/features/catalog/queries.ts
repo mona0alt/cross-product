@@ -219,7 +219,11 @@ export async function getHomepagePayload(
     db.product.findMany({
       where: {
         status: 'published',
-        isRecommended: true
+        isRecommended: true,
+        category: {
+          isActive: true,
+          parent: { isActive: true }
+        }
       },
       include: {
         images: true,
@@ -253,13 +257,15 @@ export async function getHomepagePayload(
       targetUrl: banner.targetUrl,
       sortOrder: banner.sortOrder
     })),
-    featuredCategories: categoryGroups.map((category) => ({
-      id: category.id,
-      slug: category.slug,
-      iconImageUrl: category.iconImageUrl,
-      name: category.name,
-      description: category.description
-    })),
+    featuredCategories: categoryGroups.flatMap((group) =>
+      group.children.map((child) => ({
+        id: child.id,
+        slug: child.slug,
+        iconImageUrl: child.iconImageUrl,
+        name: child.name,
+        description: child.description
+      }))
+    ),
     recommendedProducts: products.map((product) =>
       mapLocalizedProduct(product, locale)
     )

@@ -57,6 +57,22 @@ describe('catalog queries', () => {
         descriptionEn: 'English description',
         descriptionEs: 'Descripcion',
         descriptionPt: 'Descricao'
+      },
+      {
+        id: 'cat-1-phones',
+        parentId: 'cat-1',
+        slug: 'electronics-phones',
+        sortOrder: 1,
+        isActive: true,
+        iconImageUrl: '/phones.svg',
+        nameZh: '手机',
+        nameEn: 'Phones',
+        nameEs: 'Telefonos',
+        namePt: 'Telefones',
+        descriptionZh: '手机描述',
+        descriptionEn: 'Phones description',
+        descriptionEs: 'Descripcion telefonos',
+        descriptionPt: 'Descricao telefones'
       }
     ]);
 
@@ -103,8 +119,8 @@ describe('catalog queries', () => {
 
     expect(payload.banners).toHaveLength(1);
     expect(payload.featuredCategories[0]).toMatchObject({
-      slug: 'electronics',
-      name: 'Electronics'
+      slug: 'electronics-phones',
+      name: 'Phones'
     });
     expect(payload.recommendedProducts[0]).toMatchObject({
       slug: 'star-river-pro-phone',

@@ -22,7 +22,7 @@ function getHomepageHeroBanners(
       imageUrl: category.iconImageUrl ?? '',
       targetType: 'category',
       targetId: category.id,
-      targetUrl: `/${locale}/products?category=${category.slug}`,
+      targetUrl: `/${locale}/categories/${category.slug}`,
       sortOrder: index + 1,
       title: category.name,
       description: category.description
