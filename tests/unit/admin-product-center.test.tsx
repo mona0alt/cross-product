@@ -711,7 +711,10 @@ describe('ProductCenter', () => {
     expect(html).toContain('新建类目');
     expect(html).toContain('父级类目');
     expect(html).toContain(
-      '<input type="hidden" name="parentId" value=""/><select aria-hidden="true" tabindex="-1" class="sr-only" disabled="">'
+      '<input type="hidden" name="parentId" value=""/><select aria-hidden="true" tabindex="-1" class="sr-only">'
+    );
+    expect(html).not.toContain(
+      'name="parentId" value=""/><select aria-hidden="true" tabindex="-1" class="sr-only" disabled="">'
     );
     expect(html).toContain('类目主图');
     expect(html).toContain('上传主图');
@@ -737,7 +740,10 @@ describe('ProductCenter', () => {
     expect(html).toContain('/show/robot_humanoid.png');
     expect(html).toContain('移除类目主图');
     expect(html).toContain(
-      '<input type="hidden" name="parentId" value=""/><select aria-hidden="true" tabindex="-1" class="sr-only" disabled="">'
+      '<input type="hidden" name="parentId" value=""/><select aria-hidden="true" tabindex="-1" class="sr-only">'
+    );
+    expect(html).not.toContain(
+      'name="parentId" value=""/><select aria-hidden="true" tabindex="-1" class="sr-only" disabled="">'
     );
     expect(html).toContain('保存类目');
   });

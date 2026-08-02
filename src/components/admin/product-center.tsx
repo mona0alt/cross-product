@@ -1791,7 +1791,6 @@ function CategoryEditorDrawer({
                 defaultValue={category?.parentId ?? ''}
                 options={parentCategoryOptions}
                 compact
-                disabled
               />
             </Field>
             <Field label="Slug">
