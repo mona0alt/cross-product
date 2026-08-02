@@ -359,8 +359,9 @@ describe('ProductCenter', () => {
     );
     expect(html.match(/aria-pressed/g)).toHaveLength(2);
     expect(html.match(/aria-pressed="false"/g)).toHaveLength(2);
-    expect(html.match(/padding-left:32px/g)).toHaveLength(2);
-    expect(html).toContain('padding-left:12px');
+    expect(html.match(/pl-8/g)).toHaveLength(2);
+    expect(html.match(/pl-3/g)).toHaveLength(1);
+    expect(html).not.toContain('bg-blue-50 text-admin-accent');
   });
 
   it('ignores a root category id in the active filter instead of showing an empty list', () => {
@@ -375,6 +376,7 @@ describe('ProductCenter', () => {
     expect(html).toContain('Bipedal Alpha 双足机器人');
     expect(html).toContain('Quadruped Beta 四足机器人');
     expect(html).not.toContain('aria-pressed="true"');
+    expect(html).not.toContain('bg-blue-50 text-admin-accent');
   });
 
   it('clears the selected category when switching back to all products', () => {

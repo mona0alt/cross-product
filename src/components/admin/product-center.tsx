@@ -868,7 +868,7 @@ export function ProductCenter({
     });
 
     return () => controller.abort();
-  }, [activeCategoryId, locale, searchTerm, statusFilter]);
+  }, [filterCategoryId, locale, searchTerm, statusFilter]);
 
   const selectedProduct =
     selectedProductId === null
@@ -1610,11 +1610,13 @@ function CategoryItem({
   copy: ProductCenterCopy;
 }) {
   const isRoot = !category.parentId;
+  const showSelected = isSelected && !isRoot;
   return (
     <div
-      style={{ paddingLeft: isRoot ? 12 : 32 }}
       className={`group flex items-center justify-between gap-2.5 rounded-lg border p-2.5 transition focus-within:ring-2 focus-within:ring-admin-accent/20 ${
-        isSelected
+        isRoot ? 'pl-3' : 'pl-8'
+      } ${
+        showSelected
           ? 'border-admin-accent/25 bg-blue-50 text-admin-accent'
           : category.isActive
           ? 'border-admin-border bg-white text-admin-text-secondary hover:bg-admin-elevated'
