@@ -58,6 +58,22 @@ describe('storefront routes', () => {
           sortOrder: 1
         }
       ],
+      rootCategories: [
+        {
+          id: 'cat-1',
+          slug: 'electronics',
+          iconImageUrl: '/electronics.svg',
+          name: 'Electronics',
+          description: 'Configurable electronics hero copy'
+        },
+        {
+          id: 'cat-2',
+          slug: 'drones',
+          iconImageUrl: '/drones.svg',
+          name: 'Drones',
+          description: 'Flying robots'
+        }
+      ],
       featuredCategories: [
         {
           id: 'cat-1',
@@ -217,6 +233,15 @@ describe('storefront routes', () => {
   it('does not render default homepage hero copy when category hero text is incomplete', async () => {
     getHomepagePayload.mockResolvedValue({
       banners: [],
+      rootCategories: [
+        {
+          id: 'cat-1',
+          slug: 'electronics',
+          iconImageUrl: '/electronics.svg',
+          name: 'Electronics',
+          description: null
+        }
+      ],
       featuredCategories: [
         {
           id: 'cat-1',
@@ -284,6 +309,7 @@ describe('storefront routes', () => {
     ]);
     getHomepagePayload.mockResolvedValue({
       banners: [],
+      rootCategories: [],
       featuredCategories: [],
       recommendedProducts: [
         {
