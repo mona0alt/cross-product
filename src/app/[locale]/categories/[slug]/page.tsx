@@ -2,8 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import type { Locale } from '@/lib/i18n/config';
 
+import { CategoryChildGrid } from '@/components/storefront/category-child-grid';
 import { FilterSidebar } from '@/components/storefront/filter-sidebar';
-import { HomepageCategoryGrid } from '@/components/storefront/homepage-category-grid';
 import { ProductCard } from '@/components/storefront/product-card';
 import { ResultsToolbar } from '@/components/storefront/results-toolbar';
 import { productListSorts, type ProductListSort } from '@/features/catalog/types';
@@ -86,21 +86,27 @@ export default async function CategoryPage({
         aria-label="breadcrumb"
         className="text-sm text-[var(--store-text-muted)]"
       >
-        {breadcrumbItems.map((item, index) => (
-          <React.Fragment key={`${item.label}-${index}`}>
-            {index > 0 ? <span className="mx-2">/</span> : null}
-            {item.href ? (
-              <Link
-                href={item.href}
-                className="transition hover:text-[var(--store-text)]"
-              >
-                {item.label}
-              </Link>
-            ) : (
-              <span className="text-[var(--store-text)]">{item.label}</span>
-            )}
-          </React.Fragment>
-        ))}
+        <ol className="flex flex-wrap items-center">
+          {breadcrumbItems.map((item, index) => (
+            <li key={`${item.label}-${index}`} className="flex items-center">
+              {index > 0 ? (
+                <span aria-hidden="true" className="mx-2">
+                  /
+                </span>
+              ) : null}
+              {item.href ? (
+                <Link
+                  href={item.href}
+                  className="transition hover:text-[var(--store-text)]"
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <span className="text-[var(--store-text)]">{item.label}</span>
+              )}
+            </li>
+          ))}
+        </ol>
       </nav>
 
       {matchedRoot ? (
@@ -113,12 +119,7 @@ export default async function CategoryPage({
             }
           />
 
-          <HomepageCategoryGrid
-            locale={locale}
-            eyebrow={Storefront.sections.categoryGrid}
-            title={Storefront.sections.productSeries}
-            categories={matchedRoot.children}
-          />
+          <CategoryChildGrid locale={locale} categories={matchedRoot.children} />
         </div>
       ) : (
         <form className="mt-6 grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">

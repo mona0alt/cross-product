@@ -375,6 +375,10 @@ describe('storefront routes', () => {
     expect(html).not.toContain('Star River Pro Phone');
     expect(html).not.toContain('name="search"');
     expect(html).not.toContain('name="sort"');
+    // no duplicate homepage section chrome around the child grid
+    expect(html).not.toContain('SHOP BY CATEGORY');
+    expect(html).not.toContain('Product Series');
+    expect(html.match(/max-w-7xl/g)).toHaveLength(1);
     expect(getProductListPayload).toHaveBeenCalledWith(
       expect.objectContaining({
         categorySlug: 'electronics',
