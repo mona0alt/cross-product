@@ -125,7 +125,7 @@ export function StorefrontHeader({
     ...categoryGroups.map((group) => ({
       key: group.slug,
       label: group.name,
-      href: `/${locale}/products?category=${group.slug}`,
+      href: `/${locale}/categories/${group.slug}`,
       group
     }))
   ];

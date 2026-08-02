@@ -303,7 +303,9 @@ describe('storefront layout shell', () => {
     expect(html).toContain('relative z-10 h-full w-full object-contain transition duration-300 group-hover/card:scale-105');
     expect(html).not.toContain('relative z-10 h-[92%] w-[92%] object-contain transition duration-300 group-hover/card:scale-105');
     expect(html).not.toContain('h-full w-full object-cover transition duration-300 group-hover/card:scale-105');
-    expect(html).not.toContain('href="/en/categories/industrial-drones"');
+    const megaMenu =
+      html.match(/data-testid="desktop-mega-menu"[\s\S]*$/)?.[0] ?? '';
+    expect(megaMenu).not.toContain('href="/en/categories/industrial-drones"');
   });
 
   it('keeps a hover dropdown for top-level categories without child items', () => {
@@ -475,7 +477,7 @@ describe('storefront layout shell', () => {
     expect(html).toContain('Vacuum Robots');
     expect(html).toContain('Robot Dogs');
     expect(html).toContain('Industrial Arms');
-    expect(html).toContain('/en/products?category=industrial-arms');
+    expect(html).toContain('/en/categories/industrial-arms');
   });
 
   it('keeps crowded desktop categories on one row by compacting secondary header controls', () => {

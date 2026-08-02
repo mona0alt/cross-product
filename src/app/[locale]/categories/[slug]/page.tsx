@@ -1,7 +1,9 @@
 import React from 'react';
+import Link from 'next/link';
 import type { Locale } from '@/lib/i18n/config';
 
 import { FilterSidebar } from '@/components/storefront/filter-sidebar';
+import { HomepageCategoryGrid } from '@/components/storefront/homepage-category-grid';
 import { ProductCard } from '@/components/storefront/product-card';
 import { ResultsToolbar } from '@/components/storefront/results-toolbar';
 import { productListSorts, type ProductListSort } from '@/features/catalog/types';
@@ -44,89 +46,150 @@ export default async function CategoryPage({
     locale
   );
 
-  const matchedCategory =
-    payload.categoryGroups.find((group) => group.slug === slug) ??
-    payload.categoryGroups
-      .flatMap((group) => group.children)
-      .find((child) => child.slug === slug);
+  const matchedRoot = payload.categoryGroups.find(
+    (group) => group.slug === slug
+  );
+  const matchedLeaf = matchedRoot
+    ? undefined
+    : payload.categoryGroups
+        .flatMap((group) => group.children)
+        .find((child) => child.slug === slug);
+  const parentRoot = matchedLeaf
+    ? payload.categoryGroups.find((group) =>
+        group.children.some((child) => child.slug === slug)
+      )
+    : undefined;
   const selectedPrimary =
-    payload.categoryGroups.find((group) => group.slug === slug)?.slug ??
-    payload.categoryGroups.find((group) =>
-      group.children.some((child) => child.slug === slug)
-    )?.slug;
-  const selectedSecondary =
-    payload.categoryGroups
-      .flatMap((group) => group.children)
-      .find((child) => child.slug === slug)?.slug ?? '';
+    matchedRoot?.slug ?? parentRoot?.slug;
+  const selectedSecondary = matchedLeaf?.slug ?? '';
+
+  const breadcrumbItems: Array<{ label: string; href?: string }> = [
+    { label: Storefront.nav.home, href: `/${locale}` }
+  ];
+  if (matchedRoot) {
+    breadcrumbItems.push({ label: matchedRoot.name });
+  } else if (matchedLeaf) {
+    if (parentRoot) {
+      breadcrumbItems.push({
+        label: parentRoot.name,
+        href: `/${locale}/categories/${parentRoot.slug}`
+      });
+    }
+    breadcrumbItems.push({ label: matchedLeaf.name });
+  } else {
+    breadcrumbItems.push({ label: Storefront.categories.title });
+  }
 
   return (
-    <form className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
-      <FilterSidebar
-        search=""
-        category={selectedPrimary}
-        subcategory={selectedSecondary}
-        recommended={false}
-        hideCategoryFilters
-        copy={{
-          title: Storefront.products.filters.title,
-          searchPlaceholder: Storefront.searchPlaceholder,
-          allPrimary: Storefront.products.filters.allPrimary,
-          allSecondary: Storefront.products.filters.allSecondary,
-          recommendedOnly: Storefront.products.filters.recommendedOnly,
-          apply: Storefront.products.filters.apply
-        }}
-        categoryGroups={payload.categoryGroups}
-      />
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <nav
+        aria-label="breadcrumb"
+        className="text-sm text-[var(--store-text-muted)]"
+      >
+        {breadcrumbItems.map((item, index) => (
+          <React.Fragment key={`${item.label}-${index}`}>
+            {index > 0 ? <span className="mx-2">/</span> : null}
+            {item.href ? (
+              <Link
+                href={item.href}
+                className="transition hover:text-[var(--store-text)]"
+              >
+                {item.label}
+              </Link>
+            ) : (
+              <span className="text-[var(--store-text)]">{item.label}</span>
+            )}
+          </React.Fragment>
+        ))}
+      </nav>
 
-      <div className="space-y-6">
-        <ResultsToolbar
-          eyebrow={Storefront.categories.eyebrow}
-          title={matchedCategory?.name ?? Storefront.categories.title}
-          description={
-            matchedCategory?.description ?? Storefront.categories.description
-          }
-          activeSummary={matchedCategory?.name}
-          sort={sort}
-          sortLabel={Storefront.products.sortLabel}
-          sortOptions={[
-            {
-              value: 'featured',
-              label: Storefront.products.sortOptions.featured
-            },
-            {
-              value: 'price-asc',
-              label: Storefront.products.sortOptions.priceAsc
-            },
-            {
-              value: 'price-desc',
-              label: Storefront.products.sortOptions.priceDesc
-            },
-            {
-              value: 'name-asc',
-              label: Storefront.products.sortOptions.nameAsc
+      {matchedRoot ? (
+        <div className="mt-6 space-y-6">
+          <ResultsToolbar
+            eyebrow={Storefront.categories.eyebrow}
+            title={matchedRoot.name}
+            description={
+              matchedRoot.description ?? Storefront.categories.description
             }
-          ]}
-        />
+          />
 
-        {payload.products.length === 0 ? (
-          <p className="storefront-surface rounded-[var(--store-radius-lg)] p-6 text-sm text-[var(--store-text-muted)]">
-            {Storefront.emptyProducts}
-          </p>
-        ) : (
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            {payload.products.map((product) => (
-              <ProductCard
-                key={product.id}
-                locale={locale}
-                product={product}
-                ctaLabel={Storefront.productCta}
-                stockLabel={Storefront.product.stockAvailable}
-                fullWidth
-              />
-            ))}
+          <HomepageCategoryGrid
+            locale={locale}
+            eyebrow={Storefront.sections.categoryGrid}
+            title={Storefront.sections.productSeries}
+            categories={matchedRoot.children}
+          />
+        </div>
+      ) : (
+        <form className="mt-6 grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
+          <FilterSidebar
+            search=""
+            category={selectedPrimary}
+            subcategory={selectedSecondary}
+            recommended={false}
+            hideCategoryFilters
+            copy={{
+              title: Storefront.products.filters.title,
+              searchPlaceholder: Storefront.searchPlaceholder,
+              allPrimary: Storefront.products.filters.allPrimary,
+              allSecondary: Storefront.products.filters.allSecondary,
+              recommendedOnly: Storefront.products.filters.recommendedOnly,
+              apply: Storefront.products.filters.apply
+            }}
+            categoryGroups={payload.categoryGroups}
+          />
+
+          <div className="space-y-6">
+            <ResultsToolbar
+              eyebrow={Storefront.categories.eyebrow}
+              title={matchedLeaf?.name ?? Storefront.categories.title}
+              description={
+                matchedLeaf?.description ?? Storefront.categories.description
+              }
+              activeSummary={matchedLeaf?.name}
+              sort={sort}
+              sortLabel={Storefront.products.sortLabel}
+              sortOptions={[
+                {
+                  value: 'featured',
+                  label: Storefront.products.sortOptions.featured
+                },
+                {
+                  value: 'price-asc',
+                  label: Storefront.products.sortOptions.priceAsc
+                },
+                {
+                  value: 'price-desc',
+                  label: Storefront.products.sortOptions.priceDesc
+                },
+                {
+                  value: 'name-asc',
+                  label: Storefront.products.sortOptions.nameAsc
+                }
+              ]}
+            />
+
+            {payload.products.length === 0 ? (
+              <p className="storefront-surface rounded-[var(--store-radius-lg)] p-6 text-sm text-[var(--store-text-muted)]">
+                {Storefront.emptyProducts}
+              </p>
+            ) : (
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                {payload.products.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    locale={locale}
+                    product={product}
+                    ctaLabel={Storefront.productCta}
+                    stockLabel={Storefront.product.stockAvailable}
+                    fullWidth
+                  />
+                ))}
+              </div>
+            )}
           </div>
-        )}
-      </div>
-    </form>
+        </form>
+      )}
+    </div>
   );
 }

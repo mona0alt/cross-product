@@ -146,7 +146,7 @@ describe('homepage showcase components', () => {
 
     expect(html).toContain('Product Series');
     expect(html).toContain('Humanoids');
-    expect(html).toContain('/en/products?category=humanoids');
+    expect(html).toContain('/en/categories/humanoids');
     expect(html).toContain('/show/robot_humanoid.png');
     expect(html).toContain('mx-auto max-w-7xl px-4 sm:px-6 lg:px-8');
     expect(html).not.toContain('class="mk-container"');
@@ -173,7 +173,7 @@ describe('homepage showcase components', () => {
 
     expect(html).toContain('Product Series');
     expect(html).toContain('Industrial Arms');
-    expect(html).toContain('/en/products?category=arms');
+    expect(html).toContain('/en/categories/arms');
     expect(html).toContain('data-category-carousel="true"');
     expect(html).toContain('aria-label="Previous product series"');
     expect(html).toContain('aria-label="Next product series"');

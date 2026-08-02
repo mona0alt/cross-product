@@ -16,7 +16,7 @@ export function HomepageCategoryCard({
 }) {
   return (
     <Link
-      href={`/${locale}/products?category=${category.slug}`}
+      href={`/${locale}/categories/${category.slug}`}
       className={`group rounded-[18px] border border-[var(--mk-border)] bg-[var(--mk-surface)] p-3 shadow-[0_18px_44px_rgba(112,89,81,0.08)] transition duration-500 hover:-translate-y-1 ${className ?? ''}`}
     >
       <div className="aspect-[4/5] overflow-hidden rounded-[14px] bg-[var(--mk-bg-muted)]">
