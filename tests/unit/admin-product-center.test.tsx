@@ -740,11 +740,25 @@ describe('ProductCenter', () => {
     expect(html).not.toContain(
       'name="parentId" value=""/><select aria-hidden="true" tabindex="-1" class="sr-only" disabled="">'
     );
-    expect(html).not.toContain('类目主图');
-    expect(html).not.toContain('上传主图');
+    expect(html).toContain('类目主图');
+    expect(html).toContain('上传主图');
     expect(html).toContain('中文名称');
     expect(html).toContain('保存类目');
     expect(html).not.toContain('href="/admin/categories"');
+  });
+
+  it('shows the hero image upload field when creating a root category', () => {
+    const html = renderToStaticMarkup(
+      <ProductCenter
+        categories={categories}
+        products={products}
+        defaultCategoryEditorOpen
+        defaultCategoryEditorMode="create"
+      />
+    );
+
+    expect(html).toContain('role="dialog"');
+    expect(html).toContain('name="iconImageUrl"');
   });
 
   it('shows the category image field when editing a child category', () => {
@@ -777,7 +791,7 @@ describe('ProductCenter', () => {
     expect(html).toContain('编辑类目');
     expect(html).toContain('humanoid-robots');
     expect(html).toContain('人形机器人');
-    expect(html).not.toContain('移除类目主图');
+    expect(html).toContain('移除类目主图');
     expect(html).toContain(
       '<input type="hidden" name="parentId" value=""/><select aria-hidden="true" tabindex="-1" class="sr-only">'
     );

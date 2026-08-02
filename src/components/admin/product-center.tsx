@@ -241,6 +241,7 @@ type ProductCenterCopy = {
   categorySavedNotice: string;
   categorySaveError: string;
   categorySlugConflictError: string;
+  categoryImageRequiredError: string;
   productCreateTitle: string;
   productEditTitle: string;
   productCreateDescription: string;
@@ -383,6 +384,7 @@ const defaultProductCenterCopy: ProductCenterCopy = {
   categorySavedNotice: '类目已保存。',
   categorySaveError: '保存失败，请检查表单。',
   categorySlugConflictError: 'Slug 已被其他类目占用，请更换后再保存。',
+  categoryImageRequiredError: '一级类目必须上传图片后再保存。',
   productCreateTitle: '新增商品',
   productEditTitle: '编辑商品',
   productCreateDescription: '填写商品信息后保存到后台。',
@@ -1710,13 +1712,6 @@ function CategoryEditorDrawer({
 }) {
   const router = useRouter();
   const [formError, setFormError] = useState('');
-  const [parentId, setParentId] = useState(category?.parentId ?? '');
-
-  useEffect(() => {
-    if (isOpen) {
-      setParentId(category?.parentId ?? '');
-    }
-  }, [isOpen, category]);
 
   if (!isOpen) {
     return null;
@@ -1743,9 +1738,11 @@ function CategoryEditorDrawer({
     } catch (error) {
       const message = error instanceof Error ? error.message : '';
       setFormError(
-        message.includes('Unique constraint')
-          ? copy.categorySlugConflictError
-          : message || copy.categorySaveError
+        message.includes('CATEGORY_IMAGE_REQUIRED')
+          ? copy.categoryImageRequiredError
+          : message.includes('Unique constraint')
+            ? copy.categorySlugConflictError
+            : message || copy.categorySaveError
       );
     }
   };
@@ -1805,7 +1802,6 @@ function CategoryEditorDrawer({
                 defaultValue={category?.parentId ?? ''}
                 options={parentCategoryOptions}
                 compact
-                onValueChange={setParentId}
               />
             </Field>
             <Field label="Slug">
@@ -1824,21 +1820,19 @@ function CategoryEditorDrawer({
                 type="number"
               />
             </Field>
-            {parentId ? (
-              <div className="md:col-span-2">
-                <AdminImageUploadInput
-                  name="iconImageUrl"
-                  label={copy.categoryHeroImage}
-                  uploadLabel={copy.uploadHeroImage}
-                  defaultValue={category?.iconImageUrl ?? ''}
-                  scope="category"
-                  showPreview
-                  previewAlt={category?.nameZh ?? copy.categoryHeroPreviewAlt}
-                  clearLabel={copy.removeCategoryHeroImage}
-                  uploadCopy={getProductImageUploadCopy(copy)}
-                />
-              </div>
-            ) : null}
+            <div className="md:col-span-2">
+              <AdminImageUploadInput
+                name="iconImageUrl"
+                label={copy.categoryHeroImage}
+                uploadLabel={copy.uploadHeroImage}
+                defaultValue={category?.iconImageUrl ?? ''}
+                scope="category"
+                showPreview
+                previewAlt={category?.nameZh ?? copy.categoryHeroPreviewAlt}
+                clearLabel={copy.removeCategoryHeroImage}
+                uploadCopy={getProductImageUploadCopy(copy)}
+              />
+            </div>
             <Field label={copy.nameZhLabel}>
               <input name="nameZh" defaultValue={category?.nameZh ?? ''} className={drawerInputClass} />
             </Field>

@@ -333,6 +333,7 @@
       "categorySavedNotice": "Category saved.",
       "categorySaveError": "Save failed. Check the form.",
       "categorySlugConflictError": "This slug is already used by another category. Please choose a different one.",
+      "categoryImageRequiredError": "A top-level category requires an image. Please upload one before saving.",
       "productCreateTitle": "New product",
       "productEditTitle": "Edit product",
       "productCreateDescription": "Fill in product information and save it to the admin system.",
