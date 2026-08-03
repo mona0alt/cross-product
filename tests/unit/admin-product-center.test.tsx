@@ -270,11 +270,14 @@ describe('ProductCenter', () => {
     expect(aerialIndex).toBeLessThan(alphaIndex);
   });
 
-  it('can render the pending review queue as a product status filter', () => {
+  it('can render the pending review queue with the rows filtered by the server', () => {
+    const pendingProducts = productsWithPending.filter(
+      (product) => product.status === 'pending'
+    );
     const html = renderToStaticMarkup(
       <ProductCenter
         categories={categories}
-        products={productsWithPending}
+        products={pendingProducts}
         defaultStatusFilter="pending"
       />
     );
@@ -334,11 +337,14 @@ describe('ProductCenter', () => {
     expect(html).not.toContain('智能穿戴设备');
   });
 
-  it('filters the product table by the selected leaf category', () => {
+  it('highlights the selected leaf category and renders the rows filtered by the server', () => {
+    const bipedalProducts = treeProducts.filter(
+      (product) => product.categoryId === 'cat-bipedal'
+    );
     const html = renderToStaticMarkup(
       <ProductCenter
         categories={treeCategories}
-        products={treeProducts}
+        products={bipedalProducts}
         defaultActiveCategoryId="cat-bipedal"
       />
     );

@@ -774,6 +774,7 @@ export function ProductCenter({
   copy?: ProductCenterCopy;
 }) {
   const [productRows, setProductRows] = useState(() => sortProductRowsByName(products));
+  const [isProductListFetching, setIsProductListFetching] = useState(false);
   const firstProductId = productRows[0]?.id ?? null;
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
     defaultSelectedProductId ?? firstProductId
@@ -854,33 +855,41 @@ export function ProductCenter({
     productSearchRequestRef.current = requestId;
 
     async function fetchProducts() {
-      const response = await fetch(
-        buildAdminProductSearchUrl({
-          searchTerm,
-          statusFilter,
-          activeCategoryId: filterCategoryId,
-          locale
-        }),
-        {
-          signal: controller.signal
-        }
-      );
+      setIsProductListFetching(true);
 
-      if (!response.ok || productSearchRequestRef.current !== requestId) {
-        return;
-      }
-
-      const payload = (await response.json()) as {
-        products?: ProductCenterRow[];
-      };
-
-      if (Array.isArray(payload.products)) {
-        setProductRows(sortProductRowsByName(payload.products));
-        setSelectedProductIds((current) =>
-          current.filter((productId) =>
-            payload.products?.some((product) => product.id === productId)
-          )
+      try {
+        const response = await fetch(
+          buildAdminProductSearchUrl({
+            searchTerm,
+            statusFilter,
+            activeCategoryId: filterCategoryId,
+            locale
+          }),
+          {
+            signal: controller.signal
+          }
         );
+
+        if (!response.ok || productSearchRequestRef.current !== requestId) {
+          return;
+        }
+
+        const payload = (await response.json()) as {
+          products?: ProductCenterRow[];
+        };
+
+        if (Array.isArray(payload.products)) {
+          setProductRows(sortProductRowsByName(payload.products));
+          setSelectedProductIds((current) =>
+            current.filter((productId) =>
+              payload.products?.some((product) => product.id === productId)
+            )
+          );
+        }
+      } finally {
+        if (productSearchRequestRef.current === requestId) {
+          setIsProductListFetching(false);
+        }
       }
     }
 
@@ -904,20 +913,10 @@ export function ProductCenter({
     selectedCategoryId === null
       ? null
       : categories.find((category) => category.id === selectedCategoryId) ?? null;
-  const categoryProducts =
-    filterCategoryId === null
-      ? productRows
-      : productRows.filter((product) => product.categoryId === filterCategoryId);
-  const filteredProducts = categoryProducts.filter((product) => {
-    const matchesStatus =
-      statusFilter === 'all'
-        ? true
-        : statusFilter === 'recommended'
-        ? product.isRecommended
-        : product.status === statusFilter;
-
-    return matchesStatus;
-  });
+  // Filtering happens on the server via /api/admin/products. Keep rendering the
+  // previous rows while a fetch is in flight so switching categories or status
+  // filters does not flash an empty table.
+  const filteredProducts = productRows;
   const [currentProductPage, setCurrentProductPage] = useState(1);
   const safePageSize = Math.max(1, productPageSize);
   const totalProductPages = Math.max(
@@ -1293,7 +1292,12 @@ export function ProductCenter({
               </div>
             ) : null}
 
-          <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-admin-border bg-white shadow-sm">
+          <section
+            aria-busy={isProductListFetching}
+            className={`flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-admin-border bg-white shadow-sm transition-opacity duration-150 ${
+              isProductListFetching ? 'opacity-60' : 'opacity-100'
+            }`}
+          >
             {filteredProducts.length > 0 ? (
               <div
                 aria-label={copy.scrollAreaLabel}
