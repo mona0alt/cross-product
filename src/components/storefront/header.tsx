@@ -130,6 +130,19 @@ export function StorefrontHeader({
     }))
   ];
   const isCompact = mainNav.length >= 5;
+  const navItems = mainNav.map((item) => ({
+    ...item,
+    featuredItems: item.group
+      ? item.group.children.slice(0, 6).map((category) => ({
+          id: category.id,
+          slug: category.slug,
+          href: `/${locale}/categories/${category.slug}`,
+          imageUrl: category.iconImageUrl,
+          name: category.name,
+          description: category.description
+        }))
+      : []
+  }));
 
   useEffect(() => {
     if (pendingDropdownHoverSuppressedRef.current || activeCategoryKeyRef.current) {
@@ -284,20 +297,8 @@ export function StorefrontHeader({
               className={navClassName}
               onWheel={handleNavWheel}
             >
-              {mainNav.map((item) => {
-                const group = item.group;
-                const featuredItems = group
-                  ? group.children.slice(0, 6).map((category) => ({
-                      id: category.id,
-                      slug: category.slug,
-                      href: `/${locale}/categories/${category.slug}`,
-                      imageUrl: category.iconImageUrl,
-                      name: category.name,
-                      description: category.description
-                    }))
-                  : [];
-                const hasDropdown = featuredItems.length > 0;
-                const isDropdownOpen = activeCategoryKey === item.key;
+              {navItems.map((item) => {
+                const hasDropdown = item.featuredItems.length > 0;
 
                 return (
                   <div
@@ -324,72 +325,6 @@ export function StorefrontHeader({
                       {item.label}
                       {hasDropdown && <ChevronDownIcon className="h-3.5 w-3.5 transition group-hover:rotate-180" />}
                     </Link>
-
-                    {hasDropdown && (
-                      <div
-                        data-testid="desktop-mega-menu"
-                        className={`invisible absolute left-1/2 top-full z-40 w-screen -translate-x-1/2 opacity-0 transition duration-200 ease-out ${
-                          isDropdownHoverSuppressed
-                            ? ''
-                            : 'group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100'
-                        } ${
-                          isDropdownOpen && !isDropdownHoverSuppressed ? 'visible opacity-100' : ''
-                        }`}
-                        onMouseEnter={() => openCategoryDropdown(item.key)}
-                      >
-                        <div className="h-2 bg-[#07111f]" />
-                        <div className="border-y border-white/10 bg-[#07111f] text-white shadow-[0_22px_55px_rgba(0,0,0,0.22)]">
-                          <div className="mk-container py-8">
-                            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                              {featuredItems.map((child) => (
-                                <Link
-                                  key={child.slug}
-                                  href={child.href}
-                                  className="group/card relative overflow-hidden rounded-lg border border-white/10 bg-[#0b1728] transition hover:border-white/25 hover:shadow-[0_18px_35px_rgba(0,0,0,0.18)]"
-                                  onClick={() => {
-                                    suppressDropdownHover();
-                                  }}
-                                >
-                                  <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-[var(--mk-bg-muted)]">
-                                    {child.imageUrl ? (
-                                      <>
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img
-                                          src={child.imageUrl}
-                                          alt=""
-                                          aria-hidden="true"
-                                          className="absolute inset-0 h-full w-full scale-105 object-cover opacity-20 blur-2xl transition duration-300 group-hover/card:scale-110"
-                                        />
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img
-                                          src={child.imageUrl}
-                                          alt={child.name}
-                                          className="relative z-10 h-full w-full object-contain transition duration-300 group-hover/card:scale-105"
-                                        />
-                                      </>
-                                    ) : (
-                                      <div className="flex h-full w-full items-center justify-center bg-[#0f1c30] text-sm font-semibold text-white/62">
-                                        {child.name}
-                                      </div>
-                                    )}
-                                  </div>
-                                  <div className="absolute inset-x-0 bottom-0 z-20 bg-transparent p-4">
-                                    <h3 className="text-sm font-bold text-white drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)]">
-                                      {child.name}
-                                    </h3>
-                                    {child.description ? (
-                                      <p className="mt-2 line-clamp-2 text-xs font-medium leading-5 text-white/78 drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)]">
-                                        {child.description}
-                                      </p>
-                                    ) : null}
-                                  </div>
-                                </Link>
-                              ))}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                 );
               })}
@@ -440,6 +375,73 @@ export function StorefrontHeader({
           </div>
         </div>
       </div>
+
+      {/* Desktop mega menu panels, pinned to the full-width header edge */}
+      {navItems.map((item) =>
+        item.featuredItems.length > 0 ? (
+          <div
+            key={item.key}
+            data-testid="desktop-mega-menu"
+            className={`absolute inset-x-0 top-full z-40 hidden transition duration-200 ease-out lg:block ${
+              activeCategoryKey === item.key && !isDropdownHoverSuppressed
+                ? 'visible opacity-100'
+                : 'invisible opacity-0'
+            }`}
+            onMouseEnter={() => openCategoryDropdown(item.key)}
+          >
+            <div className="border-y border-white/10 bg-[#07111f] text-white shadow-[0_22px_55px_rgba(0,0,0,0.22)]">
+              <div className="mk-container py-8">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {item.featuredItems.map((child) => (
+                    <Link
+                      key={child.slug}
+                      href={child.href}
+                      className="group/card relative overflow-hidden rounded-lg border border-white/10 bg-[#0b1728] transition hover:border-white/25 hover:shadow-[0_18px_35px_rgba(0,0,0,0.18)]"
+                      onClick={() => {
+                        suppressDropdownHover();
+                      }}
+                    >
+                      <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-[var(--mk-bg-muted)]">
+                        {child.imageUrl ? (
+                          <>
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={child.imageUrl}
+                              alt=""
+                              aria-hidden="true"
+                              className="absolute inset-0 h-full w-full scale-105 object-cover opacity-20 blur-2xl transition duration-300 group-hover/card:scale-110"
+                            />
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                              src={child.imageUrl}
+                              alt={child.name}
+                              className="relative z-10 h-full w-full object-contain transition duration-300 group-hover/card:scale-105"
+                            />
+                          </>
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center bg-[#0f1c30] text-sm font-semibold text-white/62">
+                            {child.name}
+                          </div>
+                        )}
+                      </div>
+                      <div className="absolute inset-x-0 bottom-0 z-20 bg-transparent p-4">
+                        <h3 className="text-sm font-bold text-white drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)]">
+                          {child.name}
+                        </h3>
+                        {child.description ? (
+                          <p className="mt-2 line-clamp-2 text-xs font-medium leading-5 text-white/78 drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)]">
+                            {child.description}
+                          </p>
+                        ) : null}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null
+      )}
 
       {/* Mobile menu */}
       {isMenuOpen && (

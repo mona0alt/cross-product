@@ -20,9 +20,9 @@ test('desktop category dropdown stays open while moving pointer into the panel',
   await page.goto('/en');
 
   const categoryLink = page
-    .locator('header nav > div:has([data-testid="desktop-mega-menu"]) > a[href*="/en/categories/"]')
+    .locator('header nav a[href*="/en/categories/"]')
     .first();
-  const dropdown = categoryLink.locator('xpath=following-sibling::*[@data-testid="desktop-mega-menu"]').first();
+  const dropdown = page.locator('[data-testid="desktop-mega-menu"]').first();
   await categoryLink.hover();
 
   await expect(dropdown).toHaveCSS('opacity', '1');
@@ -40,8 +40,8 @@ test('desktop category dropdown stays open while moving pointer into the panel',
 
   await page.mouse.move(linkBox.x + linkBox.width / 2, linkBox.y + linkBox.height / 2);
   // Move straight down from the nav link into the panel: the full-width mega
-  // menu extends past the viewport edge, and diagonal shortcuts that leave the
-  // header bounds close the dropdown before the pointer reaches the panel.
+  // menu is pinned to the header's bottom edge, and diagonal shortcuts that
+  // leave the header bounds close the dropdown before the pointer reaches it.
   await page.mouse.move(linkBox.x + linkBox.width / 2, dropdownBox.y + 100, { steps: 12 });
 
   await expect(dropdown).toHaveCSS('opacity', '1');
@@ -53,17 +53,17 @@ test('desktop category dropdown closes after choosing a leaf category', async ({
   await page.goto('/en');
 
   const categoryLink = page
-    .locator('header nav > div:has([data-testid="desktop-mega-menu"]) > a[href*="/en/categories/"]')
+    .locator('header nav a[href*="/en/categories/"]')
     .first();
-  const dropdown = categoryLink.locator('xpath=following-sibling::*[@data-testid="desktop-mega-menu"]').first();
+  const dropdown = page.locator('[data-testid="desktop-mega-menu"]').first();
 
   await categoryLink.hover();
   await expect(dropdown).toHaveCSS('opacity', '1');
 
   await dropdown.locator('a[href*="/en/categories/"]').first().click();
   await expect(page).toHaveURL(/\/en\/categories\/[^/?#]+$/);
-  // Move the pointer off the mega menu so the dropdown can settle closed;
-  // while the pointer stays over the panel, group-hover keeps it visible.
+  // Move the pointer off the header so the dropdown can settle closed;
+  // while the pointer stays over the panel, it stays open.
   await page.mouse.move(640, 780);
   await expect(dropdown).toHaveCSS('opacity', '0');
   await expect(dropdown).toHaveCSS('visibility', 'hidden');

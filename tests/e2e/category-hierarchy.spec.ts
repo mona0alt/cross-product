@@ -6,14 +6,10 @@ test('desktop mega menu opens from the root category nav item and shows leaf cat
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto('/zh-CN');
 
-  const categoryLink = page.locator(
-    'header nav > div:has([data-testid="desktop-mega-menu"]) > a[href="/zh-CN/categories/tech"]'
-  );
+  const categoryLink = page.locator('header nav a[href="/zh-CN/categories/tech"]');
   await expect(categoryLink).toContainText('科技类');
 
-  const dropdown = categoryLink.locator(
-    'xpath=following-sibling::*[@data-testid="desktop-mega-menu"]'
-  );
+  const dropdown = page.locator('[data-testid="desktop-mega-menu"]').first();
   await categoryLink.hover();
   await expect(dropdown).toHaveCSS('opacity', '1');
   await expect(dropdown).toHaveCSS('pointer-events', 'auto');
@@ -27,8 +23,8 @@ test('desktop mega menu opens from the root category nav item and shows leaf cat
 
   await leafLink.click();
   await expect(page).toHaveURL(/\/zh-CN\/categories\/window-cleaning-robots$/);
-  // Move the pointer off the mega menu so the dropdown can settle closed;
-  // while the pointer stays over the panel, group-hover keeps it visible.
+  // Move the pointer off the header so the dropdown can settle closed;
+  // while the pointer stays over the panel, it stays open.
   await page.mouse.move(640, 780);
   await expect(dropdown).toHaveCSS('opacity', '0');
 });
@@ -37,7 +33,7 @@ test('root category page shows child category cards and no product grid', async 
   await page.goto('/zh-CN');
 
   await page
-    .locator('header nav > div:has([data-testid="desktop-mega-menu"]) > a[href="/zh-CN/categories/tech"]')
+    .locator('header nav a[href="/zh-CN/categories/tech"]')
     .click();
   await expect(page).toHaveURL(/\/zh-CN\/categories\/tech$/);
 

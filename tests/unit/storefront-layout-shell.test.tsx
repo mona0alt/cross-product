@@ -179,11 +179,11 @@ describe('storefront layout shell', () => {
     );
 
     expect(html).toContain('data-testid="desktop-mega-menu"');
-    expect(html).toContain('left-1/2');
-    expect(html).toContain('w-screen');
-    expect(html).toContain('invisible absolute left-1/2 top-full');
-    expect(html).toContain('opacity-0 transition');
-    expect(html).toContain('group-hover:opacity-100');
+    expect(html).toContain('inset-x-0');
+    expect(html).toContain('absolute inset-x-0 top-full');
+    expect(html).toContain('invisible opacity-0');
+    expect(html).not.toContain('left-1/2');
+    expect(html).not.toContain('w-screen');
     expect(html).toContain('self-stretch');
     expect(html).toContain('items-center');
     expect(html).toContain('h-10');
