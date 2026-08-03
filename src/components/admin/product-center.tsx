@@ -814,10 +814,6 @@ export function ProductCenter({
   const router = useRouter();
 
   useEffect(() => {
-    setProductRows(sortProductRowsByName(products));
-  }, [products]);
-
-  useEffect(() => {
     if (!notice) {
       return;
     }
@@ -900,7 +896,10 @@ export function ProductCenter({
     });
 
     return () => controller.abort();
-  }, [filterCategoryId, locale, searchTerm, statusFilter]);
+    // `products` is included so a server-side change (product save/delete
+    // revalidates this route) re-applies the current filters instead of
+    // resetting the table to the unfiltered list.
+  }, [products, filterCategoryId, locale, searchTerm, statusFilter]);
 
   const selectedProduct =
     selectedProductId === null
