@@ -477,8 +477,9 @@ describe('admin actions', () => {
     categoryDelete.mockResolvedValue({ id: 'cat-drones' });
 
     const { deleteCategoryFormAction } = await import('@/features/admin/category-actions');
-    await deleteCategoryFormAction('cat-drones');
+    const result = await deleteCategoryFormAction('cat-drones');
 
+    expect(result).toEqual({ ok: true });
     expect(categoryDelete).toHaveBeenCalledWith({
       where: { id: 'cat-drones' }
     });
@@ -492,17 +493,19 @@ describe('admin actions', () => {
 
     const { deleteCategoryFormAction } = await import('@/features/admin/category-actions');
 
-    await expect(deleteCategoryFormAction('cat-drones')).rejects.toThrow(
-      'CATEGORY_HAS_CHILDREN'
-    );
+    await expect(deleteCategoryFormAction('cat-drones')).resolves.toEqual({
+      ok: false,
+      error: 'CATEGORY_HAS_CHILDREN'
+    });
     expect(categoryDelete).not.toHaveBeenCalled();
 
     categoryCount.mockResolvedValue(0);
     productCount.mockResolvedValue(2);
 
-    await expect(deleteCategoryFormAction('cat-drones')).rejects.toThrow(
-      'CATEGORY_HAS_PRODUCTS'
-    );
+    await expect(deleteCategoryFormAction('cat-drones')).resolves.toEqual({
+      ok: false,
+      error: 'CATEGORY_HAS_PRODUCTS'
+    });
     expect(categoryDelete).not.toHaveBeenCalled();
   });
 

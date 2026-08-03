@@ -242,6 +242,10 @@ type ProductCenterCopy = {
   categorySaveError: string;
   categorySlugConflictError: string;
   categoryImageRequiredError: string;
+  categoryDeletedNotice: string;
+  categoryDeleteError: string;
+  categoryDeleteHasProductsError: string;
+  categoryDeleteHasChildrenError: string;
   productCreateTitle: string;
   productEditTitle: string;
   productCreateDescription: string;
@@ -385,6 +389,10 @@ const defaultProductCenterCopy: ProductCenterCopy = {
   categorySaveError: '保存失败，请检查表单。',
   categorySlugConflictError: 'Slug 已被其他类目占用，请更换后再保存。',
   categoryImageRequiredError: '一级类目必须上传图片后再保存。',
+  categoryDeletedNotice: '类目已删除。',
+  categoryDeleteError: '类目删除失败，请稍后重试。',
+  categoryDeleteHasProductsError: '该类目下仍有商品，请先移除或转移商品后再删除。',
+  categoryDeleteHasChildrenError: '该类目下仍有子类目，请先删除子类目后再删除。',
   productCreateTitle: '新增商品',
   productEditTitle: '编辑商品',
   productCreateDescription: '填写商品信息后保存到后台。',
@@ -799,8 +807,10 @@ export function ProductCenter({
     defaultPendingDeleteProductId ? [defaultPendingDeleteProductId] : []
   );
   const [notice, setNotice] = useState('');
+  const [actionError, setActionError] = useState('');
   const didMountRef = useRef(false);
   const productSearchRequestRef = useRef(0);
+  const router = useRouter();
 
   useEffect(() => {
     setProductRows(sortProductRowsByName(products));
@@ -813,6 +823,14 @@ export function ProductCenter({
 
     return scheduleNoticeDismiss(() => setNotice(''));
   }, [notice]);
+
+  useEffect(() => {
+    if (!actionError) {
+      return;
+    }
+
+    return scheduleNoticeDismiss(() => setActionError(''));
+  }, [actionError]);
 
   const activeCategory =
     activeCategoryId === null
@@ -1049,6 +1067,26 @@ export function ProductCenter({
     );
   };
 
+  const deleteCategory = async (categoryId: string) => {
+    const result = await deleteCategoryFormAction(categoryId);
+
+    if (result.ok) {
+      setActionError('');
+      setNotice(copy.categoryDeletedNotice);
+      router.refresh();
+      return;
+    }
+
+    setNotice('');
+    setActionError(
+      result.error === 'CATEGORY_HAS_PRODUCTS'
+        ? copy.categoryDeleteHasProductsError
+        : result.error === 'CATEGORY_HAS_CHILDREN'
+          ? copy.categoryDeleteHasChildrenError
+          : copy.categoryDeleteError
+    );
+  };
+
   const updateStatusFilter = (filter: ProductStatusFilter) => {
     const nextFilterState = getProductFilterUpdate({
       filter,
@@ -1203,6 +1241,7 @@ export function ProductCenter({
                     setSelectedProductIds([]);
                   }}
                   onEdit={openEditCategoryEditor}
+                  onDelete={(categoryId) => void deleteCategory(categoryId)}
                   copy={copy}
                 />
               ))}
@@ -1216,6 +1255,11 @@ export function ProductCenter({
             {notice ? (
               <p className="shrink-0 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700">
                 {notice}
+              </p>
+            ) : null}
+            {actionError ? (
+              <p className="shrink-0 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-700">
+                {actionError}
               </p>
             ) : null}
             {selectedProductIds.length > 0 ? (
@@ -1606,12 +1650,14 @@ function CategoryItem({
   isSelected,
   onSelect,
   onEdit,
+  onDelete,
   copy
 }: {
   category: ProductCenterCategory;
   isSelected: boolean;
   onSelect: (categoryId: string) => void;
   onEdit: (categoryId: string) => void;
+  onDelete: (categoryId: string) => void;
   copy: ProductCenterCopy;
 }) {
   const isRoot = !category.parentId;
@@ -1626,16 +1672,15 @@ function CategoryItem({
       >
         <Edit3 className="h-3.5 w-3.5" />
       </button>
-      <form action={deleteCategoryFormAction.bind(null, category.id)}>
-        <button
-          type="submit"
-          aria-label={formatCopy(copy.deleteCategoryLabel, { name: category.nameZh })}
-          title={copy.deleteCategoryTitle}
-          className="flex h-7 w-7 items-center justify-center rounded-md text-admin-text-muted transition hover:bg-white hover:text-rose-600"
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </button>
-      </form>
+      <button
+        type="button"
+        aria-label={formatCopy(copy.deleteCategoryLabel, { name: category.nameZh })}
+        title={copy.deleteCategoryTitle}
+        onClick={() => onDelete(category.id)}
+        className="flex h-7 w-7 items-center justify-center rounded-md text-admin-text-muted transition hover:bg-white hover:text-rose-600"
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+      </button>
     </div>
   );
 

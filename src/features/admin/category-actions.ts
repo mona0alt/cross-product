@@ -168,7 +168,19 @@ export async function updateCategoryFormAction(id: string, formData: FormData) {
 }
 
 export async function deleteCategoryFormAction(id: string) {
-  await deleteCategoryById(id);
+  try {
+    await deleteCategoryById(id);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : '';
+
+    if (message === 'CATEGORY_HAS_CHILDREN' || message === 'CATEGORY_HAS_PRODUCTS') {
+      return { ok: false as const, error: message };
+    }
+
+    throw error;
+  }
 
   revalidateCategoryAdminPaths();
+
+  return { ok: true as const };
 }
