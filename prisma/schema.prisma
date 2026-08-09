@@ -217,6 +217,15 @@ model MailAutomationSetting {
   updatedAt    DateTime @updatedAt
 }
 
+model SocialPost {
+  id        String   @id @default(cuid())
+  platform  String
+  imageUrl  String
+  targetUrl String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model SystemSetting {
   id        String   @id @default(cuid())
   key       String   @unique

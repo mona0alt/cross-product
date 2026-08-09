@@ -5,7 +5,10 @@ import { HomepageCategoryGrid } from '@/components/storefront/homepage-category-
 import { HomepageProductMatrix } from '@/components/storefront/homepage-product-matrix';
 import { SocialShowcase } from '@/components/storefront/social-showcase';
 import { getHomepageHeroBanners } from '@/features/catalog/hero-banners';
-import { getHomepagePayload } from '@/features/catalog/queries';
+import {
+  getHomepagePayload,
+  getSocialShowcasePosts
+} from '@/features/catalog/queries';
 import { defaultLocale, isLocale, type Locale } from '@/lib/i18n/config';
 import { getDictionary } from '@/lib/i18n/get-dictionary';
 
@@ -19,7 +22,10 @@ export default async function LocalizedHomePage({
   const { locale: localeParam } = await params;
   const locale: Locale = isLocale(localeParam) ? localeParam : defaultLocale;
   const messages = await getDictionary(locale);
-  const payload = await getHomepagePayload(locale);
+  const [payload, socialPosts] = await Promise.all([
+    getHomepagePayload(locale),
+    getSocialShowcasePosts()
+  ]);
   const heroBanners = getHomepageHeroBanners(payload, locale);
   const { Storefront } = messages;
 
@@ -48,7 +54,7 @@ export default async function LocalizedHomePage({
         products={payload.recommendedProducts}
       />
 
-      <SocialShowcase copy={Storefront.socialShowcase} />
+      <SocialShowcase copy={Storefront.socialShowcase} posts={socialPosts} />
     </div>
   );
 }

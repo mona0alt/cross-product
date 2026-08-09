@@ -33,6 +33,11 @@ export default async function AdminProtectedLayout({
       icon: 'MessageSquare'
     },
     {
+      href: '/admin/social-posts',
+      label: Admin.nav.socialPosts,
+      icon: 'Globe'
+    },
+    {
       href: '/admin/categories',
       label: Admin.nav.categories,
       icon: 'Settings'

@@ -68,5 +68,6 @@ export type RuntimeSystemSettings = {
     productSegment: string;
     categorySegment: string;
     bannerSegment: string;
+    socialSegment: string;
   };
 };

@@ -10,7 +10,7 @@ import {
   type AdminUploadStatusTone
 } from '@/features/admin/upload-rules';
 
-type UploadScope = 'product' | 'banner' | 'category';
+type UploadScope = 'product' | 'banner' | 'category' | 'social';
 type UploadStatus = {
   tone: AdminUploadStatusTone;
   message: string;

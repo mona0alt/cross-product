@@ -104,15 +104,7 @@
       }
     },
     "socialShowcase": {
-      "title": "社交媒体 #FBGM",
-      "handle": "@fbgm_robotics",
-      "tabs": {
-        "windowRobots": "擦窗机器人",
-        "drones": "无人机",
-        "humanoidRobots": "人形机器人",
-        "vacuumRobots": "扫地机器人",
-        "scenes": "精选内容"
-      }
+      "title": "社交媒体 #FBGM"
     },
     "home": {
       "eyebrow": "AI 机器人展示",
@@ -172,7 +164,29 @@
       "subscribers": "邮件订阅",
       "messages": "支持中心",
       "categories": "系统设置",
-      "banners": "轮播图"
+      "banners": "轮播图",
+      "socialPosts": "社媒卡片"
+    },
+    "socialPosts": {
+      "title": "社媒卡片",
+      "formTitle": "新建社媒卡片",
+      "imageUrl": "封面图",
+      "targetUrl": "跳转 URL",
+      "create": "新建卡片",
+      "save": "保存",
+      "delete": "删除",
+      "edit": "编辑",
+      "cancel": "取消",
+      "editTitle": "编辑社媒卡片",
+      "deleteConfirmTitle": "删除社媒卡片",
+      "deleteConfirmDescription": "删除后前台将不再展示该卡片，此操作不可撤销。",
+      "confirmDelete": "确认删除",
+      "createSuccess": "社媒卡片已创建。",
+      "updateSuccess": "社媒卡片已保存。",
+      "deleteSuccess": "社媒卡片已删除。",
+      "saveError": "保存失败，请检查填写内容后重试。",
+      "emptyTitle": "还没有社媒卡片",
+      "emptyDescription": "点击右上角「新建卡片」添加第一张。"
     },
     "common": {
       "save": "保存",

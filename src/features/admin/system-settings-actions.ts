@@ -106,6 +106,13 @@ const editableSettingDefinitions: EditableSettingDefinition[] = [
     defaultValue: 'banners'
   },
   {
+    key: 'upload.socialSegment',
+    groupKey: 'upload',
+    label: '社媒封面图目录',
+    inputType: 'text',
+    defaultValue: 'social'
+  },
+  {
     key: 'llm.provider',
     groupKey: 'llm',
     label: '服务商',
@@ -607,7 +614,8 @@ export async function getRuntimeSystemSettings(): Promise<RuntimeSystemSettings>
     upload: {
       productSegment: normalizeUploadSegment(getValue('upload.productSegment'), 'products'),
       categorySegment: normalizeUploadSegment(getValue('upload.categorySegment'), 'categories'),
-      bannerSegment: normalizeUploadSegment(getValue('upload.bannerSegment'), 'banners')
+      bannerSegment: normalizeUploadSegment(getValue('upload.bannerSegment'), 'banners'),
+      socialSegment: normalizeUploadSegment(getValue('upload.socialSegment'), 'social')
     }
   };
 }

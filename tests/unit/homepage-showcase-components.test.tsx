@@ -250,43 +250,53 @@ describe('homepage showcase components', () => {
     expect(html).not.toContain('aria-label="Next product"');
   });
 
-  it('renders social media cards with platform tabs', () => {
+  it('renders social media cards as plain linked images without tabs', () => {
     const html = renderToStaticMarkup(
       <SocialShowcase
-        copy={{
-          title: 'Social Media',
-          handle: '@fbgm_robotics',
-          tabs: {
-            windowRobots: 'Window Robots',
-            drones: 'Drones',
-            humanoidRobots: 'Humanoids',
-            vacuumRobots: 'Vacuum Robots',
-            scenes: 'Highlights'
+        copy={{ title: 'Social Media' }}
+        posts={[
+          {
+            id: 'social-1',
+            platform: 'facebook',
+            imageUrl: '/uploads/social/fb.jpg',
+            targetUrl: 'https://www.facebook.com/p/Fbgm-Decomaterial-61585767212910/'
+          },
+          {
+            id: 'social-2',
+            platform: 'instagram',
+            imageUrl: '/uploads/social/ig.jpg',
+            targetUrl: 'https://www.instagram.com/fbgm_decomaterial'
           }
-        }}
+        ]}
       />
     );
 
     expect(html).toContain('Social Media');
-    expect(html).toContain('@fbgm_robotics');
-    expect(html).toContain('Window Robots');
     expect(html).toContain('mx-auto max-w-7xl px-4 sm:px-6 lg:px-8');
-    expect(html).not.toContain('class="mk-container"');
     expect(html).toContain('bg-[var(--mk-bg)] py-12 sm:py-16');
-    expect(html).toContain('overflow-x-auto pb-2');
-    expect(html).toContain('grid min-w-[940px] gap-5 md:grid-cols-4');
-    expect(html).toContain('relative aspect-[9/16] overflow-hidden rounded-[22px] border border-[var(--mk-border)] bg-[var(--mk-bg-muted)] shadow-[0_20px_48px_rgba(112,89,81,0.12)]');
-    expect(html).toContain('absolute left-3 top-3 rounded-full bg-white/88 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[var(--mk-accent)] backdrop-blur');
-    expect(html).toContain('absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#201a19]/88 via-[#705951]/35 to-transparent p-4 pt-16 text-white');
-    expect(html).toContain('Instagram');
-    expect(html).toContain('YouTube');
-    expect(html).toContain('LinkedIn');
-    expect(html).toContain('Facebook');
-    expect(html).toContain('mk-display-font mt-2 text-lg font-semibold leading-tight');
-    expect(html).not.toContain('previous-social-card');
-    expect(html).not.toContain('next-social-card');
-    expect(html).not.toContain('lg:auto-rows-[220px]');
-    expect(html).not.toContain('sm:col-span-2 lg:col-span-2 lg:row-span-2');
-    expect(html).not.toContain('absolute inset-0 bg-gradient-to-t from-[#061b38]/84 via-[#0f63ce]/14 to-transparent');
+    expect(html).toContain('grid gap-5 sm:grid-cols-2 lg:grid-cols-4');
+    expect(html).toContain(
+      'href="https://www.facebook.com/p/Fbgm-Decomaterial-61585767212910/"'
+    );
+    expect(html).toContain('href="https://www.instagram.com/fbgm_decomaterial"');
+    expect(html).toContain('target="_blank"');
+    expect(html).toContain('rel="noopener noreferrer"');
+    expect(html).toContain('/uploads/social/fb.jpg');
+    expect(html).toContain('/uploads/social/ig.jpg');
+    expect(html).toContain('relative block aspect-[9/16] overflow-hidden rounded-[22px] border border-[var(--mk-border)] bg-[var(--mk-bg-muted)] shadow-[0_20px_48px_rgba(112,89,81,0.12)]');
+    // no tabs, no titles, no platform mock feed
+    expect(html).not.toContain('role="listbox"');
+    expect(html).not.toContain('aria-pressed');
+    expect(html).not.toContain('YouTube');
+    expect(html).not.toContain('LinkedIn');
+    expect(html).not.toContain('@fbgm_robotics');
+  });
+
+  it('renders nothing when no social posts are configured', () => {
+    const html = renderToStaticMarkup(
+      <SocialShowcase copy={{ title: 'Social Media' }} posts={[]} />
+    );
+
+    expect(html).toBe('');
   });
 });

@@ -104,15 +104,7 @@
       }
     },
     "socialShowcase": {
-      "title": "Redes sociais #FBGM",
-      "handle": "@fbgm_robotics",
-      "tabs": {
-        "windowRobots": "ROBÔS DE LIMPEZA",
-        "drones": "DRONES",
-        "humanoidRobots": "HUMANOIDES",
-        "vacuumRobots": "ROBÔS ASPIRADORES",
-        "scenes": "DESTAQUES"
-      }
+      "title": "Redes sociais #FBGM"
     },
     "home": {
       "eyebrow": "AI ROBOTICS SHOWCASE",
@@ -172,7 +164,29 @@
       "subscribers": "Assinantes",
       "messages": "Suporte",
       "categories": "Configurações",
-      "banners": "Banners"
+      "banners": "Banners",
+      "socialPosts": "Redes sociais"
+    },
+    "socialPosts": {
+      "title": "Redes sociais",
+      "formTitle": "Novo cartão social",
+      "imageUrl": "Imagem de capa",
+      "targetUrl": "URL de destino",
+      "create": "Criar cartão",
+      "save": "Salvar",
+      "delete": "Excluir",
+      "edit": "Editar",
+      "cancel": "Cancelar",
+      "editTitle": "Editar cartão social",
+      "deleteConfirmTitle": "Excluir cartão social",
+      "deleteConfirmDescription": "O cartão deixará de aparecer na loja. Esta ação não pode ser desfeita.",
+      "confirmDelete": "Excluir",
+      "createSuccess": "Cartão social criado.",
+      "updateSuccess": "Cartão social salvo.",
+      "deleteSuccess": "Cartão social excluído.",
+      "saveError": "Falha ao salvar. Verifique os campos e tente novamente.",
+      "emptyTitle": "Ainda não há cartões sociais",
+      "emptyDescription": "Clique em «Criar cartão» para adicionar o primeiro."
     },
     "common": {
       "save": "Salvar",

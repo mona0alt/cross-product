@@ -9,7 +9,7 @@ import {
 } from '@/features/admin/upload-rules';
 import { getRuntimeSystemSettings } from '@/features/admin/system-settings-actions';
 
-export type AdminUploadScope = 'product' | 'banner' | 'category';
+export type AdminUploadScope = 'product' | 'banner' | 'category' | 'social';
 
 export const MAX_UPLOAD_BYTES = MAX_ADMIN_UPLOAD_BYTES;
 export type UploadValidationError = Exclude<AdminUploadValidationError, 'UPLOAD_FAILED'>;
@@ -31,7 +31,7 @@ export function validateAdminImageFile(file: File): UploadValidationError | null
 }
 
 export function normalizeAdminUploadScope(value: FormDataEntryValue | null): AdminUploadScope {
-  if (value === 'banner' || value === 'category') {
+  if (value === 'banner' || value === 'category' || value === 'social') {
     return value;
   }
 
@@ -52,7 +52,9 @@ export async function saveAdminImageUpload(
       ? settings.upload.bannerSegment
       : scope === 'category'
         ? settings.upload.categorySegment
-        : settings.upload.productSegment;
+        : scope === 'social'
+          ? settings.upload.socialSegment
+          : settings.upload.productSegment;
   const filename = `${randomUUID()}.${extension}`;
   const relativeUrl = `/uploads/${segment}/${year}/${month}/${filename}`;
   const directory = join(process.cwd(), 'public', 'uploads', segment, year, month);

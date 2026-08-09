@@ -104,15 +104,7 @@
       }
     },
     "socialShowcase": {
-      "title": "Social Media #FBGM",
-      "handle": "@fbgm_robotics",
-      "tabs": {
-        "windowRobots": "WINDOW ROBOTS",
-        "drones": "DRONES",
-        "humanoidRobots": "HUMANOIDS",
-        "vacuumRobots": "VACUUM ROBOTS",
-        "scenes": "HIGHLIGHTS"
-      }
+      "title": "Social Media #FBGM"
     },
     "home": {
       "eyebrow": "AI ROBOTICS SHOWCASE",
@@ -172,7 +164,29 @@
       "subscribers": "Subscribers",
       "messages": "Support",
       "categories": "Settings",
-      "banners": "Banners"
+      "banners": "Banners",
+      "socialPosts": "Social Posts"
+    },
+    "socialPosts": {
+      "title": "Social Posts",
+      "formTitle": "New Social Post",
+      "imageUrl": "Cover Image",
+      "targetUrl": "Target URL",
+      "create": "Create Post",
+      "save": "Save",
+      "delete": "Delete",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "editTitle": "Edit Social Post",
+      "deleteConfirmTitle": "Delete Social Post",
+      "deleteConfirmDescription": "The card will no longer appear on the storefront. This cannot be undone.",
+      "confirmDelete": "Delete",
+      "createSuccess": "Social post created.",
+      "updateSuccess": "Social post saved.",
+      "deleteSuccess": "Social post deleted.",
+      "saveError": "Save failed. Check the fields and try again.",
+      "emptyTitle": "No social posts yet",
+      "emptyDescription": "Click \"Create Post\" in the top right to add the first one."
     },
     "common": {
       "save": "Save",

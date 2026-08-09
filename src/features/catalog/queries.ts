@@ -288,6 +288,14 @@ export async function getHomepagePayload(
   };
 }
 
+export async function getSocialShowcasePosts() {
+  return db.socialPost.findMany({
+    orderBy: {
+      createdAt: 'asc'
+    }
+  });
+}
+
 export async function getProductListPayload(
   filters: ProductListFilters,
   locale: CatalogLocale

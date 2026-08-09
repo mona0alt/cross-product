@@ -104,15 +104,7 @@
       }
     },
     "socialShowcase": {
-      "title": "Redes sociales #FBGM",
-      "handle": "@fbgm_robotics",
-      "tabs": {
-        "windowRobots": "ROBOTS LIMPIACRISTALES",
-        "drones": "DRONES",
-        "humanoidRobots": "HUMANOIDES",
-        "vacuumRobots": "ROBOTS ASPIRADORES",
-        "scenes": "DESTACADOS"
-      }
+      "title": "Redes sociales #FBGM"
     },
     "home": {
       "eyebrow": "AI ROBOTICS SHOWCASE",
@@ -172,7 +164,29 @@
       "subscribers": "Suscriptores",
       "messages": "Soporte",
       "categories": "Configuración",
-      "banners": "Banners"
+      "banners": "Banners",
+      "socialPosts": "Redes sociales"
+    },
+    "socialPosts": {
+      "title": "Redes sociales",
+      "formTitle": "Nueva tarjeta social",
+      "imageUrl": "Imagen de portada",
+      "targetUrl": "URL de destino",
+      "create": "Crear tarjeta",
+      "save": "Guardar",
+      "delete": "Eliminar",
+      "edit": "Editar",
+      "cancel": "Cancelar",
+      "editTitle": "Editar tarjeta social",
+      "deleteConfirmTitle": "Eliminar tarjeta social",
+      "deleteConfirmDescription": "La tarjeta dejará de mostrarse en la tienda. Esta acción no se puede deshacer.",
+      "confirmDelete": "Eliminar",
+      "createSuccess": "Tarjeta social creada.",
+      "updateSuccess": "Tarjeta social guardada.",
+      "deleteSuccess": "Tarjeta social eliminada.",
+      "saveError": "Error al guardar. Revisa los campos e inténtalo de nuevo.",
+      "emptyTitle": "Aún no hay tarjetas sociales",
+      "emptyDescription": "Haz clic en «Crear tarjeta» para añadir la primera."
     },
     "common": {
       "save": "Guardar",

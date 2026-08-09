@@ -5,12 +5,14 @@ const getHomepagePayload = vi.fn();
 const getProductListPayload = vi.fn();
 const getProductDetailBySlug = vi.fn();
 const getRecommendedProducts = vi.fn();
+const getSocialShowcasePosts = vi.fn();
 
 vi.mock('@/features/catalog/queries', () => ({
   getHomepagePayload,
   getProductListPayload,
   getProductDetailBySlug,
-  getRecommendedProducts
+  getRecommendedProducts,
+  getSocialShowcasePosts
 }));
 
 vi.mock('@/features/admin/system-settings-actions', () => ({
@@ -44,6 +46,8 @@ describe('storefront routes', () => {
     getProductListPayload.mockReset();
     getProductDetailBySlug.mockReset();
     getRecommendedProducts.mockReset();
+    getSocialShowcasePosts.mockReset();
+    getSocialShowcasePosts.mockResolvedValue([]);
   });
 
   it('renders the localized homepage', async () => {
@@ -111,6 +115,14 @@ describe('storefront routes', () => {
     });
 
     const HomePage = (await import('@/app/[locale]/page')).default;
+    getSocialShowcasePosts.mockResolvedValue([
+      {
+        id: 'social-1',
+        platform: 'instagram',
+        imageUrl: '/show/social.jpg',
+        targetUrl: 'https://www.instagram.com/fbgm_decomaterial'
+      }
+    ]);
     const html = renderToStaticMarkup(
       await HomePage({
         params: Promise.resolve({ locale: 'en' })
@@ -127,6 +139,8 @@ describe('storefront routes', () => {
     expect(html).toContain('Product Series');
     expect(html).toContain('More Product Images');
     expect(html).toContain('Social Media #FBGM');
+    expect(html).toContain('href="https://www.instagram.com/fbgm_decomaterial"');
+    expect(html).toContain('/show/social.jpg');
     expect(html).not.toContain('UNMISSABLE OFFERS');
     expect(html).not.toContain('Catalog: Window Cleaning Robots');
     expect(html).not.toContain('Catálogo Pisos y Muros');
@@ -225,6 +239,32 @@ describe('storefront routes', () => {
       expect.objectContaining({
         search: 'phone',
         sort: 'price-desc'
+      }),
+      'en'
+    );
+  });
+
+  it('falls back to the primary category when subcategory is empty', async () => {
+    getProductListPayload.mockResolvedValue({
+      filters: {},
+      categoryGroups: [],
+      products: []
+    });
+
+    const ProductsPage = (await import('@/app/[locale]/products/page')).default;
+    renderToStaticMarkup(
+      await ProductsPage({
+        params: Promise.resolve({ locale: 'en' }),
+        searchParams: Promise.resolve({
+          category: 'electronics',
+          subcategory: ''
+        })
+      })
+    );
+
+    expect(getProductListPayload).toHaveBeenCalledWith(
+      expect.objectContaining({
+        categorySlug: 'electronics'
       }),
       'en'
     );
