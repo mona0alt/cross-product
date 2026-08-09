@@ -41,12 +41,14 @@ export function FilterSelect({
   name,
   defaultValue = '',
   allLabel,
-  groups
+  groups,
+  onValueChange
 }: {
   name: string;
   defaultValue?: string;
   allLabel: string;
   groups: FilterSelectGroup[];
+  onValueChange?: (value: string) => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedValue, setSelectedValue] = useState(defaultValue);
@@ -88,6 +90,7 @@ export function FilterSelect({
   const chooseOption = (value: string) => {
     setSelectedValue(value);
     setIsOpen(false);
+    onValueChange?.(value);
   };
 
   const renderOption = (value: string, label: string) => {

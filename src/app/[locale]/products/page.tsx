@@ -44,7 +44,9 @@ export default async function ProductsPage({
   const payload = await getProductListPayload(
     {
       search,
-      categorySlug: subcategory ?? category,
+      // subcategory 为空字符串（URL 中的 subcategory=）时回落到一级分类，
+      // 保证“一级已选 + 全部二级”时只展示该一级分类下的商品
+      categorySlug: subcategory || category || undefined,
       recommended,
       sort
     },

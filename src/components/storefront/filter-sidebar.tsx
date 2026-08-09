@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useRef, useState } from 'react';
 
 import { FilterSelect } from '@/components/storefront/filter-select';
 import type { StorefrontCategoryGroup } from '@/features/catalog/types';
@@ -31,6 +33,59 @@ export function FilterSidebar({
   copy,
   categoryGroups
 }: FilterSidebarProps) {
+  const [activeCategory, setActiveCategory] = useState(category ?? '');
+  const asideRef = useRef<HTMLElement>(null);
+
+  const activeGroup = categoryGroups.find(
+    (group) => group.slug === activeCategory
+  );
+  const subcategoryOptions = activeGroup
+    ? activeGroup.children.map((child) => ({
+        value: child.slug,
+        label: child.name
+      }))
+    : categoryGroups.flatMap((group) =>
+        group.children.map((child) => ({
+          value: child.slug,
+          label: child.name
+        }))
+      );
+
+  // 原生 GET 提交读取的是 DOM 当前值，选中回调触发时 React 尚未重渲染，
+  // 因此先把对应 hidden input 同步成新值再提交。
+  const submitForm = (overrides: { category?: string; subcategory?: string }) => {
+    const form = asideRef.current?.closest('form');
+
+    if (!form) {
+      return;
+    }
+
+    for (const name of ['category', 'subcategory'] as const) {
+      const value = overrides[name];
+
+      if (value === undefined) {
+        continue;
+      }
+
+      const input = form.querySelector<HTMLInputElement>(`input[name="${name}"]`);
+
+      if (input) {
+        input.value = value;
+      }
+    }
+
+    form.requestSubmit();
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setActiveCategory(value);
+    submitForm({ category: value, subcategory: '' });
+  };
+
+  const handleSubcategoryChange = (value: string) => {
+    submitForm({ subcategory: value });
+  };
+
   if (layout === 'horizontal') {
     return (
       <div className="w-full rounded-[18px] border border-[#e2d9d3] bg-white/70 p-3 sm:w-auto sm:rounded-full sm:p-1.5">
@@ -98,7 +153,10 @@ export function FilterSidebar({
   }
 
   return (
-    <aside className="h-fit rounded-[24px] border border-[#d8cec7] bg-white/82 p-5 shadow-[0_18px_48px_rgba(32,26,25,0.08)] backdrop-blur xl:sticky xl:top-24">
+    <aside
+      ref={asideRef}
+      className="h-fit rounded-[24px] border border-[#d8cec7] bg-white/82 p-5 shadow-[0_18px_48px_rgba(32,26,25,0.08)] backdrop-blur xl:sticky xl:top-24"
+    >
       <div className="space-y-5">
         <div>
           <h2 className="text-lg font-bold text-[var(--store-text)]">
@@ -120,6 +178,7 @@ export function FilterSidebar({
                 name="category"
                 defaultValue={category ?? ''}
                 allLabel={copy.allPrimary}
+                onValueChange={handleCategoryChange}
                 groups={[
                   {
                     options: categoryGroups.map((group) => ({
@@ -131,19 +190,14 @@ export function FilterSidebar({
               />
 
               <FilterSelect
+                key={activeCategory || '__all__'}
                 name="subcategory"
-                defaultValue={subcategory ?? ''}
+                defaultValue={
+                  activeCategory === (category ?? '') ? (subcategory ?? '') : ''
+                }
                 allLabel={copy.allSecondary}
-                groups={[
-                  {
-                    options: categoryGroups.flatMap((group) =>
-                      group.children.map((child) => ({
-                        value: child.slug,
-                        label: child.name
-                      }))
-                    )
-                  }
-                ]}
+                onValueChange={handleSubcategoryChange}
+                groups={[{ options: subcategoryOptions }]}
               />
             </>
           )}
