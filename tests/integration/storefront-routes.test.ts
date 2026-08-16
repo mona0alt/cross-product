@@ -489,7 +489,7 @@ describe('storefront routes', () => {
     expect(html).toContain('Tablets');
     expect(html).toContain('href="/en/categories/electronics-phones"');
     expect(html).toContain('href="/en/categories/electronics-tablets"');
-    expect(html).toContain('mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8');
+    expect(html).toContain('mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8');
     // root pages show the child grid, not the product list or filters
     expect(html).not.toContain('Star River Pro Phone');
     expect(html).not.toContain('name="search"');
